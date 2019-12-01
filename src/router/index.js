@@ -24,8 +24,8 @@ export default new Router({
       component: Problemset
     },
     {
-      path: '/problems/:id'.
-      name: 'Problems'.
+      path: '/problems/:id',
+      name: 'Problems',
       component: Problems
     },
     {
@@ -39,7 +39,7 @@ export default new Router({
       component: Courses
     },
     {
-      path: '/inbox'.
+      path: '/inbox',
       name: 'Inbox',
       component: Inbox
     },
@@ -49,7 +49,7 @@ export default new Router({
       component: EmailVerify
     },
     {
-      path: '/email_resend'
+      path: '/email_resend',
       name: 'EmailResend',
       component: EmailResend
     }
