@@ -9,6 +9,7 @@
     
       <v-app-bar-nav-icon
         class="hidden-md-and-up"
+        @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
 
       <v-img
@@ -40,6 +41,34 @@
       </v-btn>
 
     </v-app-bar>
+    <v-navigation-drawer v-model="drawer">
+      <v-list-item>
+        <v-list-item-avatar>
+          <v-img
+            :src="require('@/assets/NOJ.png')"
+            :aspect-ratio="1"
+            height="100%"
+            contain
+          ></v-img>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title>Username</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list dense>
+        <v-list-item
+          v-for="link in links"
+          :key="link.title"
+          :to="link.path"
+          link
+        >
+          <v-list-item-title>{{ link.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
   </v-content>
 </template>
 
@@ -57,6 +86,7 @@ export default {
         { 'title': 'Courses', 'path': '/courses', 'show': 'true'},
         { 'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
       ],
+      drawer: false
     }
   }
 }
