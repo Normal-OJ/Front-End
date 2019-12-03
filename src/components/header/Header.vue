@@ -17,6 +17,7 @@
         :aspect-ratio="29167/4921"
         height="100%"
         contain
+        class="mr-3"
       ></v-img>
 
       <v-toolbar-items>
@@ -26,19 +27,14 @@
           :to="link.path"
           :show="link.show"
           class="text-none subtitle-1 hidden-sm-and-down"
-          min-width="10vw"
+          min-width="8vw"
           text
         >{{ link.title }}</v-btn>
       </v-toolbar-items>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        class="hidden-xs-only"
-        text
-      >
-        <!-- Auth Modal Reservation -->
-      </v-btn>
+      <Auth/>
 
     </v-app-bar>
     <v-navigation-drawer v-model="drawer">
@@ -73,9 +69,15 @@
 </template>
 
 <script>
+import Auth from './Auth'
+
 export default {
 
   name: 'Header',
+
+  components: {
+    'Auth': Auth,
+  },
 
   data () {
     return {
