@@ -4,7 +4,8 @@
       id="navbar"
       color="#003865"
       dark
-      >
+      dense
+    >
     
       <v-app-bar-nav-icon
         class="hidden-md-and-up"
@@ -23,7 +24,7 @@
           :key="link.title"
           :to="link.path"
           :show="link.show"
-          class="text-none title hidden-sm-and-down"
+          class="text-none subtitle-1 hidden-sm-and-down"
           min-width="10vw"
           text
         >{{ link.title }}</v-btn>
@@ -67,30 +68,18 @@ export default {
   #navbar {
     padding: 0 1vw;
   }
-
-  /*.logo {
-    width: 70vw;
-  }*/
 }
 
 @media screen and (min-width: 600px) and (max-width: 1904px) {
   #navbar {
     padding: 0 5vw;
   }
-
-  /*.logo {
-    width: 50vw;
-  }*/
 }
 
 @media screen and (min-width: 1904px) {
   #navbar {
     padding: 0 10vw;
   }
-
-  /*.logo {
-    width: 8vw;
-  }*/ 
 }
 
 </style>
