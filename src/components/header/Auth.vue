@@ -1,11 +1,13 @@
 <template>
   <v-dialog
     v-model="authDialog"
-    width="500"
+    :width="smDown ? '80vw' : '40vw'"
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        class="subtitle-1 hidden-sm-down"
+        v-show="$vuetify.breakpoint.mdAndUp || smDown"
+        class="subtitle-1"
+        :color="smDown ? 'primary' : 'white'"
         min-width="8vw"
         v-on="on"
         outlined
@@ -29,13 +31,11 @@
           grow
           color="secondary"
         >
-          <v-tab class="text-none subtitle-1">Sign in</v-tab>
+          <v-tab class="text-none subtitle-1" active>Sign in</v-tab>
           <v-tab class="text-none subtitle-1">Sign up</v-tab>
         </v-tabs>
         
-        <v-tabs-items
-          v-model="authTab"
-        >
+        <v-tabs-items v-model="authTab">
           <v-tab-item>
             <v-container>
               <SignInForm/>
@@ -43,7 +43,7 @@
           </v-tab-item>
           <v-tab-item>
             <v-container>
-              <SignInForm/>
+              <SignUpForm/>
             </v-container>
           </v-tab-item>
         </v-tabs-items>
@@ -55,13 +55,15 @@
 
 <script>
 import SignInForm from './SignInForm'
+import SignUpForm from './SignUpForm'
 
 export default {
 
   name: 'Auth',
 
   components: {
-    SignInForm
+    SignInForm,
+    SignUpForm,
   },
 
   data () {
@@ -69,7 +71,9 @@ export default {
       authDialog: false,
       authTab: null,
     }
-  }
+  },
+
+  props: ['smDown'],
 }
 </script>
 

@@ -34,11 +34,14 @@
 
       <v-spacer></v-spacer>
 
-      <Auth/>
+      <Auth :smDown="false"></Auth>
 
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer">
-      <v-list-item>
+
+    <v-navigation-drawer 
+      v-model="drawer"
+    >
+      <v-list-item v-if="isLogin">
         <v-list-item-avatar>
           <v-img
             :src="require('@/assets/NOJ.png')"
@@ -47,9 +50,23 @@
             contain
           ></v-img>
         </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title>Username</v-list-item-title>
-        </v-list-item-content>
+        <v-list-item-title>
+          Username
+        </v-list-item-title>
+        <v-btn
+          icon
+          @click.stop="drawer = !drawer"
+        ><v-icon>mdi-chevron-left</v-icon></v-btn>
+      </v-list-item>
+      
+      <v-list-item v-else>
+        <v-list-item-title>
+          <Auth :smDown="true"></Auth>
+        </v-list-item-title>
+        <v-btn
+          icon
+          @click.stop="drawer = !drawer"
+        ><v-icon>mdi-chevron-left</v-icon></v-btn>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -88,7 +105,8 @@ export default {
         { 'title': 'Courses', 'path': '/courses', 'show': 'true'},
         { 'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
       ],
-      drawer: false
+      drawer: false,
+      isLogin: false,
     }
   }
 }

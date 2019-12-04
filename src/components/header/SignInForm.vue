@@ -1,5 +1,5 @@
 <template>
-	<v-form
+  <v-form
     v-model="validForm"
     ref="form"
   >
@@ -7,9 +7,8 @@
     <v-text-field
       v-model="authData.username"
       label="Username / Email"
-      :rules="nameRule"
       prepend-icon="mdi-account"
-      required
+      :rules="usernameRule"
       autofocus
     ></v-text-field>
 
@@ -17,17 +16,17 @@
       v-model="authData.password"
       label="Password"
       prepend-icon="mdi-lock"
-      required
-      autofocus
-      :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-      :type="show ? 'text' : 'password'"
-      @click:append="show = !show"
+      :rules="passwordRule"
+      :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+      :type="showPassword ? 'text' : 'password'"
+      @click:append="showPassword = !showPassword"
     ></v-text-field>
 
+    <v-icon color="white">mdi-lock</v-icon>
     <v-btn
-      ref="btn"
-      class="text-none subtitle-1 mt-3"
+      class="text-none subtitle-1 mt-1 ml-2"
       color="primary"
+      :loading="btnLoading"
       @click="submit"
     >Sign in</v-btn>
 
@@ -48,15 +47,16 @@ export default {
         'username': '',
         'password': ''
       },
-      nameRule: [
-        v => !!v || 'Username is required'
-      ],
-      show: false,
+      usernameRule: [val => !!val || 'Username is required!'],
+      passwordRule: [val => !!val || 'Password is required!'],
+      showPassword: false,
+      btnLoading: false,
     }
   },
 
   methods: {
     submit() {
+      this.btnLoading = true;
       if ( this.$refs.form.validate() ) {
         this.$http.post('API_BASE_URL/auth/session', this.authData)
           .then((response) => {
@@ -66,6 +66,7 @@ export default {
             console.log(error.response.data)
           });
       }
+      this.btnLoading = false;
     }
   }
 }
