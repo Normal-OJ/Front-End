@@ -1,17 +1,22 @@
 <template>
   <v-dialog
     v-model="authDialog"
-    :width="smDown ? '80vw' : '40vw'"
+    :width="smDown ? '95vw' : '40vw'"
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        v-show="$vuetify.breakpoint.mdAndUp || smDown"
-        class="subtitle-1"
-        :color="smDown ? 'primary' : 'white'"
+        v-for="sign in smDown ? signs : signs.slice().reverse()"
+        :key="sign.title"
         min-width="8vw"
         v-on="on"
-        outlined
-      ><v-icon class="pr-1">mdi-account</v-icon>SIGN IN | UP</v-btn>
+        v-show="$vuetify.breakpoint.mdAndUp || smDown"
+        :class="smDown ? 'subtitle-2' : 'subtitle-1'"
+        :color="smDown ? 'primary' : 'white'"
+        :small="smDown ? true : false"
+        :outlined="sign.outline"
+        :text="sign.text"
+        @click="tabEntry=sign.entry"
+      >{{ sign.title }}</v-btn>
     </template>
     <v-card>
       <v-card-title
@@ -27,15 +32,18 @@
 
       <v-card-text>
         <v-tabs
-          v-model="authTab"
+          v-model="tabEntry"
           grow
           color="secondary"
         >
-          <v-tab class="text-none subtitle-1" active>Sign in</v-tab>
-          <v-tab class="text-none subtitle-1">Sign up</v-tab>
+          <v-tab 
+            v-for="tab in tabs"
+            :key="tab.id"
+            class="text-none subtitle-1"
+          >{{ tab.title }}</v-tab>
         </v-tabs>
         
-        <v-tabs-items v-model="authTab">
+        <v-tabs-items v-model="tabEntry">
           <v-tab-item>
             <v-container>
               <SignInForm/>
@@ -68,8 +76,16 @@ export default {
 
   data () {
     return {
+      signs: [
+        {'title': 'SIGN IN', 'outline': false, 'text': true, 'entry': 0},
+        {'title': 'SIGN UP', 'outline': true, 'text': false, 'entry': 1},
+      ],
       authDialog: false,
-      authTab: null,
+      tabEntry: 0,
+      tabs: [
+        {'id': 0, 'title': 'Sign in'},
+        {'id': 1, 'title': 'Sign up'},
+      ]
     }
   },
 
