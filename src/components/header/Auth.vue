@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="authDialog"
-    :width="smDown ? '95vw' : '40vw'"
+    :width="smDown ? '95vw' : '50vw'"
   >
     <template v-slot:activator="{ on }">
       <v-btn
@@ -46,17 +46,16 @@
         <v-tabs-items v-model="tabEntry">
           <v-tab-item>
             <v-container>
-              <SignInForm/>
+              <SignInForm v-on:signinSuccess="signinSuccessHideDialog"></SignInForm>
             </v-container>
           </v-tab-item>
           <v-tab-item>
             <v-container>
-              <SignUpForm/>
+              <SignUpForm></SignUpForm>
             </v-container>
           </v-tab-item>
         </v-tabs-items>
       </v-card-text>
-
     </v-card>
   </v-dialog>
 </template>
@@ -77,8 +76,8 @@ export default {
   data () {
     return {
       signs: [
-        {'title': 'SIGN IN', 'outline': false, 'text': true, 'entry': 0},
-        {'title': 'SIGN UP', 'outline': true, 'text': false, 'entry': 1},
+        {'title': 'Sign in', 'outline': false, 'text': true, 'entry': 0},
+        {'title': 'Sign up', 'outline': true, 'text': false, 'entry': 1},
       ],
       authDialog: false,
       tabEntry: 0,
@@ -90,6 +89,13 @@ export default {
   },
 
   props: ['smDown'],
+
+  methods: {
+    signinSuccessHideDialog() {
+      this.authDialog = false;
+      this.$emit('signinSuccessToHeader');
+    }
+  }
 }
 </script>
 

@@ -34,7 +34,7 @@
 
       <v-spacer></v-spacer>
 
-      <Auth :smDown="false"></Auth>
+      <Auth :smDown="false" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
 
     </v-app-bar>
 
@@ -61,7 +61,7 @@
       
       <v-list-item v-else>
         <v-list-item-title>
-          <Auth :smDown="true"></Auth>
+          <Auth :smDown="true" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
         </v-list-item-title>
         <v-btn
           icon
@@ -82,6 +82,25 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
+    <v-snackbar
+      v-model="alertBar"
+      color="success"
+      vertical
+      top
+      :timeout="4000"
+    >
+      <h3>{{ alertText }}</h3>
+      <v-btn
+        text
+        @click="alertBar = false"
+      >Close</v-btn>
+      <pre></pre>
+      <v-progress-linear
+        v-model="progress"
+        :active="showProgress"
+      ></v-progress-linear>
+    </v-snackbar>
   </v-content>
 </template>
 
@@ -107,7 +126,29 @@ export default {
       ],
       drawer: false,
       isLogin: false,
+      alertBar: false,
+      alertText: 'Welcome! Signed in successfully!',
+      progress: 0,
+      showProgress: true,
     }
+  },
+
+  methods: {
+    async signinSuccessShowAlert() {
+      this.drawer = false;
+      this.alertBar = true;
+      for ( let i=0; i<40; ++i ) {
+        this.progress += 2.5;
+        await this.delay(100);
+      }
+    },
+    delay(delayInms) {
+      return new Promise(resolve  => {
+        setTimeout(() => {
+          resolve(2);
+        }, delayInms);
+      });
+    },
   }
 }
 </script>
