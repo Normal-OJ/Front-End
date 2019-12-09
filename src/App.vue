@@ -1,18 +1,22 @@
 <template>
   <v-app>
-    <Inbox/>
+    <v-content>
+      <v-container>
+        <Header/>
+        <router-view/>
+      </v-container>
+    </v-content>
   </v-app>
 </template>
 
 <script>
-import Inbox from './components/inbox/Inbox';
+import Header from './components/header/Header';
 
 export default {
   name: 'App',
 
   components: {
-    //
-    Inbox,
+    Header,
   },
 
   data: () => ({
