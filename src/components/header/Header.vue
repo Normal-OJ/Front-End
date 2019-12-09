@@ -1,6 +1,7 @@
 <template>
-  <v-content>
+  <div>
     <v-app-bar
+      app
       id="navbar"
       color="#003865"
       dark
@@ -8,6 +9,7 @@
     >
     
       <v-app-bar-nav-icon
+        app
         class="hidden-md-and-up"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
@@ -17,6 +19,7 @@
         :aspect-ratio="29167/4921"
         height="100%"
         contain
+        class="mr-3"
       ></v-img>
 
       <v-toolbar-items>
@@ -26,23 +29,23 @@
           :to="link.path"
           :show="link.show"
           class="text-none subtitle-1 hidden-sm-and-down"
-          min-width="10vw"
+          min-width="8vw"
           text
         >{{ link.title }}</v-btn>
       </v-toolbar-items>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        class="hidden-xs-only"
-        text
-      >
-        <!-- Auth Modal Reservation -->
-      </v-btn>
+      <Auth :smDown="false" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
 
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer">
-      <v-list-item>
+
+    <v-navigation-drawer 
+      v-model="drawer"
+      app
+      disable-resize-watcher
+    >
+      <v-list-item v-if="isLogin">
         <v-list-item-avatar>
           <v-img
             :src="require('@/assets/NOJ.png')"
@@ -51,9 +54,23 @@
             contain
           ></v-img>
         </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title>Username</v-list-item-title>
-        </v-list-item-content>
+        <v-list-item-title>
+          Username
+        </v-list-item-title>
+        <v-btn
+          icon
+          @click.stop="drawer = !drawer"
+        ><v-icon>mdi-chevron-left</v-icon></v-btn>
+      </v-list-item>
+      
+      <v-list-item v-else>
+        <v-list-item-title>
+          <Auth :smDown="true" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
+        </v-list-item-title>
+        <v-btn
+          icon
+          @click.stop="drawer = !drawer"
+        ><v-icon>mdi-chevron-left</v-icon></v-btn>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -69,13 +86,38 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-  </v-content>
+
+    <v-snackbar
+      v-model="alertBar"
+      color="success"
+      vertical
+      top
+      :timeout="4000"
+    >
+      <h3>{{ alertText }}</h3>
+      <v-btn
+        text
+        @click="alertBar = false"
+      >Close</v-btn>
+      <pre></pre>
+      <v-progress-linear
+        v-model="progress"
+        :active="showProgress"
+      ></v-progress-linear>
+    </v-snackbar>
+  </div>
 </template>
 
 <script>
+import Auth from './Auth'
+
 export default {
 
   name: 'Header',
+
+  components: {
+    'Auth': Auth,
+  },
 
   data () {
     return {
@@ -86,8 +128,31 @@ export default {
         { 'title': 'Courses', 'path': '/courses', 'show': 'true'},
         { 'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
       ],
-      drawer: false
+      drawer: false,
+      isLogin: false,
+      alertBar: false,
+      alertText: 'Welcome! Signed in successfully!',
+      progress: 0,
+      showProgress: true,
     }
+  },
+
+  methods: {
+    async signinSuccessShowAlert() {
+      this.drawer = false;
+      this.alertBar = true;
+      for ( let i=0; i<40; ++i ) {
+        this.progress += 2.5;
+        await this.delay(100);
+      }
+    },
+    delay(delayInms) {
+      return new Promise(resolve  => {
+        setTimeout(() => {
+          resolve(2);
+        }, delayInms);
+      });
+    },
   }
 }
 </script>
