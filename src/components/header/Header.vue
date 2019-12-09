@@ -48,14 +48,14 @@
       <v-list-item v-if="isLogin">
         <v-list-item-avatar>
           <v-img
-            :src="require('@/assets/NOJ.png')"
+            :src="require('@/assets/defaultAvatar.png')"
             :aspect-ratio="1"
             height="100%"
             contain
           ></v-img>
         </v-list-item-avatar>
         <v-list-item-title>
-          Username
+          {{ username }}
         </v-list-item-title>
         <v-btn
           icon
@@ -134,10 +134,22 @@ export default {
       alertText: 'Welcome! Signed in successfully!',
       progress: 0,
       showProgress: true,
+      username: '',
     }
   },
 
+  created () {
+    this.getCookie();
+  },
+
   methods: {
+    getCookie() {
+      if ( this.$cookies.isKey('jwt') ) {
+        this.username = atob(this.$cookies.get('jwt'));
+        this.isLogin = true;
+      }
+    },
+
     async signinSuccessShowAlert() {
       this.drawer = false;
       this.alertBar = true;
