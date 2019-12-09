@@ -1,6 +1,7 @@
 <template>
-  <v-content>
+  <div>
     <v-app-bar
+      app
       id="navbar"
       color="#003865"
       dark
@@ -8,6 +9,7 @@
     >
     
       <v-app-bar-nav-icon
+        app
         class="hidden-md-and-up"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
@@ -40,6 +42,8 @@
 
     <v-navigation-drawer 
       v-model="drawer"
+      app
+      disable-resize-watcher
     >
       <v-list-item v-if="isLogin">
         <v-list-item-avatar>
@@ -101,7 +105,7 @@
         :active="showProgress"
       ></v-progress-linear>
     </v-snackbar>
-  </v-content>
+  </div>
 </template>
 
 <script>
