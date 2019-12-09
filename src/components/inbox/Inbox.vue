@@ -74,26 +74,26 @@
     <v-col cols="7" class="ma-0">
       <v-card tile elevation="0" height="93vh">
         <v-card tile outlined height="20%" class="pt-3 px-3">
-            <v-list-item v-if="displaymail === -1"></v-list-item>
-            <v-list-item v-else three-line>
-              <v-list-item-avatar size="64px">
-                <v-img :src="mail[displaymail].avatar"></v-img>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title class="headline">{{mail[displaymail].sender}}</v-list-item-title>
-                <v-list-item-subtitle>From "Computer Programming II"</v-list-item-subtitle>
-                <v-list-item-subtitle>{{mail[displaymail].time}}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-spacer></v-spacer>
-              <v-list-item-icon>
-                <v-btn icon outlined>
-                  <v-icon>mdi-reply</v-icon>
-                </v-btn>
-                <v-btn icon outlined>
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-list-item-icon>
-            </v-list-item>
+          <v-list-item v-if="displaymail === -1"></v-list-item>
+          <v-list-item v-else three-line>
+            <v-list-item-avatar size="64px">
+              <v-img :src="mail[displaymail].avatar"></v-img>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title class="headline">{{mail[displaymail].sender}}</v-list-item-title>
+              <v-list-item-subtitle>From "Computer Programming II"</v-list-item-subtitle>
+              <v-list-item-subtitle>{{mail[displaymail].time}}</v-list-item-subtitle>
+            </v-list-item-content>
+            <v-spacer></v-spacer>
+            <v-list-item-icon>
+              <v-btn icon outlined>
+                <v-icon>mdi-reply</v-icon>
+              </v-btn>
+              <v-btn icon outlined>
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-list-item-icon>
+          </v-list-item>
         </v-card>
         <v-card tile outlined height="70%">
           <v-list-item v-if="displaymail === -1">
@@ -105,7 +105,7 @@
           <v-list-item v-else>
             <v-list-item-content>
               <v-list-item-title class="headline">{{mail[displaymail].subject}}</v-list-item-title>
-              <v-list-item-subtitle class="black--text mt-2">{{mail[displaymail].content}}</v-list-item-subtitle>
+              <v-list-item-subtitle class="black--text mt-2 text-wrap">{{mail[displaymail].content}}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -143,7 +143,7 @@ export default {
         { sender: 'cpj',
           avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
           subject: 'test',
-          content: '資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面',
+          content: '資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面',
           time: '2019/12/13 12:13'
         },
         { sender: 'aflafl',
