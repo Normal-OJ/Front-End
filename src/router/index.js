@@ -11,6 +11,7 @@ import CoursesHomework from '@/components/courses/element/CoursesHomework'
 import CoursesContest from '@/components/courses/element/CoursesContest'
 import CoursesDiscussion from '@/components/courses/element/CoursesDiscussion'
 import CoursesScore from '@/components/courses/element/CoursesScore'
+import CoursesManage from '@/components/courses/element/CoursesManage'
 import Inbox from '@/components/inbox/Inbox'
 import EmailVerify from '@/components/header/EmailVerify'
 import EmailResend from '@/components/header/EmailResend'
@@ -54,6 +55,7 @@ export default new Router({
         { path: 'contest', component: CoursesContest },
         { path: 'discussion', component: CoursesDiscussion },
         { path: 'score', component: CoursesScore },
+        { path: 'manage', component: CoursesManage},
       ]
     },
     {

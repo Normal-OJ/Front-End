@@ -1,10 +1,10 @@
 <template>
-  <v-card tile outlined height="91.5vh" width="20vw">
+  <v-card tile outlined min-height="95vh">
     <v-list>
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="text-wrap">Course Name Example</v-list-item-title>
-          <v-list-item-subtitle>Teacher Example</v-list-item-subtitle>
+          <v-list-item-subtitle class="text-wrap">Teacher Example</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -14,15 +14,15 @@
         <v-list-item 
           v-for="link in links"
           :key="link.title"
-          link
           :to="link.path"
+          link
           dense
         >
           <v-list-item-icon>
             <v-icon>{{ link.icon }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>{{link.title}}</v-list-item-title>
+            <v-list-item-title class="text-wrap">{{link.title}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -44,6 +44,7 @@ export default {
         { 'title': 'Contest', 'path': `/course/${this.$route.params.name}/contest`, 'icon': 'mdi-flag'},
         { 'title': 'Discussion', 'path': `/course/${this.$route.params.name}/discussion`, 'icon': 'mdi-message-text'},
         { 'title': 'Score', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
+        { 'title': 'Manage', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
       ],
     }
   }

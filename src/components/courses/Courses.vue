@@ -48,31 +48,31 @@ export default {
         {
           'title': 'Computer Programming I',
           'teacher': 'Po-Wen Chi',
-          'path': '/1',
+          'path': '/1/announcement',
           'ta': ['Tzu-Wei', 'Jau-Hua'],
         },
         {
           'title': 'Discrete Math',
           'teacher': 'Wang',
-          'path': '/2',
+          'path': '/2/announcement',
           'ta': ['Tzu-Wei', 'Jau-Hua'],
         },
         {
           'title': 'How to make bugs',
           'teacher': 'Jau-Hua Lu',
-          'path': '/3',
+          'path': '/3/announcement',
           'ta': ['Tzu-Wei', 'Jau-Hua'],
         },
         {
           'title': 'Eating',
           'teacher': 'Po-Jay Chuang',
-          'path': '/4',
+          'path': '/4/announcement',
           'ta': ['Tzu-Wei', 'Jau-Hua'],
         },
         {
           'title': 'what',
           'teacher': 'Po-Jay Chuang',
-          'path': '/4',
+          'path': '/4/announcement',
           'ta': ['Tzu-Wei', 'Jau-Hua'],
         },
       ]
