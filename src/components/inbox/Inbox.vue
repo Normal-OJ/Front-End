@@ -2,18 +2,42 @@
   <v-row no-gutters>
     <v-col cols="2">
       <v-card tile outlined height="93vh">
-        <v-list>
-          <v-list-item>
-            <v-list-item-icon>
-              <v-btn color="primary" fab>
+        <v-row justify="center" align="center"><v-col cols="4" class="pl-6">
+          <v-dialog v-model="composeDialog" presistent  width="50%">
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" fab v-on="on">
                 <v-icon large>mdi-plus-thick</v-icon>
               </v-btn>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Compose</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+            </template>
+            <v-card>
+              <v-toolbar color="primary" dark dense>
+                <div class="subtitle-1">New mail</div>
+                <v-spacer></v-spacer>
+                <v-btn tile icon @click="composeDialog = false"><v-icon>mdi-close</v-icon></v-btn>
+              </v-toolbar>
+              <v-form>
+                <v-container>
+                  <v-text-field label="To" required></v-text-field>
+                  <v-text-field label="Subject" required></v-text-field>
+                  <v-textarea label="Content" required></v-textarea>
+                  <v-row>
+                    <v-spacer></v-spacer>
+                    <v-card-actions>
+                      <v-btn
+                        dark
+                        color="primary"
+                        @click="composeDialog = false"
+                      >
+                        Send
+                      </v-btn>
+                    </v-card-actions>
+                  </v-row>
+                </v-container>
+              </v-form>
+            </v-card>
+          </v-dialog></v-col>
+          <v-col><div class="subtitle-1">Compose</div></v-col>
+        </v-row>
         <v-divider></v-divider>
         <v-list nav>
           <v-list-item-group color="primary">
@@ -21,7 +45,7 @@
               v-for="(item, i) in navbar"
               :key="i"
               dense
-              @click="clear(i)"
+              @click="Clear(i)"
             >
               <v-list-item-icon>
                 <v-icon>{{item.icon}}</v-icon>
@@ -36,7 +60,7 @@
     </v-col>
     <v-col cols="3">
       <v-card tile elevation="0" outlined height="93vh">
-        <v-card tile height="92.5%">
+        <v-card tile elevation="0" height="92.5%">
           <v-card-title>
             <v-text-field
               outlined
@@ -89,14 +113,23 @@
               <v-list-item-subtitle>{{mail[displayfolder].folder[displaymail].time}}</v-list-item-subtitle>
             </v-list-item-content>
             <v-spacer></v-spacer>
-            <v-list-item-icon>
-              <v-btn icon outlined>
-                <v-icon>mdi-reply</v-icon>
-              </v-btn>
-              <v-btn icon outlined>
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-icon>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon outlined v-on="on">
+                  <v-icon>mdi-reply</v-icon>
+                </v-btn>
+              </template>
+              <span v-if="displayfolder === 0">reply</span>
+              <span v-else-if="displayfolder === 3">throw back to inbox</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon outlined v-on="on" @click="Remove()">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span>delete</span>
+            </v-tooltip>
           </v-list-item>
         </v-card>
         <v-divider></v-divider>
@@ -133,6 +166,7 @@ export default {
 
   data () {
     return {
+      composeDialog: false,
       displayfolder: 0,
       displaymail: -1,
       page: 1,
@@ -182,11 +216,11 @@ export default {
               time: '2019/04/06 04:06'
             },
             { 
-              sender: 'ooo',
+              sender: 'Ku Lily',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
               subject: '資工營面試通知',
               content: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              time: '2019/03/05 23:32'
+              time: '2019/03/08 03:08'
             },
             
           ]
@@ -221,10 +255,16 @@ export default {
     }
   },
   methods: {
-    clear(i) {
+    Clear(i) {
       this.displayfolder = i
       this.displaymail = -1
     },
+    Remove() {
+      this.mail[this.displayfolder].folder.splice(this.displaymail, 1)
+      if(this.displaymail === this.mail[this.displayfolder].folder.length) {
+        this.displaymail--
+      }
+    }
   }
 }
 </script>
