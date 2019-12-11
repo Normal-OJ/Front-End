@@ -36,7 +36,8 @@
 
       <v-spacer></v-spacer>
 
-      <Auth :smDown="false" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
+      <div v-if="isLogin && $vuetify.breakpoint.mdAndUp" class="headline">{{ displayedName }}({{ username }})</div>
+      <Auth v-else :smDown="false" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
 
     </v-app-bar>
 
@@ -54,9 +55,7 @@
             contain
           ></v-img>
         </v-list-item-avatar>
-        <v-list-item-title>
-          Username
-        </v-list-item-title>
+        <v-list-item-title>{{ displayedName }}({{ username }})</v-list-item-title>
         <v-btn
           icon
           @click.stop="drawer = !drawer"
@@ -134,11 +133,20 @@ export default {
       alertText: 'Welcome! Signed in successfully!',
       progress: 0,
       showProgress: true,
+      payload: null,
+      username: '',
+      displayedName: '',
     }
+  },
+
+  beforeMount () {
+    this.setProfile();
   },
 
   methods: {
     async signinSuccessShowAlert() {
+      this.isLogin = true;
+      this.setProfile();
       this.drawer = false;
       this.alertBar = true;
       for ( let i=0; i<40; ++i ) {
@@ -152,6 +160,20 @@ export default {
           resolve(2);
         }, delayInms);
       });
+    },
+    setProfile() {
+      if ( this.$cookies.isKey('jwt') ) {
+        this.payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( this.payload.active === true ) {
+          this.isLogin = true;
+          this.username = this.payload.username;
+          this.displayedName = this.payload.profile.displayedName;
+        }
+      }
+    },
+    parseJwt(token) {
+      console.log(atob(token.split('.')[1]));
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
   }
 }
