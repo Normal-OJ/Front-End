@@ -124,15 +124,15 @@ export default {
     submit() {
       this.btnLoading = true;
       if ( this.$refs.form.validate() ) {
-        this.$http.post('API_BASE_URL/auth/signup', this.authData)
+        this.$http.post(`${API_BASE_URL}/auth/signup`, this.authData)
           .then((response) => {
             this.signup = false;
-            console.log(response.data);
+            // console.log(response.data);
           })
           .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
             this.errAlert = true;
-            console.log(error.response.data);
+            // console.log(error.response.data);
           });
       }
       this.btnLoading = false;
@@ -143,12 +143,17 @@ export default {
     check(type, cnt) {
       if ( cnt == globKey[type] && ((type=='email' && this.isMailFormat(this.authData[type])) || (type=='username' && this.isNameFormat(this.authData[type]))) ) {
         this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
-          .then(() => {
-            this.used[type] = true;
+          .then((response) => {
+            if ( response.data.valid === 0 ) {
+              this.used[type] = false;
+              this.$refs[type].validate();
+            } else if ( response.data.valid === 1 ) {
+              this.used[type] = true;
+            }
           })
-          .catch(() => {
-            this.used[type] = false;
-            this.$refs[type].validate();
+          .catch((error) => {
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+            this.errAlert = true;
           })
       }
     },
