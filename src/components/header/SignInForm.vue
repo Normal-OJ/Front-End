@@ -73,7 +73,7 @@ export default {
         var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username';
           this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
           .then((response) => {
-            // console.log(response.data);
+            // console.log(response);
             if ( response.data.valid === 0 ) {
               // this user is not exist
               type = (type==='email') ? 'E-mail' : 'Username';
@@ -82,22 +82,27 @@ export default {
             } else if ( response.data.valid === 1 ) {
               this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
                 .then((response) => {
-                  // successful sign in
-                  // wrong password
-                  // this.$emit('signinSuccess');
                   console.log(response);
+                  if ( response.data.valid === 0 ) {
+                    // wrong password
+                    this.errMsg = 'Sorry, your password do not match.';
+                    this.errAlert = true;
+                  } else if ( response.data.valid === 1 ) {
+                    // successful sign in
+                    this.$emit('signinSuccess');
+                  } 
                 })
                 .catch((error) => {
-                  this.errMsg = 'Sorry, your password do not match.';
+                  this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
                   this.errAlert = true;
-                  // console.log(error);
+                  console.log(error);
                 });
             }
           })
           .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
             this.errAlert = true;
-            // console.log(error.data);
+            // console.log(error);
           });
       }
       this.btnLoading = false;
