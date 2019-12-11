@@ -78,8 +78,8 @@ export default {
       this.btnLoading = true;
       if ( this.$refs.form.validate() ) {
         var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username';
-
-        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
+        console.log('type: ' + type);
+        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData.username})
           .then((response) => {
             // console.log(response.data);
             if ( response.data.data.valid === 1 ) {
@@ -94,16 +94,13 @@ export default {
               console.log('user exist');
               this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
                 .then((response) => {
-                  console.log(response);
-                  if ( response.data.data.valid === 0 ) {
-                    // wrong password
-                  } else if ( response.data.data.valid === 1 ) {
-                    // successful sign in
-                    this.$emit('signinSuccess');
-                  } 
+                  // successful sign in
+                  // console.log(response);
+                  this.$emit('signinSuccess');
                 })
                 .catch((error) => {
-                  console.log(error);
+                  // wrong password or not active
+                  // console.log(error);
                   this.errMsg = ['Sorry, your password do not match.', 'Or, you haven\'t verify your email yet. (you can verify email by link at bottom.)'];
                   this.errAlert = true;
                 });

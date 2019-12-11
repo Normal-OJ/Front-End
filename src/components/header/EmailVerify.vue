@@ -92,7 +92,7 @@ export default {
 
   data () {
     return {
-      payload: '',
+      payload: null,
       username: '',
       profile: {
         // 'avatar': null,
@@ -111,7 +111,8 @@ export default {
   },
 
   beforeMount () {
-    this.payload = this.parseJwt(this.$route.params.token);
+
+    this.payload = this.getPayload();
     this.username = this.payload.username;
     this.profile.displayedName = this.username;
     // console.log('creating');
@@ -119,6 +120,18 @@ export default {
   },
 
   methods: {
+    getPayload() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === false ) {
+          return this.parseJwt(this.$cookies.get('jwt'));
+        } else {
+          this.$router.push('/');
+        }
+      } else {
+        this.$router.push('/');
+      }
+    },
     parseJwt(token) {
       console.log(atob(token.split('.')[1]));
       return JSON.parse(atob(token.split('.')[1])).data;
