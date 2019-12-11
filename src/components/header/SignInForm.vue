@@ -12,7 +12,7 @@
       elevation="2"
       type="error"
       transition="scroll-y-transition"
-    >{{ errMsg }}</v-alert>
+    ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
 
     <v-text-field
       v-model="authData.username"
@@ -34,11 +34,18 @@
 
     <v-icon color="white">mdi-lock</v-icon>
     <v-btn
-      class="text-none subtitle-1 mt-1 ml-2"
+      class="text-none subtitle-1 mt-1 mx-2"
       color="primary"
       :loading="btnLoading"
       @click="submit"
     >Sign in</v-btn>
+
+    <v-btn
+      class="text-none caption mx-2"
+      color="primary"
+      text
+      x-small
+    >haven't verify your mail?</v-btn>
 
   </v-form>
 </template>
@@ -62,7 +69,7 @@ export default {
       showPassword: false,
       btnLoading: false,
       errAlert: false,
-      errMsg: '',
+      errMsg: [],
     }
   },
 
@@ -71,29 +78,44 @@ export default {
       this.btnLoading = true;
       if ( this.$refs.form.validate() ) {
         var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username';
-        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, this.authData[type])
+
+        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
           .then((response) => {
-            console.log(response.data);
-            this.$http.post('API_BASE_URL/auth/session', this.authData)
-              .then((response) => {
-                // successful sign in
-                this.$emit('signinSuccess');
-                console.log(response.data);
-              })
-              .catch((error) => {
-                // wrong password
-                this.errMsg = 'Sorry, your password do not match.';
-                this.errAlert = true;
-                console.log(error.response.data);
-              });
+            // console.log(response.data);
+            if ( response.data.data.valid === 1 ) {
+              // this user is not exist
+              console.log('user is not exist');
+              type = (type==='email') ? 'E-mail' : 'Username';
+              this.errMsg = ['Sorry, we couldn\'t find an account with that ' + type + '.'];
+              this.errAlert = true;
+
+            } else if ( response.data.data.valid === 0 ) {
+
+              console.log('user exist');
+              this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
+                .then((response) => {
+                  console.log(response);
+                  if ( response.data.data.valid === 0 ) {
+                    // wrong password
+                  } else if ( response.data.data.valid === 1 ) {
+                    // successful sign in
+                    this.$emit('signinSuccess');
+                  } 
+                })
+                .catch((error) => {
+                  console.log(error);
+                  this.errMsg = ['Sorry, your password do not match.', 'Or, you haven\'t verify your email yet. (you can verify email by link at bottom.)'];
+                  this.errAlert = true;
+                });
+
+            }
           })
           .catch((error) => {
-            // this user is not exist
-            type = (type==='email') ? 'E-mail' : 'Username';
-            this.errMsg = 'Sorry, we couldn\'t find an account with that ' + type + '.';
+            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
             this.errAlert = true;
-            console.log(error.response.data);
+            // console.log(error);
           });
+
       }
       this.btnLoading = false;
     }

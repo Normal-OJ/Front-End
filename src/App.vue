@@ -21,7 +21,14 @@ export default {
 
   data: () => ({
     //
+    aa: false
   }),
+
+  created () {
+    () => {
+      this.aa = true;
+    }
+  }
 };
 </script>
 
