@@ -13,7 +13,7 @@
       elevation="2"
       type="error"
       transition="scroll-y-transition"
-    >{{ errMsg }}</v-alert>
+    ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
     
     <v-text-field
       v-model="authData.email"
@@ -109,7 +109,7 @@ export default {
       showPassword: false,
       btnLoading: false,
       errAlert: false,
-      errMsg: '',
+      errMsg: [],
       signup: true,
     }
   },
@@ -130,7 +130,7 @@ export default {
             // console.log(response.data);
           })
           .catch((error) => {
-            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
             this.errAlert = true;
             // console.log(error.response.data);
           });
@@ -144,15 +144,15 @@ export default {
       if ( cnt == globKey[type] && ((type=='email' && this.isMailFormat(this.authData[type])) || (type=='username' && this.isNameFormat(this.authData[type]))) ) {
         this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
           .then((response) => {
-            if ( response.data.valid === 0 ) {
+            if ( response.data.data.valid === 0 ) {
               this.used[type] = false;
               this.$refs[type].validate();
-            } else if ( response.data.valid === 1 ) {
+            } else if ( response.data.data.valid === 1 ) {
               this.used[type] = true;
             }
           })
           .catch((error) => {
-            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
             this.errAlert = true;
           })
       }
