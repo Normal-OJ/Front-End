@@ -3,8 +3,8 @@
     <v-list>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="text-wrap">Course Name Example</v-list-item-title>
-          <v-list-item-subtitle class="text-wrap">Teacher Example</v-list-item-subtitle>
+          <v-list-item-title class="text-wrap">{{ courseName }}</v-list-item-title>
+          <v-list-item-subtitle class="text-wrap">{{ teacherName }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -38,6 +38,8 @@ export default {
 
   data () {
     return {
+      courseName: this.$route.params.name,
+      teacherName: 'teacherName',
       links: [
         { 'title': 'Announcement', 'path': `/course/${this.$route.params.name}/announcement`, 'icon': 'mdi-bulletin-board'},
         { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-open-variant'},

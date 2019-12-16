@@ -17,7 +17,7 @@
             :elevation="hover ? 12 : 2"
           >
             <v-card-title>
-              <a :href="'/#/course'+items[(i-1)*2+(j-1)].path">
+              <a :href="'/course'+items[(i-1)*2+(j-1)].path">
                 {{ items[(i-1)*2+(j-1)].title }}
               </a>
             </v-card-title>
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+const API_BASE_URL = '/api';
+
 export default {
 
   name: 'Courses',
@@ -45,37 +47,26 @@ export default {
   data () {
     return {
       items: [
-        {
-          'title': 'Computer Programming I',
-          'teacher': 'Po-Wen Chi',
-          'path': '/1/announcement',
-          'ta': ['Tzu-Wei', 'Jau-Hua'],
-        },
-        {
-          'title': 'Discrete Math',
-          'teacher': 'Wang',
-          'path': '/2/announcement',
-          'ta': ['Tzu-Wei', 'Jau-Hua'],
-        },
-        {
-          'title': 'How to make bugs',
-          'teacher': 'Jau-Hua Lu',
-          'path': '/3/announcement',
-          'ta': ['Tzu-Wei', 'Jau-Hua'],
-        },
-        {
-          'title': 'Eating',
-          'teacher': 'Po-Jay Chuang',
-          'path': '/4/announcement',
-          'ta': ['Tzu-Wei', 'Jau-Hua'],
-        },
-        {
-          'title': 'what',
-          'teacher': 'Po-Jay Chuang',
-          'path': '/4/announcement',
-          'ta': ['Tzu-Wei', 'Jau-Hua'],
-        },
       ]
+    }
+  },
+
+  beforeMount () {
+    this.getCourses();
+  },
+
+  methods: {
+    getCourses() {
+      this.$http.get('/api/course')
+        .then((res) => {
+          console.log(res);
+          res.data.data.forEach(ele => {
+            this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}/announcement`, 'ta': []})
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
 }
