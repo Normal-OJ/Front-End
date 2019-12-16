@@ -92,10 +92,11 @@ export default {
 
   data () {
     return {
-      username: atob(this.$route.params.token),
+      payload: null,
+      username: '',
       profile: {
         // 'avatar': null,
-        'displayedName': atob(this.$route.params.token),
+        'displayedName': '',
         'bio': '',
       },
       image: null,
@@ -109,14 +110,35 @@ export default {
     }
   },
 
-  // created () {
-  //   this.getAvatar();
-  // },
+  beforeMount () {
+
+    this.payload = this.getPayload();
+    this.username = this.payload.username;
+    this.profile.displayedName = this.username;
+    // console.log('creating');
+    // this.getAvatar();
+  },
 
   methods: {
+    getPayload() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === false ) {
+          return this.parseJwt(this.$cookies.get('jwt'));
+        } else {
+          this.$router.push('/');
+        }
+      } else {
+        this.$router.push('/');
+      }
+    },
+    parseJwt(token) {
+      console.log(atob(token.split('.')[1]));
+      return JSON.parse(atob(token.split('.')[1])).data;
+    },
     submit() {
       if ( this.$refs.form.validate() ) {
-        this.$http.post('API_BASE_URL/auth/active', this.profile)
+        this.$http.post(`${API_BASE_URL}/auth/active`, {'agreement': this.agree, 'profile': this.profile})
           .then((response) => {
             this.$router.push('/');
             console.log(response.data);
@@ -129,18 +151,18 @@ export default {
       }
     },
     // getAvatar() {
-    //   this.$http.get('https://www.gravatar.com/4de7f6200a85a8c2716bbc13bbbec829.json')
+    //   this.$http.get(`https://www.gravatar.com/${md5(toLowerCase(this.payload.email))}.json`)
     //     .then((response) => {
     //       console.log(response);
     //     })
     //     .catch((error) => {
-
+    //       console.log(error);
     //     });
     // },
-    // uploadImage(event) {
-    //   console.log(event)
-    //   this.image = URL.createObjectURL(event)
-    // },
+    uploadImage(event) {
+      console.log(event)
+      this.image = URL.createObjectURL(event)
+    },
   },
 }
 </script>

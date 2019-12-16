@@ -19,6 +19,7 @@ import EmailResend from '@/components/header/EmailResend'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -64,7 +65,7 @@ export default new Router({
       component: Inbox
     },
     {
-      path: '/email_verify/:token',
+      path: '/email_verify',
       name: 'EmailVerify',
       component: EmailVerify
     },
