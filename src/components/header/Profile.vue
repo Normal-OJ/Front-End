@@ -58,6 +58,16 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
+          <v-alert
+            v-model="errAlert"
+            dismissible
+            colored-border
+            border="left"
+            dense
+            elevation="2"
+            type="error"
+            transition="scroll-y-transition"
+          ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
           <v-row>
             <v-text-field
               v-model="passwd.newPassword"
@@ -117,6 +127,8 @@ export default {
         'displayedName': '',
         'bio': '',
       },
+      errAlert: false,
+      errMsg: [],
     }
   },
 
@@ -155,6 +167,8 @@ export default {
           // console.log(res);
         })
         .catch((err) => {
+          this.errMsg = ['Sorry, your password do not match.'];
+          this.errAlert = true;
           // console.log(err);
         })
       }
