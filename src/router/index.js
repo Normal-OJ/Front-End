@@ -52,12 +52,15 @@ export default new Router({
       component: Course,
       children: [
         { path: 'announcement', component: CoursesAnnouncement },
+        // { path: 'announcement/:id', component: CoursesAnnouncementPost },
         { path: 'homework', component: CoursesHomework },
         { path: 'contest', component: CoursesContest },
         { path: 'discussion', component: CoursesDiscussion },
+        // { path: 'discussion/:id', component: CoursesDiscussionPost },
         { path: 'score', component: CoursesScore },
         { path: 'manage', component: CoursesManage},
-      ]
+      ],
+      redirect: '/course/:name/announcement',
     },
     {
       path: '/inbox',

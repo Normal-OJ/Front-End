@@ -61,7 +61,7 @@ export default {
         .then((res) => {
           console.log(res);
           res.data.data.forEach(ele => {
-            this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}/announcement`, 'ta': []})
+            this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}`, 'ta': []})
           })
         })
         .catch((err) => {

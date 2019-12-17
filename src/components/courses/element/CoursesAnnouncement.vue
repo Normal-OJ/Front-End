@@ -2,7 +2,7 @@
   <div>
     <v-row no-gutters v-for="(item, idx) in items" :key="idx" justify="center">
     	<v-card
-        class="mt-6 flex-column d-flex"
+        class="my-6 flex-column d-flex"
         elevation="6"
         height="60vh"
         width="50vw"
@@ -11,7 +11,7 @@
           Written by <a>{{ item.author }}</a>, {{ item.createdTime }}.<br>
           <i>Last update on {{ item.lastUpdatedTime }}.</i>
         </v-card-subtitle>
-        <v-row class="ma-0 pa-0" justify="center"><v-card-title class="display-1 pa-0">{{ item.title }}</v-card-title></v-row>
+        <v-row class="ma-0 pa-0" justify="center"><v-card-title class="display-1">{{ item.title }}</v-card-title></v-row>
         <v-card-text class="grow mask"><p class="body-1 black--text">{{ item.content }}</p></v-card-text>
         <v-card-actions>
           <v-btn

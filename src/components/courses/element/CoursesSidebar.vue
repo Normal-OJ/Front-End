@@ -22,7 +22,7 @@
             <v-icon>{{ link.icon }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title class="text-wrap">{{link.title}}</v-list-item-title>
+            <v-list-item-title class="text-wrap mr-3">{{link.title}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
