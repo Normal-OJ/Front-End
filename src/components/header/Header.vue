@@ -114,7 +114,8 @@
       v-model="alertBar"
       color="success"
       vertical
-      top
+      bottom
+      right
       :timeout="4000"
     >
       <h3>{{ alertText }}</h3>

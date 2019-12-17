@@ -17,9 +17,10 @@
     <v-text-field
       v-model="authData.username"
       label="Username / E-mail"
+      ref="username"
       prepend-icon="mdi-account"
       :rules="usernameRule"
-      autofocus
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-text-field
@@ -30,6 +31,7 @@
       :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
       :type="showPassword ? 'text' : 'password'"
       @click:append="showPassword = !showPassword"
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-icon color="white">mdi-lock</v-icon>
@@ -71,6 +73,12 @@ export default {
       errAlert: false,
       errMsg: [],
     }
+  },
+
+  mounted () {
+    this.$nextTick(() => {
+      this.$refs.username.focus();
+    });
   },
 
   methods: {
