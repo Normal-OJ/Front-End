@@ -114,6 +114,12 @@ export default {
     }
   },
 
+  mounted () {
+    this.$nextTick(() => {
+      this.$refs.email.focus();
+    });
+  },
+
   methods: {
     isMailFormat(val) {
       return /.+@.+/.test(val);

@@ -17,9 +17,10 @@
     <v-text-field
       v-model="authData.username"
       label="Username / E-mail"
+      ref="username"
       prepend-icon="mdi-account"
       :rules="usernameRule"
-      autofocus
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-text-field
@@ -30,6 +31,7 @@
       :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
       :type="showPassword ? 'text' : 'password'"
       @click:append="showPassword = !showPassword"
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-icon color="white">mdi-lock</v-icon>
@@ -73,7 +75,27 @@ export default {
     }
   },
 
+  mounted () {
+    this.$nextTick(() => {
+      this.$refs.username.focus();
+    });
+  },
+
   methods: {
+    signin() {
+      this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
+        .then((response) => {
+          // successful sign in
+          // console.log(response);
+          this.$emit('signinSuccess');
+        })
+        .catch((error) => {
+          // wrong password or not active
+          // console.log(error);
+          this.errMsg = ['Sorry, your password do not match.', 'Or, you haven\'t verify your email yet. (you can verify email by link at bottom.)'];
+          this.errAlert = true;
+        });
+    },
     submit() {
       this.btnLoading = true;
       if ( this.$refs.form.validate() ) {
@@ -84,27 +106,27 @@ export default {
             // console.log(response.data);
             if ( response.data.data.valid === 1 ) {
               // this user is not exist
-              console.log('user is not exist');
               type = (type==='email') ? 'E-mail' : 'Username';
-              this.errMsg = ['Sorry, we couldn\'t find an account with that ' + type + '.'];
-              this.errAlert = true;
 
-            } else if ( response.data.data.valid === 0 ) {
-
-              console.log('user exist');
-              this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
+              this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData.username})
                 .then((response) => {
-                  // successful sign in
-                  // console.log(response);
-                  this.$emit('signinSuccess');
+                  // console.log(response.data);
+                  if ( response.data.data.valid === 1 ) {
+                    this.errMsg = ['Sorry, we couldn\'t find an account with that ' + type + '.'];
+                    this.errAlert = true;
+                  } else if ( response.data.data.valid === 0 ) {
+                    this.signin();
+                  }
                 })
                 .catch((error) => {
-                  // wrong password or not active
-                  // console.log(error);
-                  this.errMsg = ['Sorry, your password do not match.', 'Or, you haven\'t verify your email yet. (you can verify email by link at bottom.)'];
+                  this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
                   this.errAlert = true;
-                });
+                  // console.log(error);      
+                })
 
+            } else if ( response.data.data.valid === 0 ) {
+              // this uesr is exist
+              this.signin();
             }
           })
           .catch((error) => {
