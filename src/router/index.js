@@ -8,6 +8,7 @@ import Courses from '@/components/courses/Courses'
 import Inbox from '@/components/inbox/Inbox'
 import EmailVerify from '@/components/header/EmailVerify'
 import EmailResend from '@/components/header/EmailResend'
+import Profile from '@/components/header/Profile'
 
 Vue.use(Router)
 
@@ -53,6 +54,11 @@ export default new Router({
       path: '/email_resend',
       name: 'EmailResend',
       component: EmailResend
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
     }
   ]
 })
