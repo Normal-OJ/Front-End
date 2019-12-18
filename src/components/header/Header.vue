@@ -16,7 +16,7 @@
 
       <v-img
         :src="require('@/assets/NOJ-LOGO.png')"
-        :aspect-ratio="29167/4921"
+        :aspect-ratio="1080/182"
         height="100%"
         contain
         class="mr-3"
