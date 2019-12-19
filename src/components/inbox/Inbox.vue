@@ -21,10 +21,10 @@
                 </v-tooltip>
               </v-toolbar>
               <v-card-text class="mt-2">
-                <v-text-field label="To" required></v-text-field>
-                <v-text-field label="Subject" required counter="32" :rules="titleRule" v-model="draftSubject"
+                <v-text-field label="To" required v-model="newMail.receiver"></v-text-field>
+                <v-text-field label="title" required counter="32" :rules="titleRule" v-model="newMail.title"
                 ></v-text-field>
-                <v-textarea label="Message" v-model="draftMessage"></v-textarea>
+                <v-textarea label="Message" v-model="newMail.message"></v-textarea>
                 <v-row>
                   <v-spacer></v-spacer>
                   <v-card-actions>
@@ -82,8 +82,7 @@
           </v-list-item>
           <v-list-item v-else>
             <v-list-item-content class="ma-3">
-              {{displaymail}}
-              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].subject}}</v-list-item-title>
+              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
               <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
@@ -101,7 +100,7 @@
           <v-text-field
             outlined
             append-icon="mdi-magnify"
-            label="Search author, subject ..."
+            label="Search author, title ..."
             hide-details
             @click:append=""
           ></v-text-field>
@@ -118,11 +117,11 @@
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
               <v-list-item-content v-if="item.status === 1 && displayfolder === 0" class="font-weight-bold" @click="Click(i)">
-                <v-list-item-title>{{item.subject}}</v-list-item-title>
+                <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-content v-else @click="Click(i)">
-                <v-list-item-title>{{item.subject}}</v-list-item-title>
+                <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
               </v-list-item-content>
               <v-btn icon color="primary" x-small  v-if="displayfolder === 0" @click="Read(displayfolder,i)">
@@ -192,7 +191,7 @@
           </v-list-item>
           <v-list-item v-else>
             <v-list-item-content class="ma-3">
-              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].subject}}</v-list-item-title>
+              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
               <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
@@ -211,6 +210,7 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
+const API_BASE_URL = '/api';
 
 export default {
 
@@ -218,9 +218,11 @@ export default {
 
   data () {
     return {
-      draftSentTo: '',
-      draftSubject: '',
-      draftMessage: '',
+      newMail: {
+        receiver: '',
+        title: '',
+        message: ''
+      },
       composeDialog: false,
       showMail: false,
       displayfolder: 0,
@@ -241,7 +243,7 @@ export default {
               status: 1,
               sender: 'Uier',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: '**As** title, u! ~~As~~ title, u! As title, u! As title, u! As title, u!',
               timestamp: 201903052332
             },
@@ -249,7 +251,7 @@ export default {
               status: 1,
               sender: 'Kelly',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: 'test',
+              title: 'test',
               message: '資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面',
               timestamp: 201912131213
             },
@@ -257,7 +259,7 @@ export default {
               status: 1,
               sender: 'ysl',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '測',
+              title: '測',
               message: '0991234567890qwer tyuioasdfghjklzxcvbnm,098765edkdftgyhunfd6csxexbabiubcuibgfwvgurefviuegrvfuervfuwrvfiwugvfuevfugrvfuwvrfuviugfevrugfvrguvurefviuegrvfuervfuwrvfiwugvfuevfugrvfuwvrfuviugfevrugfvrguvurefviuegrvfuervfuwrvfiwugvfuevfugrvfuwvrfuviugfevrugfvrguv',
               timestamp: 201905110511
             },
@@ -265,7 +267,7 @@ export default {
               status: 1,
               sender: '黃欣欣',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201911021102
             },
@@ -273,7 +275,7 @@ export default {
               status: 1,
               sender: '臻臻',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201904060406
             },
@@ -281,7 +283,7 @@ export default {
               status: 1,
               sender: 'Ku Lily',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201903080309
             },
@@ -289,7 +291,7 @@ export default {
               status: 1,
               sender: 'Ku Lily',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201903080312
             },
@@ -297,7 +299,7 @@ export default {
               status: 1,
               sender: 'Ku Lily',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201903080008
             },
@@ -305,7 +307,7 @@ export default {
               status: 1,
               sender: 'Lily',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知',
+              title: '資工營面試通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201903088808
             },
@@ -313,7 +315,7 @@ export default {
               status: 1,
               sender: '黃欣欣',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: '資工營面試通知通知通知通知通知',
+              title: '資工營面試通知通知通知通知通知',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201910021102
             },
@@ -325,7 +327,7 @@ export default {
               status: 1,
               sender: 'cpj',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              subject: 'iiiiiiiiii',
+              title: 'iiiiiiiiii',
               message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
               timestamp: 201909020902
             }
@@ -334,7 +336,47 @@ export default {
       ],
     }
   },
+  beforeMount() {
+    this.getInbox();
+    this.getSent();
+  },
   methods: {
+    getInbox() {
+      this.$http.get(`${API_BASE_URL}/inbox`)
+        .then((res) => {
+          console.log(res)
+          res.data.forEach(ele => {
+            this.mail[0].push({'id': ele.id, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getSent() {
+      this.$http.get(`${API_BASE_URL}/inbox/sent`)
+        .then((res) => {
+          console.log(res)
+          res.data.forEach((ele) => {
+            this.mail[1].push({'id': ele.id, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    postSend() {
+      this.$http.post(`${API_BASE_URL}/inbox`,this.newMail)
+        .then((res) => {
+          console.log(res)
+          res.data((ele) => {
+            // ???
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     ShowMailSet() {
       if(this.$vuetify.breakpoint.mdAndUp) return true;
       else if(!this.showMail) return true;
@@ -357,14 +399,14 @@ export default {
       }
     },
     ResetNewmail() {
-      this.draftSentTo = ''
-      this.draftSubject = ''
-      this.draftMessage = ''
+      this.newMail.receiver = ''
+      this.newMail.title = ''
+      this.newMail.message = ''
       this.composeDialog = false
     },
     Reply(f,m) {
-      this.draftSentTo = this.mail[f].folder[m].sender
-      this.draftSubject = 'Re: ' + this.mail[f].folder[m].subject
+      this.newMail.receiver = this.mail[f].folder[m].sender
+      this.newMail.title = 'Re: ' + this.mail[f].folder[m].title
       this.composeDialog = true
     },
     Read(f,idx) {
