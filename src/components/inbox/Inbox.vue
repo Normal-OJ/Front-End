@@ -21,8 +21,9 @@
                 </v-tooltip>
               </v-toolbar>
               <v-card-text class="mt-2">
-                <v-text-field label="To" required hint="enter an username" v-model="draftSentTo"></v-text-field>
-                <v-text-field label="Subject" required v-model="draftSubject"></v-text-field>
+                <v-text-field label="To" required></v-text-field>
+                <v-text-field label="Subject" required counter="32" :rules="titleRule" v-model="draftSubject"
+                ></v-text-field>
                 <v-textarea label="Message" v-model="draftMessage"></v-textarea>
                 <v-row>
                   <v-spacer></v-spacer>
@@ -81,8 +82,9 @@
           </v-list-item>
           <v-list-item v-else>
             <v-list-item-content class="ma-3">
+              {{displaymail}}
               <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].subject}}</v-list-item-title>
-              <v-list-item-subtitle class="black--text text-wrap">{{mail[displayfolder].folder[displaymail].message}}</v-list-item-subtitle>
+              <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -111,29 +113,30 @@
               two-line
               v-for="(item, i) in mail[displayfolder].folder"
               :key="item.time"
-              @click="Click(i)"
             >
               <v-list-item-avatar>
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
-              <v-list-item-content v-if="item.status === 1" class="font-weight-bold">
+              <v-list-item-content v-if="item.status === 1 && displayfolder === 0" class="font-weight-bold" @click="Click(i)">
                 <v-list-item-title>{{item.subject}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
-                <v-list-item-subtitle>{{item.message}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-content v-else>
+              <v-list-item-content v-else @click="Click(i)">
                 <v-list-item-title>{{item.subject}}</v-list-item-title>
-                <v-list-item-subtitle>{{item.sender}} - {{item.time}}</v-list-item-subtitle>
-                <v-list-item-subtitle>{{item.message}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
               </v-list-item-content>
+              <v-btn icon color="primary" x-small  v-if="displayfolder === 0" @click="Read(displayfolder,i)">
+                <v-icon size="1" v-if="item.status === 1" >mdi-checkbox-blank-circle</v-icon>
+                <v-icon size="1" v-else>mdi-checkbox-blank-circle-outline</v-icon>
+              </v-btn>
             </v-list-item></v-list-item-group>
           </v-list>
         </v-container>
       </v-card>
-      <v-btn left bottom fixed fab class="text-center hidden-md-and-up" color="primary" @click="composeDialog = true">
+      <v-btn left bottom fixed fab class="text-center hidden-md-and-up" color="primary" @click="composeDialog = true" v-if="!showMail">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
-      <v-speed-dial right fixed bottom v-model="speedDial" class="hidden-md-and-up">
+      <v-speed-dial right fixed bottom v-model="speedDial" class="hidden-md-and-up" v-if="!showMail">
         <template v-slot:activator>
           <v-btn v-model="speedDial" color="primary" dark fab>
             <v-icon v-if="speedDial">mdi-close</v-icon>
@@ -190,7 +193,7 @@
           <v-list-item v-else>
             <v-list-item-content class="ma-3">
               <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].subject}}</v-list-item-title>
-              <v-list-item-subtitle class="black--text text-wrap">{{mail[displayfolder].folder[displaymail].message}}</v-list-item-subtitle>
+              <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -207,6 +210,8 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown'
+
 export default {
 
   name: 'Inbox',
@@ -225,6 +230,9 @@ export default {
     		{ icon: 'mdi-inbox', title: 'Inbox'},
     		{ icon: 'mdi-send', title: 'Sent'},
     	],
+      titleRule: [
+        val => val.length <= 32 || 'Sorry, the length must be ≤ 32 characters',
+      ],
       mail: [
         {
           // inbox
@@ -234,7 +242,7 @@ export default {
               sender: 'Uier',
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
               subject: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
+              message: '**As** title, u! ~~As~~ title, u! As title, u! As title, u! As title, u!',
               timestamp: 201903052332
             },
             { 
@@ -358,8 +366,19 @@ export default {
       this.draftSentTo = this.mail[f].folder[m].sender
       this.draftSubject = 'Re: ' + this.mail[f].folder[m].subject
       this.composeDialog = true
+    },
+    Read(f,idx) {
+      if(this.mail[f].folder[idx].status === 1) {
+        this.mail[f].folder[idx].status = 0
+      }
+      else this.mail[f].folder[idx].status = 1
     }
-  }
+  },
+  components: {
+    VueMarkdown
+  },
 }
 </script>
+
+<style lang="css" scoped>
 </style>
