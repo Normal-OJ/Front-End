@@ -395,7 +395,7 @@ export default {
         .then((res) => {
           console.log(res)
           res.data.forEach(ele => {
-            this.mail[0].push({'id': ele.id, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+            this.mail[0].push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
           })
         })
         .catch((err) => {
@@ -407,19 +407,21 @@ export default {
         .then((res) => {
           console.log(res)
           res.data.forEach((ele) => {
-            this.mail[1].push({'id': ele.id, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+            this.mail[1].push({'messageId': ele.messageId, 'receiver': ele.receiver, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
           })
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    postSend() {
+    send() {
+      // validate form
+      // loading btn
       this.$http.post(`${API_BASE_URL}/inbox`,this.newMail)
         .then((res) => {
           console.log(res)
-          res.data((ele) => {
-            // ???
+          res.data.forEach((ele) => {
+            this.mail[1].push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
           })
         })
         .catch((err) => {
@@ -443,9 +445,18 @@ export default {
     },
     Remove(f,idx) {
       this.mail[f].folder.splice(idx, 1)
-      if(idx === this.mail[f].folder.length) {
-        this.displaymail--
-      }
+      this.showMail = false
+      this.displaymail = -1
+      this.$http.delete(`${API_BASE_URL}/inbox`, this.mail[f].folder[idx].messageId)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+      // if(idx === this.mail[f].folder.length) {
+      //   this.displaymail--
+      // }
     },
     cancelCompose() {
       this.newMail.receiver = ''
@@ -463,6 +474,13 @@ export default {
         this.mail[f].folder[idx].status = 0
       }
       else this.mail[f].folder[idx].status = 1
+      this.$http.put(`${API_BASE_URL}/inbox`, this.mail[f].folder[idx].messageId)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
     }
   },
 }
