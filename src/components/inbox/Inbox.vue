@@ -1,49 +1,68 @@
 <template>
   <v-row no-gutters>
+    <!-- Side Bar Begin -->
     <v-col cols="2" class="hidden-sm-and-down">
       <v-card tile outlined height="93vh">
-        <v-row justify="center" align="center"><v-col cols="4" class="pl-6">
-          <v-dialog v-model="composeDialog" scrollable width="80%">
-            <template v-slot:activator="{ on }">
-              <v-btn color="primary" fab v-on="on" small>
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-toolbar color="primary" dark dense>
-                <div class="subtitle-1">New mail</div>
-                <v-spacer></v-spacer>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn tile icon @click="ResetNewmail()" v-on="on"><v-icon>mdi-close</v-icon></v-btn>
-                  </template>
-                  <span>close</span>
-                </v-tooltip>
-              </v-toolbar>
-              <v-card-text class="mt-2">
-                <v-text-field label="To" required v-model="newMail.receiver"></v-text-field>
-                <v-text-field label="title" required counter="32" :rules="titleRule" v-model="newMail.title"
-                ></v-text-field>
-                <v-textarea label="Message" v-model="newMail.message"></v-textarea>
-                <v-row>
+        <v-card-title>
+        <!-- <v-row justify="center" align="center"> -->
+          <!-- <v-col cols="4" class="pl-6"> -->
+            <v-dialog v-model="composeDialog" scrollable width="80%">
+              <template v-slot:activator="{ on }">
+                <v-btn color="primary" fab v-on="on" small>
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+              </template>
+              <!-- Compose Mail Begin -->
+              <v-card>
+                <v-toolbar color="primary" dark dense>
+                  <div class="subtitle-1">New mail</div>
                   <v-spacer></v-spacer>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn tile icon @click="cancelCompose()" v-on="on"><v-icon>mdi-close</v-icon></v-btn>
+                    </template>
+                    <span>close</span>
+                  </v-tooltip>
+                </v-toolbar>
+                <!-- New Mail Form -->
+                <v-card-text class="mt-2">
+                  <v-text-field 
+                    label="To" 
+                    required 
+                    v-model="newMail.receiver"
+                  ></v-text-field>
+                  <v-text-field 
+                    label="title" 
+                    required 
+                    counter="32" 
+                    :rules="titleRule" 
+                    v-model="newMail.title"
+                  ></v-text-field>
+                  <v-textarea 
+                    label="Message" 
+                    v-model="newMail.message"
+                  ></v-textarea>
                   <v-card-actions>
-                    <v-btn outlined color="primary" @click="ResetNewmail()">cancel</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
                     <v-btn dark color="primary" @click="composeDialog = false">send</v-btn>
                   </v-card-actions>
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-dialog></v-col>
-          <v-col><div class="subtitle-1">Compose</div></v-col>
-        </v-row>
+                </v-card-text>
+              </v-card>
+              <!-- Compose Mail End -->
+            </v-dialog>
+          <!-- </v-col> -->
+          <div class="ml-4">Compose</div>
+        <!-- </v-row> -->
+        </v-card-title>
+
         <v-divider></v-divider>
+        <!-- Nav Bar -->
         <v-list nav>
           <v-list-item-group color="primary">
             <v-list-item 
               v-for="(item, i) in navbar"
               :key="i"
-              dense
               @click="Clear(i)"
             >
               <v-list-item-icon><v-icon>{{item.icon}}</v-icon></v-list-item-icon>
@@ -53,49 +72,64 @@
         </v-list>
       </v-card>
     </v-col>
-    <v-col cols="12" md="3">
-      <v-slide-x-reverse-transition><v-card tile elevation="0" outlined v-if="showMail && displaymail !== -1" height="93vh" class="hidden-md-and-up">
-        <v-card tile elevation="0" height="25%" class="pt-3 px-3">
-          <v-card-title class="pa-0">
-            <v-btn icon @click="showMail = false"><v-icon large>mdi-chevron-left</v-icon></v-btn>
-            <v-spacer></v-spacer>
-          </v-card-title>
-          <v-list-item two-line>
-            <v-list-item-avatar size="64px">
-              <v-img :src="mail[displayfolder].folder[displaymail].avatar"></v-img>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].sender}}</v-list-item-title>
-              <v-list-item-subtitle>{{mail[displayfolder].folder[displaymail].timestamp}}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-btn class="ma-1" icon outlined v-if="displayfolder === 0"><v-icon @click="Reply(displayfolder,displaymail)">mdi-reply</v-icon></v-btn>
-            <v-btn class="ma-1" icon outlined @click="Remove(displayfolder,displaymail)"><v-icon>mdi-delete</v-icon></v-btn>
-          </v-list-item>
+    <!-- Side Bar End -->
+    <!-- Middle Area -->
+    <v-col cols="12" md="3" style="overflow-y: hidden;">
+      <!-- Mobile: Display Mail Begin -->
+      <v-slide-x-reverse-transition>
+        <v-card
+          v-if="showMail && (displaymail !== -1)"
+          tile
+          elevation="0" 
+          outlined
+          height="93vh" 
+          class="hidden-md-and-up"
+        >
+          <v-card tile elevation="0" height="100%" class="pt-3 px-3">
+            <v-card-title class="pa-0">
+              <v-btn icon @click="showMail = false"><v-icon large>mdi-chevron-left</v-icon></v-btn>
+              <v-spacer></v-spacer>
+              <v-list-item two-line>
+                <v-list-item-avatar size="64px">
+                  <v-img :src="mail[displayfolder].folder[displaymail].avatar"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].sender}}</v-list-item-title>
+                  <v-list-item-subtitle>{{mail[displayfolder].folder[displaymail].timestamp}}</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-btn class="ma-1" icon outlined v-if="displayfolder === 0"><v-icon @click="Reply(displayfolder,displaymail)">mdi-reply</v-icon></v-btn>
+                <v-btn class="ma-1" icon outlined @click="Remove(displayfolder,displaymail)"><v-icon>mdi-delete</v-icon></v-btn>
+              </v-list-item>
+            </v-card-title>
+            <v-divider></v-divider>
+            <!-- why icon??? -->
+            <v-card-text>
+              <v-list-item v-if="displaymail === -1">
+                <v-list-item-content>
+                  <v-icon x-large color="grey">mdi-email</v-icon>
+                  <v-list-item-subtitle class="text-center">Empty</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item v-else>
+                <v-list-item-content class="ma-3">
+                  <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+                  <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
+                </v-list-item-content>
+              </v-list-item>
+            </v-card-text>
+          </v-card>
+          <!-- <v-divider></v-divider> -->
+          <!-- <v-card tile elevation="0" height="5%">
+            <v-list-item v-if="displaymail === -1"></v-list-item>
+            <v-list-item v-else>
+              <v-list-item-subtitle>Attachment</v-list-item-subtitle>
+            </v-list-item>
+          </v-card>-->
         </v-card>
-        <v-divider></v-divider>
-        <v-card tile elevation="0" height="60%" class="overflow-y-auto">
-          <v-list-item v-if="displaymail === -1">
-            <v-list-item-content>
-              <v-icon x-large color="grey">mdi-email</v-icon>
-              <v-list-item-subtitle class="text-center">Empty</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item v-else>
-            <v-list-item-content class="ma-3">
-              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
-              <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
-            </v-list-item-content>
-          </v-list-item>
-        </v-card>
-        <v-divider></v-divider>
-        <!-- <v-card tile elevation="0" height="5%">
-          <v-list-item v-if="displaymail === -1"></v-list-item>
-          <v-list-item v-else>
-            <v-list-item-subtitle>Attachment</v-list-item-subtitle>
-          </v-list-item>
-        </v-card>-->
-      </v-card></v-slide-x-reverse-transition>
-      <v-card tile elevation="0" outlined height="93vh" v-if="ShowMailSet()" class="overflow-y-auto">
+      </v-slide-x-reverse-transition>
+      <!-- Mobile: Display Mail End -->
+      <!-- Mail List Begin -->
+      <v-card tile elevation="0" outlined height="93vh" v-if="ShowMailSet()">
         <v-card-title fixed>
           <v-text-field
             outlined
@@ -106,12 +140,12 @@
           ></v-text-field>
         </v-card-title>
         <v-divider></v-divider>
-        <v-container style="max-height: 100%;" class="overflow-x-auto pa-0">
+        <v-card-text style="max-height: 100%;" class="overflow-x-auto pa-0">
           <v-list style="width: 100%;" class="pa-0"><v-list-item-group>
             <v-list-item 
               two-line
               v-for="(item, i) in mail[displayfolder].folder"
-              :key="item.time"
+              :key="i"
             >
               <v-list-item-avatar>
                 <v-img :src="item.avatar"></v-img>
@@ -124,14 +158,16 @@
                 <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-btn icon color="primary" x-small  v-if="displayfolder === 0" @click="Read(displayfolder,i)">
-                <v-icon size="1" v-if="item.status === 1" >mdi-checkbox-blank-circle</v-icon>
-                <v-icon size="1" v-else>mdi-checkbox-blank-circle-outline</v-icon>
+              <v-btn icon color="primary" text x-small v-if="displayfolder === 0" @click="Read(displayfolder,i)">
+                <v-icon size="10" v-if="item.status === 1" >mdi-checkbox-blank-circle</v-icon>
+                <v-icon size="10" v-else>mdi-checkbox-blank-circle-outline</v-icon>
               </v-btn>
             </v-list-item></v-list-item-group>
           </v-list>
-        </v-container>
+        </v-card-text>
+        <!-- Mail List End -->
       </v-card>
+      <!-- Mobile: Compose & Drawer Button Begin-->
       <v-btn left bottom fixed fab class="text-center hidden-md-and-up" color="primary" @click="composeDialog = true" v-if="!showMail">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
@@ -149,28 +185,35 @@
           <v-icon>mdi-inbox</v-icon>
         </v-btn>
       </v-speed-dial>
+      <!-- Mobile: Compose & Drawer Button End-->
     </v-col>
+    <!-- Display Mail Begin -->
     <v-col cols="7" class="ma-0 hidden-sm-and-down">
-      <v-card tile outlined height="93vh">
-        <v-card tile elevation="0" height="20%" class="pt-3 px-3">
-          <v-list-item v-if="displaymail === -1"></v-list-item>
-          <v-list-item v-else two-line>
+      <v-card tile elevation="0" outlined height="93vh">
+        <v-card-title class="pt-3 px-3">
+          <v-list-item v-if="displaymail !== -1" two-line>
             <v-list-item-avatar size="64px">
               <v-img :src="mail[displayfolder].folder[displaymail].avatar"></v-img>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].sender}}</v-list-item-title>
-              <v-list-item-subtitle>{{mail[displayfolder].folder[displaymail].timestamp}}</v-list-item-subtitle>
+              <v-list-item-title class="headline">
+                {{mail[displayfolder].folder[displaymail].sender}}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{mail[displayfolder].folder[displaymail].timestamp}}
+              </v-list-item-subtitle>
             </v-list-item-content>
             <v-spacer></v-spacer>
+            <!-- Reply Btn -->
             <v-tooltip bottom v-if="displayfolder != 1">
               <template v-slot:activator="{ on }">
-                <v-btn class="ml-1" icon outlined v-on="on">
+                <v-btn class="ml-1" icon outlined >
                   <v-icon @click="Reply(displayfolder,displaymail)">mdi-reply</v-icon>
                 </v-btn>
               </template>
               <span>reply</span>
             </v-tooltip>
+            <!-- Delete Btn -->
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
                 <v-btn class="ml-1" icon outlined v-on="on" @click="Remove(displayfolder,displaymail)">
@@ -180,9 +223,10 @@
               <span>delete</span>
             </v-tooltip>
           </v-list-item>
-        </v-card>
+        </v-card-title>
+        <!-- if no display main, no divider??? -->
         <v-divider></v-divider>
-        <v-card tile elevation="0" height="70%">
+        <v-card-text>
           <v-list-item v-if="displaymail === -1">
             <v-list-item-content>
               <v-icon x-large color="grey">mdi-email</v-icon>
@@ -195,8 +239,8 @@
               <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
-        </v-card>
-        <v-divider></v-divider>
+        </v-card-text>
+        <!-- <v-divider></v-divider> -->
         <!-- <v-card tile elevation="0" height="10%">
           <v-list-item v-if="displaymail === -1"></v-list-item>
           <v-list-item v-else>
@@ -205,16 +249,21 @@
         </v-card> -->
       </v-card>
     </v-col>
+    <!-- Display Mail End -->
   </v-row>
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown'
+// import VueMarkdown from 'vue-markdown'
 const API_BASE_URL = '/api';
 
 export default {
 
   name: 'Inbox',
+
+  components: {
+    // VueMarkdown,
+  },
 
   data () {
     return {
@@ -398,7 +447,7 @@ export default {
         this.displaymail--
       }
     },
-    ResetNewmail() {
+    cancelCompose() {
       this.newMail.receiver = ''
       this.newMail.title = ''
       this.newMail.message = ''
@@ -415,9 +464,6 @@ export default {
       }
       else this.mail[f].folder[idx].status = 1
     }
-  },
-  components: {
-    VueMarkdown
   },
 }
 </script>
