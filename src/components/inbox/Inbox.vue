@@ -26,26 +26,29 @@
                 </v-toolbar>
                 <!-- New Mail Form -->
                 <v-card-text class="mt-2">
-                  <v-text-field 
-                    label="To" 
-                    required 
-                    v-model="newMail.receiver"
-                  ></v-text-field>
-                  <v-text-field 
-                    label="title" 
-                    required 
-                    counter="32" 
-                    :rules="titleRule" 
-                    v-model="newMail.title"
-                  ></v-text-field>
-                  <v-textarea 
-                    label="Message" 
-                    v-model="newMail.message"
-                  ></v-textarea>
+                  <v-form v-model="validForm" ref="form">
+                    <v-text-field 
+                      label="To" 
+                      required 
+                      v-model="newMail.receiver"
+                    ></v-text-field>
+                    <v-text-field 
+                      label="title" 
+                      required 
+                      counter="32" 
+                      :rules="titleRule" 
+                      v-model="newMail.title"
+                    ></v-text-field>
+                    <v-textarea 
+                      label="Message" 
+                      required
+                      v-model="newMail.message"
+                    ></v-textarea>
+                  </v-form>
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
-                    <v-btn dark color="primary" @click="composeDialog = false">send</v-btn>
+                    <v-btn dark color="primary" @click="send()">send</v-btn>
                   </v-card-actions>
                 </v-card-text>
               </v-card>
@@ -268,10 +271,11 @@ export default {
   data () {
     return {
       newMail: {
-        receiver: '',
-        title: '',
-        message: ''
+        'receiver': '',
+        'title': '',
+        'message': ''
       },
+      validForm: false,
       composeDialog: false,
       showMail: false,
       displayfolder: 0,
@@ -394,7 +398,7 @@ export default {
       this.$http.get(`${API_BASE_URL}/inbox`)
         .then((res) => {
           console.log(res)
-          res.data.forEach(ele => {
+          res.data.data.forEach(ele => {
             this.mail[0].push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
           })
         })
@@ -406,7 +410,7 @@ export default {
       this.$http.get(`${API_BASE_URL}/inbox/sent`)
         .then((res) => {
           console.log(res)
-          res.data.forEach((ele) => {
+          res.data.data.forEach((ele) => {
             this.mail[1].push({'messageId': ele.messageId, 'receiver': ele.receiver, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
           })
         })
@@ -417,16 +421,22 @@ export default {
     send() {
       // validate form
       // loading btn
-      this.$http.post(`${API_BASE_URL}/inbox`,this.newMail)
-        .then((res) => {
-          console.log(res)
-          res.data.forEach((ele) => {
-            this.mail[1].push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
-          })
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if ( this.$refs.form.validate() ) {
+        console.log(this.check(this.newMail.receiver));
+        if ( this.check(this.newMail.receiver) ) {
+          this.$http.post(`${API_BASE_URL}/inbox`,this.newMail)
+            .then((res) => {
+              console.log(res)
+              res.data.data.forEach((ele) => {
+                this.mail[1].push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
+              })
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+      this.composeDialog = false
     },
     ShowMailSet() {
       if(this.$vuetify.breakpoint.mdAndUp) return true;
@@ -481,7 +491,23 @@ export default {
         .catch((err) => {
           console.log(err);
         })
-    }
+    },
+    check(user) {
+      this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: user})
+        .then((response) => {
+          if ( response.data.data.valid === 0 ) {
+            return true;
+          } else if ( response.data.data.valid === 1 ) {
+            // user not found
+            return false;
+          }
+        })
+        .catch((error) => {
+          return false;
+          // this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+          // this.errAlert = true;
+        })
+    },
   },
 }
 </script>
