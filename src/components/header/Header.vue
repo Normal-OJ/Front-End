@@ -36,7 +36,32 @@
 
       <v-spacer></v-spacer>
 
-      <Auth :smDown="false" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
+      <div v-if="isLogin && $vuetify.breakpoint.mdAndUp" class="headline text-none">
+        <v-menu offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              dark
+              text
+              v-on="on"
+            >{{ displayedName }}({{ username }})</v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              link
+              :to="{path: '/profile'}"
+            >
+              <v-list-item-title class="body-1">Profile</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              link
+              @click="signout"
+            >
+              <v-list-item-title class="body-1">Sign Out</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+      <Auth v-else :smDown="false" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
 
     </v-app-bar>
 
@@ -54,9 +79,7 @@
             contain
           ></v-img>
         </v-list-item-avatar>
-        <v-list-item-title>
-          Username
-        </v-list-item-title>
+        <v-list-item-title>{{ displayedName }}({{ username }})</v-list-item-title>
         <v-btn
           icon
           @click.stop="drawer = !drawer"
@@ -65,7 +88,7 @@
       
       <v-list-item v-else>
         <v-list-item-title>
-          <Auth :smDown="true" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
+          <Auth :smDown="true" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
         </v-list-item-title>
         <v-btn
           icon
@@ -91,7 +114,8 @@
       v-model="alertBar"
       color="success"
       vertical
-      top
+      bottom
+      right
       :timeout="4000"
     >
       <h3>{{ alertText }}</h3>
@@ -111,6 +135,9 @@
 <script>
 import Auth from './Auth'
 
+const API_BASE_URL = '/api';
+const MSG = ['Welcome! Signed in successfully!', 'Bye! Signed out successfully'];
+
 export default {
 
   name: 'Header',
@@ -122,27 +149,38 @@ export default {
   data () {
     return {
       links: [
-        { 'title': 'Home', 'path': '/', 'show': 'true'},
-        { 'title': 'Problems', 'path': '/problems', 'show': 'true'},
-        { 'title': 'Submissions', 'path': '/submissions', 'show': 'true'},
-        { 'title': 'Courses', 'path': '/courses', 'show': 'true'},
-        { 'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
+        {'title': 'Home', 'path': '/', 'show': 'true'},
+        {'title': 'Problems', 'path': '/problems', 'show': 'true'},
+        {'title': 'Submissions', 'path': '/submissions', 'show': 'true'},
+        {'title': 'Courses', 'path': '/courses', 'show': 'true'},
+        {'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
       ],
       drawer: false,
       isLogin: false,
       alertBar: false,
-      alertText: 'Welcome! Signed in successfully!',
+      alertText: '',
       progress: 0,
       showProgress: true,
+      payload: null,
+      username: '',
+      displayedName: '',
     }
   },
 
+  beforeMount () {
+    this.setProfile();
+  },
+
   methods: {
-    async signinSuccessShowAlert() {
+    async showAlert(type) {
+      this.isLogin = true;
+      this.setProfile();
       this.drawer = false;
       this.alertBar = true;
+      this.alertText = MSG[type];
+      this.progress = 100;
       for ( let i=0; i<40; ++i ) {
-        this.progress += 2.5;
+        this.progress -= 2.5;
         await this.delay(100);
       }
     },
@@ -153,6 +191,31 @@ export default {
         }, delayInms);
       });
     },
+    setProfile() {
+      if ( this.$cookies.isKey('jwt') ) {
+        this.payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( this.payload.active === true ) {
+          this.isLogin = true;
+          this.username = this.payload.username;
+          this.displayedName = this.payload.profile.displayedName;
+        }
+      }
+    },
+    parseJwt(token) {
+      console.log(atob(token.split('.')[1]));
+      return JSON.parse(atob(token.split('.')[1])).data;
+    },
+    signout() {
+      this.$http.get(`${API_BASE_URL}/auth/session`)
+        .then((res) => {
+          console.log(res);
+          this.showAlert(1);
+          this.isLogin = false;
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    }
   }
 }
 </script>
