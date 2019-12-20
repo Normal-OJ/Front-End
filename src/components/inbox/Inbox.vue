@@ -4,8 +4,6 @@
     <v-col cols="2" class="hidden-sm-and-down">
       <v-card tile outlined height="93vh">
         <v-card-title>
-        <!-- <v-row justify="center" align="center"> -->
-          <!-- <v-col cols="4" class="pl-6"> -->
             <v-dialog v-model="composeDialog" scrollable width="80%">
               <template v-slot:activator="{ on }">
                 <v-btn color="primary" fab v-on="on" small>
@@ -63,9 +61,7 @@
               </v-card>
               <!-- Compose Mail End -->
             </v-dialog>
-          <!-- </v-col> -->
           <div class="ml-4">Compose</div>
-        <!-- </v-row> -->
         </v-card-title>
 
         <v-divider></v-divider>
@@ -116,15 +112,17 @@
             <v-divider></v-divider>
             <!-- why icon??? -->
             <v-card-text>
-              <v-list-item v-if="displaymail === -1">
+              <!-- <v-list-item v-if="displaymail === -1">
                 <v-list-item-content>
-                  <v-icon x-large color="grey">mdi-email</v-icon>
-                  <v-list-item-subtitle class="text-center">Empty</v-list-item-subtitle>
+                  <v-icon size="200" color="grey">mdi-email-outline</v-icon>
+                  <v-list-item-subtitle class="text-center display-1">Empty</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item v-else>
-                <v-list-item-content class="ma-3">
-                  <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+              <v-list-item v-else> -->
+              <v-list-item>
+                <v-list-item-content class="ma-3" v-if="mailRender">
+                  <v-list-item-title class="headline">Subject: {{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+                  <v-divider></v-divider>
                   <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
                 </v-list-item-content>
               </v-list-item>
@@ -141,19 +139,25 @@
       </v-slide-x-reverse-transition>
       <!-- Mobile: Display Mail End -->
       <!-- Mail List Begin -->
-      <v-card tile elevation="0" outlined height="93vh" v-if="showMailSet()">
+      <v-card tile elevation="0" outlined height="93vh" v-if="this.$vuetify.breakpoint.mdAndUp || !this.showMail">
         <v-card-title fixed>
-          <v-text-field
+          <v-autocomplete
             outlined
             append-icon="mdi-magnify"
             label="Search author, title ..."
             hide-details
             @click:append=""
-          ></v-text-field>
+          ></v-autocomplete>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text style="max-height: 100%;" class="overflow-x-auto pa-0">
           <v-list style="width: 100%;" class="pa-0"><v-list-item-group>
+            <v-list-item v-if="mail[displayfolder].folder.length === 0" disabled>
+              <v-list-item-content>
+                <v-icon size="50" color="grey">mdi-email-outline</v-icon>
+                <v-list-item-subtitle class="text-center subtitle-1">Empty</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item 
               two-line
               v-for="(item, i) in mail[displayfolder].folder"
@@ -162,18 +166,24 @@
               <v-list-item-avatar>
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
-              <v-list-item-content v-if="item.status === 1 && displayfolder === 0" class="font-weight-bold" @click="open(i)">
+              <v-list-item-content v-if="displayfolder === 0" :class="item.status === 0 ? 'font-weight-bold': ''" @click="open(i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
-                <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, From: {{item.sender}}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-content v-else @click="open(i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
-                <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, To: {{item.receiver}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-btn icon color="primary" text x-small v-if="displayfolder === 0" @click="read(displayfolder,i)">
-                <v-icon size="10" v-if="item.status === 1" >mdi-checkbox-blank-circle</v-icon>
-                <v-icon size="10" v-else>mdi-checkbox-blank-circle-outline</v-icon>
-              </v-btn>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn v-on="on" icon color="primary" text x-small v-if="displayfolder === 0" @click="read(displayfolder,i)">
+                  <v-icon size="10" v-if="item.status === 0">mdi-checkbox-blank-circle</v-icon>
+                  <v-icon size="10" v-else>mdi-checkbox-blank-circle-outline</v-icon>
+                </v-btn>
+              </template>
+              <span v-if="item.status === 0">Mark as Read</span>
+              <span v-else>Mark as Unread</span>
+            </v-tooltip>
             </v-list-item></v-list-item-group>
           </v-list>
         </v-card-text>
@@ -208,8 +218,11 @@
               <v-img :src="mail[displayfolder].folder[displaymail].avatar"></v-img>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title class="headline">
+              <v-list-item-title class="headline" v-if="displayfolder === 0">
                 {{mail[displayfolder].folder[displaymail].sender}}
+              </v-list-item-title>
+              <v-list-item-title class="headline" v-else>
+                To: {{mail[displayfolder].folder[displaymail].receiver}}
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{mail[displayfolder].folder[displaymail].timestamp}}
@@ -237,17 +250,18 @@
           </v-list-item>
         </v-card-title>
         <!-- if no display main, no divider??? -->
-        <v-divider></v-divider>
+        <v-divider v-if="displaymail !== -1"></v-divider>
         <v-card-text>
           <v-list-item v-if="displaymail === -1">
             <v-list-item-content>
-              <v-icon x-large color="grey">mdi-email</v-icon>
-              <v-list-item-subtitle class="text-center">Empty</v-list-item-subtitle>
+              <v-icon size="200" color="grey">mdi-email-outline</v-icon>
+              <v-list-item-subtitle class="text-center display-1">Empty</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-else>
-            <v-list-item-content class="ma-3">
-              <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+            <v-list-item-content class="ma-3" v-if="mailRender">
+              <v-list-item-title class="headline">Subject: {{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+              <v-divider></v-divider>
               <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
@@ -266,7 +280,7 @@
 </template>
 
 <script>
-// import VueMarkdown from 'vue-markdown'
+import VueMarkdown from 'vue-markdown'
 const API_BASE_URL = '/api';
 
 export default {
@@ -274,7 +288,7 @@ export default {
   name: 'Inbox',
 
   components: {
-    // VueMarkdown,
+    VueMarkdown,
   },
 
   data () {
@@ -305,23 +319,27 @@ export default {
           folder: []
         }
       ],
+      mailRender: true,
     }
   },
   beforeMount() {
-    this.getInbox();
-    this.getSent();
+    this.init();
   },
   methods: {
-    convertTime(time) {
-      var a = new Date(time * 1000);
-      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var year = a.getFullYear();
-      var month = months[a.getMonth()];
-      var date = a.getDate();
-      var hour = '0' + a.getHours();
-      var min = '0' + a.getMinutes();
-      var sec = '0' + a.getSeconds();
-      var time = date + ' ' + month + ' ' + year + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
+    init() {
+      this.mail = [{folder: []}, {folder: []}];
+      this.getInbox();
+      this.getSent();
+    },
+    timeFormat(time) {
+      var tmp = new Date(time * 1000);
+      var year = tmp.getFullYear();
+      var month = '0' + (tmp.getMonth()+1);
+      var date = '0' + tmp.getDate();
+      var hour = '0' + tmp.getHours();
+      var min = '0' + tmp.getMinutes();
+      var sec = '0' + tmp.getSeconds();
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
       return time;
     },
     getInbox() {
@@ -329,7 +347,7 @@ export default {
         .then((res) => {
           console.log(res)
           res.data.data.forEach(ele => {
-            this.mail[0].folder.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.convertTime(ele.timestamp)})
+            this.mail[0].folder.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
           })
         })
         .catch((err) => {
@@ -341,7 +359,11 @@ export default {
         .then((res) => {
           console.log(res)
           res.data.data.forEach((ele) => {
-            this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': ele.receiver, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+            var receiversFormat = '';
+            ele.receivers.forEach((rec) => {
+              receiversFormat += ' ' + rec
+            })
+            this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': receiversFormat, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
           })
         })
         .catch((err) => {
@@ -361,11 +383,14 @@ export default {
                   res.data.forEach((ele) => {
                     this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
                   })
+                  this.composeDialog = false
+                  this.init();
                 })
                 .catch((err) => {
                   console.log(err);
+                  this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+                  this.errAlert = true;
                 });
-              this.composeDialog = false
             } else if ( response.data.data.valid === 1 ) {
               this.errMsg = ['User not found']
               this.errAlert = true
@@ -377,25 +402,29 @@ export default {
           })
       } 
     },
-    showMailSet() {
-      if(this.$vuetify.breakpoint.mdAndUp) return true;
-      else if(!this.showMail) return true;
-      else return false;
-    },
     open(i) {
       this.showMail = true
       this.displaymail = i
-      if ( this.mail[this.displayfolder].folder[i].status === 1) {
+      if ( this.mail[this.displayfolder].folder[i].status === 0) {
         this.read(this.displayfolder,i)
       }
+      this.mailRender = false;
+      this.$nextTick(() => {
+        this.mailRender = true;
+      })
     },
     clear(i) {
       this.showMail = false
       this.displayfolder = i
       this.displaymail = -1
+      this.init();
     },
     remove(f,idx) {
-      this.$http.delete(`${API_BASE_URL}/inbox`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f].folder[idx].messageId}})
+      var url = '';
+      if ( f === 1 ) {
+        url = '/sent';
+      }
+      this.$http.delete(`${API_BASE_URL}/inbox${url}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f].folder[idx].messageId}})
         .then((res) => {
           console.log(res);
         })
@@ -405,6 +434,7 @@ export default {
       this.mail[f].folder.splice(idx, 1)
       this.showMail = false
       this.displaymail = -1
+      this.init();
     },
     cancelCompose() {
       this.newMail.receiver = ''
@@ -418,12 +448,7 @@ export default {
       this.composeDialog = true
     },
     read(f,idx) {
-      if(this.mail[f].folder[idx].status === 1) {
-        this.mail[f].folder[idx].status = 0
-      }
-      else {
-        this.mail[f].folder[idx].status = 1
-      }
+      this.mail[f].folder[idx].status ^= 1;
       this.$http.put(`${API_BASE_URL}/inbox`, {'messageId': this.mail[f].folder[idx].messageId})
         .then((res) => {
           console.log(res);
