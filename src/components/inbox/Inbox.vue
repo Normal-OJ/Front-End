@@ -27,30 +27,39 @@
                 <!-- New Mail Form -->
                 <v-card-text class="mt-2">
                   <v-form v-model="validForm" ref="form">
+                    <v-alert
+                      v-model="errAlert"
+                      dismissible
+                      colored-border
+                      border="left"
+                      dense
+                      elevation="2"
+                      type="error"
+                      transition="scroll-y-transition"
+                    ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
                     <v-text-field 
                       label="To" 
-                      required 
+                      :rules="[v => !!v || 'Sorry, cannot send without Receiver']"
                       v-model="newMail.receiver"
                     ></v-text-field>
                     <v-text-field 
-                      label="title" 
-                      required 
+                      label="Title" 
                       counter="32" 
-                      :rules="titleRule" 
+                      :rules="[v => !!v && v.length <= 32 || 'Sorry, the length must be ≤ 32 characters']" 
                       v-model="newMail.title"
                     ></v-text-field>
                     <v-textarea 
                       label="Message" 
-                      required
+                      :rules="[v => !!v || 'Sorry, cannot send empty message']"
                       v-model="newMail.message"
                     ></v-textarea>
                   </v-form>
+                </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
                     <v-btn dark color="primary" @click="send()">send</v-btn>
                   </v-card-actions>
-                </v-card-text>
               </v-card>
               <!-- Compose Mail End -->
             </v-dialog>
@@ -66,7 +75,7 @@
             <v-list-item 
               v-for="(item, i) in navbar"
               :key="i"
-              @click="Clear(i)"
+              @click="clear(i)"
             >
               <v-list-item-icon><v-icon>{{item.icon}}</v-icon></v-list-item-icon>
               <v-list-item-title>{{item.title}}</v-list-item-title>
@@ -100,8 +109,8 @@
                   <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].sender}}</v-list-item-title>
                   <v-list-item-subtitle>{{mail[displayfolder].folder[displaymail].timestamp}}</v-list-item-subtitle>
                 </v-list-item-content>
-                <v-btn class="ma-1" icon outlined v-if="displayfolder === 0"><v-icon @click="Reply(displayfolder,displaymail)">mdi-reply</v-icon></v-btn>
-                <v-btn class="ma-1" icon outlined @click="Remove(displayfolder,displaymail)"><v-icon>mdi-delete</v-icon></v-btn>
+                <v-btn class="ma-1" icon outlined v-if="displayfolder === 0"><v-icon @click="reply(displayfolder,displaymail)">mdi-reply</v-icon></v-btn>
+                <v-btn class="ma-1" icon outlined @click="remove(displayfolder,displaymail)"><v-icon>mdi-delete</v-icon></v-btn>
               </v-list-item>
             </v-card-title>
             <v-divider></v-divider>
@@ -132,7 +141,7 @@
       </v-slide-x-reverse-transition>
       <!-- Mobile: Display Mail End -->
       <!-- Mail List Begin -->
-      <v-card tile elevation="0" outlined height="93vh" v-if="ShowMailSet()">
+      <v-card tile elevation="0" outlined height="93vh" v-if="showMailSet()">
         <v-card-title fixed>
           <v-text-field
             outlined
@@ -153,15 +162,15 @@
               <v-list-item-avatar>
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
-              <v-list-item-content v-if="item.status === 1 && displayfolder === 0" class="font-weight-bold" @click="Click(i)">
+              <v-list-item-content v-if="item.status === 1 && displayfolder === 0" class="font-weight-bold" @click="open(i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-content v-else @click="Click(i)">
+              <v-list-item-content v-else @click="open(i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.sender}} - {{item.timestamp}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-btn icon color="primary" text x-small v-if="displayfolder === 0" @click="Read(displayfolder,i)">
+              <v-btn icon color="primary" text x-small v-if="displayfolder === 0" @click="read(displayfolder,i)">
                 <v-icon size="10" v-if="item.status === 1" >mdi-checkbox-blank-circle</v-icon>
                 <v-icon size="10" v-else>mdi-checkbox-blank-circle-outline</v-icon>
               </v-btn>
@@ -181,10 +190,10 @@
             <v-icon v-else>mdi-folder-open</v-icon>
           </v-btn>
         </template>
-        <v-btn fab small color="grey--text" @click="Clear(1)">
+        <v-btn fab small color="grey--text" @click="clear(1)">
           <v-icon>mdi-send</v-icon>
         </v-btn>
-        <v-btn fab small color="grey--text" @click="Clear(0)">
+        <v-btn fab small color="grey--text" @click="clear(0)">
           <v-icon>mdi-inbox</v-icon>
         </v-btn>
       </v-speed-dial>
@@ -211,7 +220,7 @@
             <v-tooltip bottom v-if="displayfolder != 1">
               <template v-slot:activator="{ on }">
                 <v-btn class="ml-1" icon outlined >
-                  <v-icon @click="Reply(displayfolder,displaymail)">mdi-reply</v-icon>
+                  <v-icon @click="reply(displayfolder,displaymail)">mdi-reply</v-icon>
                 </v-btn>
               </template>
               <span>reply</span>
@@ -219,7 +228,7 @@
             <!-- Delete Btn -->
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn class="ml-1" icon outlined v-on="on" @click="Remove(displayfolder,displaymail)">
+                <v-btn class="ml-1" icon outlined v-on="on" @click="remove(displayfolder,displaymail)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </template>
@@ -276,6 +285,8 @@ export default {
         'message': ''
       },
       validForm: false,
+      errAlert: false,
+      errMsg: [],
       composeDialog: false,
       showMail: false,
       displayfolder: 0,
@@ -285,106 +296,13 @@ export default {
     		{ icon: 'mdi-inbox', title: 'Inbox'},
     		{ icon: 'mdi-send', title: 'Sent'},
     	],
-      titleRule: [
-        val => val.length <= 32 || 'Sorry, the length must be ≤ 32 characters',
-      ],
       mail: [
         {
           // inbox
-          folder: [
-            { 
-              status: 1,
-              sender: 'Uier',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: '**As** title, u! ~~As~~ title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201903052332
-            },
-            { 
-              status: 1,
-              sender: 'Kelly',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: 'test',
-              message: '資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面試通知資工營面',
-              timestamp: 201912131213
-            },
-            { 
-              status: 1,
-              sender: 'ysl',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '測',
-              message: '0991234567890qwer tyuioasdfghjklzxcvbnm,098765edkdftgyhunfd6csxexbabiubcuibgfwvgurefviuegrvfuervfuwrvfiwugvfuevfugrvfuwvrfuviugfevrugfvrguvurefviuegrvfuervfuwrvfiwugvfuevfugrvfuwvrfuviugfevrugfvrguvurefviuegrvfuervfuwrvfiwugvfuevfugrvfuwvrfuviugfevrugfvrguv',
-              timestamp: 201905110511
-            },
-            { 
-              status: 1,
-              sender: '黃欣欣',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201911021102
-            },
-            { 
-              status: 1,
-              sender: '臻臻',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201904060406
-            },
-            { 
-              status: 1,
-              sender: 'Ku Lily',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201903080309
-            },
-            { 
-              status: 1,
-              sender: 'Ku Lily',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201903080312
-            },
-            { 
-              status: 1,
-              sender: 'Ku Lily',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201903080008
-            },
-            { 
-              status: 1,
-              sender: 'Lily',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201903088808
-            },
-            { 
-              status: 1,
-              sender: '黃欣欣',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: '資工營面試通知通知通知通知通知',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201910021102
-            },
-          ]
+          folder: []
         },
         { // sent
-          folder: [
-            {
-              status: 1,
-              sender: 'cpj',
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              title: 'iiiiiiiiii',
-              message: 'As title, u! As title, u! As title, u! As title, u! As title, u!',
-              timestamp: 201909020902
-            }
-          ]
+          folder: []
         }
       ],
     }
@@ -394,12 +312,24 @@ export default {
     this.getSent();
   },
   methods: {
+    convertTime(time) {
+      var a = new Date(time * 1000);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var year = a.getFullYear();
+      var month = months[a.getMonth()];
+      var date = a.getDate();
+      var hour = '0' + a.getHours();
+      var min = '0' + a.getMinutes();
+      var sec = '0' + a.getSeconds();
+      var time = date + ' ' + month + ' ' + year + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
+      return time;
+    },
     getInbox() {
       this.$http.get(`${API_BASE_URL}/inbox`)
         .then((res) => {
           console.log(res)
           res.data.data.forEach(ele => {
-            this.mail[0].push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+            this.mail[0].folder.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.convertTime(ele.timestamp)})
           })
         })
         .catch((err) => {
@@ -411,7 +341,7 @@ export default {
         .then((res) => {
           console.log(res)
           res.data.data.forEach((ele) => {
-            this.mail[1].push({'messageId': ele.messageId, 'receiver': ele.receiver, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
+            this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': ele.receiver, 'title': ele.title, 'message': ele.message, 'timestamp': ele.timestamp})
           })
         })
         .catch((err) => {
@@ -422,51 +352,59 @@ export default {
       // validate form
       // loading btn
       if ( this.$refs.form.validate() ) {
-        console.log(this.check(this.newMail.receiver));
-        if ( this.check(this.newMail.receiver) ) {
-          this.$http.post(`${API_BASE_URL}/inbox`,this.newMail)
-            .then((res) => {
-              console.log(res)
-              res.data.data.forEach((ele) => {
-                this.mail[1].push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
-              })
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      }
-      this.composeDialog = false
+        this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: this.newMail.receiver})
+          .then((response) => {
+            if ( response.data.data.valid === 0 ) {
+              this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': [this.newMail.receiver], 'title': this.newMail.title, 'message': this.newMail.message})
+                .then((res) => {
+                  console.log(res)
+                  res.data.forEach((ele) => {
+                    this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
+                  })
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+              this.composeDialog = false
+            } else if ( response.data.data.valid === 1 ) {
+              this.errMsg = ['User not found']
+              this.errAlert = true
+            }
+          })
+          .catch((error) => {
+            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+            this.errAlert = true;
+          })
+      } 
     },
-    ShowMailSet() {
+    showMailSet() {
       if(this.$vuetify.breakpoint.mdAndUp) return true;
       else if(!this.showMail) return true;
       else return false;
     },
-    Click(i) {
+    open(i) {
       this.showMail = true
       this.displaymail = i
-      this.mail[this.displayfolder].folder[i].status = 0
+      if ( this.mail[this.displayfolder].folder[i].status === 1) {
+        this.read(this.displayfolder,i)
+      }
     },
-    Clear(i) {
+    clear(i) {
       this.showMail = false
       this.displayfolder = i
       this.displaymail = -1
     },
-    Remove(f,idx) {
-      this.mail[f].folder.splice(idx, 1)
-      this.showMail = false
-      this.displaymail = -1
-      this.$http.delete(`${API_BASE_URL}/inbox`, this.mail[f].folder[idx].messageId)
+    remove(f,idx) {
+      this.$http.delete(`${API_BASE_URL}/inbox`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f].folder[idx].messageId}})
         .then((res) => {
           console.log(res);
         })
         .catch((err) => {
           console.log(err);
         })
-      // if(idx === this.mail[f].folder.length) {
-      //   this.displaymail--
-      // }
+      this.mail[f].folder.splice(idx, 1)
+      this.showMail = false
+      this.displaymail = -1
     },
     cancelCompose() {
       this.newMail.receiver = ''
@@ -474,38 +412,24 @@ export default {
       this.newMail.message = ''
       this.composeDialog = false
     },
-    Reply(f,m) {
+    reply(f,m) {
       this.newMail.receiver = this.mail[f].folder[m].sender
       this.newMail.title = 'Re: ' + this.mail[f].folder[m].title
       this.composeDialog = true
     },
-    Read(f,idx) {
+    read(f,idx) {
       if(this.mail[f].folder[idx].status === 1) {
         this.mail[f].folder[idx].status = 0
       }
-      else this.mail[f].folder[idx].status = 1
-      this.$http.put(`${API_BASE_URL}/inbox`, this.mail[f].folder[idx].messageId)
+      else {
+        this.mail[f].folder[idx].status = 1
+      }
+      this.$http.put(`${API_BASE_URL}/inbox`, {'messageId': this.mail[f].folder[idx].messageId})
         .then((res) => {
           console.log(res);
         })
         .catch((err) => {
           console.log(err);
-        })
-    },
-    check(user) {
-      this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: user})
-        .then((response) => {
-          if ( response.data.data.valid === 0 ) {
-            return true;
-          } else if ( response.data.data.valid === 1 ) {
-            // user not found
-            return false;
-          }
-        })
-        .catch((error) => {
-          return false;
-          // this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
-          // this.errAlert = true;
         })
     },
   },
