@@ -4,7 +4,7 @@
     <v-col cols="2" class="hidden-sm-and-down">
       <v-card tile outlined height="93vh">
         <v-card-title>
-            <v-dialog v-model="composeDialog" scrollable width="80%">
+            <v-dialog v-model="composeDialog" scrollable :width="this.$vuetify.breakpoint.mdAndUp ? '80%' : '100%'" persistent>
               <template v-slot:activator="{ on }">
                 <v-btn color="primary" fab v-on="on" small>
                   <v-icon>mdi-pencil</v-icon>
@@ -35,11 +35,47 @@
                       type="error"
                       transition="scroll-y-transition"
                     ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
-                    <v-text-field 
-                      label="To" 
-                      :rules="[v => !!v || 'Sorry, cannot send without Receiver']"
+                    <v-select
+                      v-model="selectedCourse"
+                      :items="courseList"
+                      label="Course (Public can view all users)"
+                    ></v-select>
+                    <v-autocomplete
+                      label="To"
                       v-model="newMail.receiver"
-                    ></v-text-field>
+                      v-if="toShow"
+                      :items="userList"
+                      :rules="[v => !!v || 'Sorry, you have to select at least one User']"
+                      item-text="username"
+                      chips
+                      multiple
+                      clearable
+                      :menu-props="{ maxHeight: '25%' }"
+                      :search-input.sync="userSearchValue"
+                      @change="receiverChg"
+                    >
+                      <template v-slot:no-data>
+                        <v-list-item>
+                          <v-list-item-title>User not found</v-list-item-title>
+                        </v-list-item>
+                      </template>
+                      <template v-slot:selection="{ attr, on, item, selected }">
+                        <v-chip
+                          v-bind="attr"
+                          :input-value="selected"
+                          color="primary"
+                          class="white--text"
+                          clearable
+                          v-on="on"
+                        ><span v-text="item.username"></span></v-chip>
+                      </template>
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title v-text="item.username"></v-list-item-title>
+                          <v-list-item-subtitle v-text="item.displayedName"></v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-autocomplete>
                     <v-text-field 
                       label="Title" 
                       counter="32" 
@@ -59,9 +95,9 @@
                     <v-btn dark color="primary" @click="send()">send</v-btn>
                   </v-card-actions>
               </v-card>
-              <!-- Compose Mail End -->
             </v-dialog>
           <div class="ml-4">Compose</div>
+              <!-- Compose Mail End -->
         </v-card-title>
 
         <v-divider></v-divider>
@@ -86,7 +122,7 @@
       <!-- Mobile: Display Mail Begin -->
       <v-slide-x-reverse-transition>
         <v-card
-          v-if="showMail && (displaymail !== -1)"
+          v-if="showMail && (displayMail !== -1)"
           tile
           elevation="0" 
           outlined
@@ -99,20 +135,20 @@
               <v-spacer></v-spacer>
               <v-list-item two-line>
                 <v-list-item-avatar size="64px">
-                  <v-img :src="mail[displayfolder].folder[displaymail].avatar"></v-img>
+                  <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title class="headline">{{mail[displayfolder].folder[displaymail].sender}}</v-list-item-title>
-                  <v-list-item-subtitle>{{mail[displayfolder].folder[displaymail].timestamp}}</v-list-item-subtitle>
+                  <v-list-item-title class="headline">{{mail[displayFolder][displayMail].sender}}</v-list-item-title>
+                  <v-list-item-subtitle>{{mail[displayFolder][displayMail].timestamp}}</v-list-item-subtitle>
                 </v-list-item-content>
-                <v-btn class="ma-1" icon outlined v-if="displayfolder === 0"><v-icon @click="reply(displayfolder,displaymail)">mdi-reply</v-icon></v-btn>
-                <v-btn class="ma-1" icon outlined @click="remove(displayfolder,displaymail)"><v-icon>mdi-delete</v-icon></v-btn>
+                <v-btn class="ma-1" icon outlined v-if="displayFolder === 'inbox'"><v-icon @click="reply(displayFolder,displayMail)">mdi-reply</v-icon></v-btn>
+                <v-btn class="ma-1" icon outlined @click="remove(displayFolder,displayMail)"><v-icon>mdi-delete</v-icon></v-btn>
               </v-list-item>
             </v-card-title>
             <v-divider></v-divider>
             <!-- why icon??? -->
             <v-card-text>
-              <!-- <v-list-item v-if="displaymail === -1">
+              <!-- <v-list-item v-if="displayMail === -1">
                 <v-list-item-content>
                   <v-icon size="200" color="grey">mdi-email-outline</v-icon>
                   <v-list-item-subtitle class="text-center display-1">Empty</v-list-item-subtitle>
@@ -121,16 +157,16 @@
               <v-list-item v-else> -->
               <v-list-item>
                 <v-list-item-content class="ma-3" v-if="mailRender">
-                  <v-list-item-title class="headline">Subject: {{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+                  <v-list-item-title class="headline">Subject: {{mail[displayFolder][displayMail].title}}</v-list-item-title>
                   <v-divider></v-divider>
-                  <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
+                  <vue-markdown>{{mail[displayFolder][displayMail].message}}</vue-markdown>
                 </v-list-item-content>
               </v-list-item>
             </v-card-text>
           </v-card>
           <!-- <v-divider></v-divider> -->
           <!-- <v-card tile elevation="0" height="5%">
-            <v-list-item v-if="displaymail === -1"></v-list-item>
+            <v-list-item v-if="displayMail === -1"></v-list-item>
             <v-list-item v-else>
               <v-list-item-subtitle>Attachment</v-list-item-subtitle>
             </v-list-item>
@@ -142,17 +178,39 @@
       <v-card tile elevation="0" outlined height="93vh" v-if="this.$vuetify.breakpoint.mdAndUp || !this.showMail">
         <v-card-title fixed>
           <v-autocomplete
+            v-model="searchMail"
             outlined
             append-icon="mdi-magnify"
-            label="Search author, title ..."
+            label="Search for subject..."
             hide-details
-            @click:append=""
-          ></v-autocomplete>
+            item-text="title"
+            item-value="messageId"
+            :items="mail[displayFolder]"
+            search-input.sync="search"
+            @change="open('id', searchMail)"
+          >
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  No relevant data found
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+            <template v-slot:item="{ item }">
+              <v-list-item-avatar color="primary" class="headline font-weight-light white--text">
+                {{ item.title.charAt(0) }}
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title"></v-list-item-title>
+                <v-list-item-subtitle v-text="item.sender"></v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+          </v-autocomplete>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text style="max-height: 100%;" class="overflow-x-auto pa-0">
           <v-list style="width: 100%;" class="pa-0"><v-list-item-group>
-            <v-list-item v-if="mail[displayfolder].folder.length === 0" disabled>
+            <v-list-item v-if="mail[displayFolder].length === 0" disabled>
               <v-list-item-content>
                 <v-icon size="50" color="grey">mdi-email-outline</v-icon>
                 <v-list-item-subtitle class="text-center subtitle-1">Empty</v-list-item-subtitle>
@@ -160,23 +218,23 @@
             </v-list-item>
             <v-list-item 
               two-line
-              v-for="(item, i) in mail[displayfolder].folder"
+              v-for="(item, i) in mail[displayFolder]"
               :key="i"
             >
               <v-list-item-avatar>
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
-              <v-list-item-content v-if="displayfolder === 0" :class="item.status === 0 ? 'font-weight-bold': ''" @click="open(i)">
+              <v-list-item-content v-if="displayFolder === 'inbox'" :class="item.status === 0 ? 'font-weight-bold': ''" @click="open('idx', i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, From: {{item.sender}}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-list-item-content v-else @click="open(i)">
+              <v-list-item-content v-else @click="open('idx', i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
                 <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, To: {{item.receiver}}</v-list-item-subtitle>
               </v-list-item-content>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn v-on="on" icon color="primary" text x-small v-if="displayfolder === 0" @click="read(displayfolder,i)">
+                <v-btn v-on="on" icon color="primary" text x-small v-if="displayFolder === 'inbox'" @click="read(displayFolder,i)">
                   <v-icon size="10" v-if="item.status === 0">mdi-checkbox-blank-circle</v-icon>
                   <v-icon size="10" v-else>mdi-checkbox-blank-circle-outline</v-icon>
                 </v-btn>
@@ -213,27 +271,27 @@
     <v-col cols="7" class="ma-0 hidden-sm-and-down">
       <v-card tile elevation="0" outlined height="93vh">
         <v-card-title class="pt-3 px-3">
-          <v-list-item v-if="displaymail !== -1" two-line>
+          <v-list-item v-if="displayMail !== -1" two-line>
             <v-list-item-avatar size="64px">
-              <v-img :src="mail[displayfolder].folder[displaymail].avatar"></v-img>
+              <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title class="headline" v-if="displayfolder === 0">
-                {{mail[displayfolder].folder[displaymail].sender}}
+              <v-list-item-title class="headline" v-if="displayFolder === 'inbox'">
+                {{mail[displayFolder][displayMail].sender}}
               </v-list-item-title>
               <v-list-item-title class="headline" v-else>
-                To: {{mail[displayfolder].folder[displaymail].receiver}}
+                To: {{mail[displayFolder][displayMail].receiver}}
               </v-list-item-title>
               <v-list-item-subtitle>
-                {{mail[displayfolder].folder[displaymail].timestamp}}
+                {{mail[displayFolder][displayMail].timestamp}}
               </v-list-item-subtitle>
             </v-list-item-content>
             <v-spacer></v-spacer>
             <!-- Reply Btn -->
-            <v-tooltip bottom v-if="displayfolder != 1">
+            <v-tooltip bottom v-if="displayFolder === 'inbox'">
               <template v-slot:activator="{ on }">
                 <v-btn class="ml-1" icon outlined >
-                  <v-icon @click="reply(displayfolder,displaymail)">mdi-reply</v-icon>
+                  <v-icon @click="reply(displayFolder,displayMail)">mdi-reply</v-icon>
                 </v-btn>
               </template>
               <span>reply</span>
@@ -241,7 +299,7 @@
             <!-- Delete Btn -->
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn class="ml-1" icon outlined v-on="on" @click="remove(displayfolder,displaymail)">
+                <v-btn class="ml-1" icon outlined v-on="on" @click="remove(displayFolder,displayMail)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </template>
@@ -250,9 +308,9 @@
           </v-list-item>
         </v-card-title>
         <!-- if no display main, no divider??? -->
-        <v-divider v-if="displaymail !== -1"></v-divider>
+        <v-divider v-if="displayMail !== -1"></v-divider>
         <v-card-text>
-          <v-list-item v-if="displaymail === -1">
+          <v-list-item v-if="displayMail === -1">
             <v-list-item-content>
               <v-icon size="200" color="grey">mdi-email-outline</v-icon>
               <v-list-item-subtitle class="text-center display-1">Empty</v-list-item-subtitle>
@@ -260,15 +318,15 @@
           </v-list-item>
           <v-list-item v-else>
             <v-list-item-content class="ma-3" v-if="mailRender">
-              <v-list-item-title class="headline">Subject: {{mail[displayfolder].folder[displaymail].title}}</v-list-item-title>
+              <v-list-item-title class="headline">Subject: {{mail[displayFolder][displayMail].title}}</v-list-item-title>
               <v-divider></v-divider>
-              <vue-markdown>{{mail[displayfolder].folder[displaymail].message}}</vue-markdown>
+              <vue-markdown>{{mail[displayFolder][displayMail].message}}</vue-markdown>
             </v-list-item-content>
           </v-list-item>
         </v-card-text>
         <!-- <v-divider></v-divider> -->
         <!-- <v-card tile elevation="0" height="10%">
-          <v-list-item v-if="displaymail === -1"></v-list-item>
+          <v-list-item v-if="displayMail === -1"></v-list-item>
           <v-list-item v-else>
             <v-list-item-subtitle>Attachment</v-list-item-subtitle>
           </v-list-item>
@@ -303,33 +361,52 @@ export default {
       errMsg: [],
       composeDialog: false,
       showMail: false,
-      displayfolder: 0,
-      displaymail: -1,
+      displayFolder: 'inbox',
+      displayMail: -1,
       speedDial: false,
     	navbar: [
     		{ icon: 'mdi-inbox', title: 'Inbox'},
     		{ icon: 'mdi-send', title: 'Sent'},
     	],
-      mail: [
-        {
-          // inbox
-          folder: []
-        },
-        { // sent
-          folder: []
-        }
+      folder: [
+        'inbox', 'sent',
       ],
+      mail: {
+        'inbox': [],
+        'sent': [],
+      },
       mailRender: true,
+      isLoading: false,
+      search: null,
+      searchMail: '',
+      courseList: [],
+      userList: [],
+      disableSearch: false,
+      userSearchValue: '',
+      selectedCourse: 'Select Course',
+      toShow: false,
     }
+  },
+  watch: {
+    selectedCourse() {
+      if ( this.selectedCourse === this.courseList[0] )  this.toShow = false;
+      else {
+        this.toShow = true;
+        this.userList = [];
+        this.getUser();
+      }
+    },
   },
   beforeMount() {
     this.init();
   },
   methods: {
     init() {
-      this.mail = [{folder: []}, {folder: []}];
+      this.mail = {'inbox': [], 'sent': []};
+      this.courseList = ['Select Course'];
       this.getInbox();
       this.getSent();
+      this.getCourse();
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);
@@ -345,30 +422,58 @@ export default {
     getInbox() {
       this.$http.get(`${API_BASE_URL}/inbox`)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           res.data.data.forEach(ele => {
-            this.mail[0].folder.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
+            this.mail.inbox.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
           })
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     getSent() {
       this.$http.get(`${API_BASE_URL}/inbox/sent`)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           res.data.data.forEach((ele) => {
             var receiversFormat = '';
             ele.receivers.forEach((rec) => {
               receiversFormat += ' ' + rec
             })
-            this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': receiversFormat, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
+            this.mail.sent.push({'messageId': ele.messageId, 'receiver': receiversFormat, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
           })
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
+    },
+    getCourse() {
+      this.$http.get(`${API_BASE_URL}/course`)
+        .then((res) => {
+          console.log(res)
+          res.data.data.forEach((ele) => {
+            this.courseList.push(ele.course);
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    getUser() {
+      this.$http.get(`${API_BASE_URL}/course/${this.selectedCourse}`)
+        .then((res) => {
+          console.log(res);
+          var data = res.data.data;
+          this.userList.push({'username': 'Select All'});
+          this.userList.push({'username': data.teacher});
+          data.TAs.forEach((ele) => {this.userList.push({'username': ele})})
+          for ( var key in data.studentNicknames ) {
+            this.userList.push({'username': data.studentNicknames[key]});
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
     },
     send() {
       // validate form
@@ -377,12 +482,9 @@ export default {
         this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: this.newMail.receiver})
           .then((response) => {
             if ( response.data.data.valid === 0 ) {
-              this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': [this.newMail.receiver], 'title': this.newMail.title, 'message': this.newMail.message})
+              this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message})
                 .then((res) => {
                   console.log(res)
-                  res.data.forEach((ele) => {
-                    this.mail[1].folder.push({'messageId': ele.messageId, 'receiver': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message, 'timestamp': ele.timestamp})
-                  })
                   this.composeDialog = false
                   this.init();
                 })
@@ -392,7 +494,11 @@ export default {
                   this.errAlert = true;
                 });
             } else if ( response.data.data.valid === 1 ) {
-              this.errMsg = ['User not found']
+              if ( this.toShow ) {
+                this.errMsg = ['User not found']
+              } else {
+                this.errMsg = ['You have to select at least one receiver(and select course before)']
+              }
               this.errAlert = true
             }
           })
@@ -402,11 +508,15 @@ export default {
           })
       } 
     },
-    open(i) {
+    open(by, i) {
+      if ( by === 'id' ) {
+        i = this.mail[this.displayFolder].map(function(e) { return e.messageId; }).indexOf(i);
+      }
+      console.log(by, i);
       this.showMail = true
-      this.displaymail = i
-      if ( this.mail[this.displayfolder].folder[i].status === 0) {
-        this.read(this.displayfolder,i)
+      this.displayMail = i
+      if ( this.mail[this.displayFolder][i].status === 0 ) {
+        this.read(this.displayFolder,i)
       }
       this.mailRender = false;
       this.$nextTick(() => {
@@ -415,41 +525,42 @@ export default {
     },
     clear(i) {
       this.showMail = false
-      this.displayfolder = i
-      this.displaymail = -1
+      this.displayFolder = this.folder[i]
+      this.displayMail = -1
       this.init();
     },
     remove(f,idx) {
       var url = '';
-      if ( f === 1 ) {
+      if ( f === 'sent' ) {
         url = '/sent';
       }
-      this.$http.delete(`${API_BASE_URL}/inbox${url}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f].folder[idx].messageId}})
+      this.$http.delete(`${API_BASE_URL}/inbox${url}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f][idx].messageId}})
         .then((res) => {
           console.log(res);
         })
         .catch((err) => {
           console.log(err);
         })
-      this.mail[f].folder.splice(idx, 1)
+      this.mail[f].splice(idx, 1)
       this.showMail = false
-      this.displaymail = -1
+      this.displayMail = -1
       this.init();
     },
     cancelCompose() {
+      this.selectedCourse = 'Select Course'
       this.newMail.receiver = ''
       this.newMail.title = ''
       this.newMail.message = ''
       this.composeDialog = false
     },
     reply(f,m) {
-      this.newMail.receiver = this.mail[f].folder[m].sender
-      this.newMail.title = 'Re: ' + this.mail[f].folder[m].title
+      this.newMail.receiver = this.mail[f][m].sender
+      this.newMail.title = 'Re: ' + this.mail[f][m].title
       this.composeDialog = true
     },
     read(f,idx) {
-      this.mail[f].folder[idx].status ^= 1;
-      this.$http.put(`${API_BASE_URL}/inbox`, {'messageId': this.mail[f].folder[idx].messageId})
+      this.mail[f][idx].status ^= 1;
+      this.$http.put(`${API_BASE_URL}/inbox`, {'messageId': this.mail[f][idx].messageId})
         .then((res) => {
           console.log(res);
         })
@@ -457,6 +568,14 @@ export default {
           console.log(err);
         })
     },
+    receiverChg() {
+      this.userSearchValue = '';
+      console.log(this.newMail.receiver)
+      if ( this.newMail.receiver.indexOf('Select All') >= 0 ) {
+        this.newMail.receiver = this.userList;
+        this.newMail.receiver.splice(0, 1);
+      }
+    }
   },
 }
 </script>
