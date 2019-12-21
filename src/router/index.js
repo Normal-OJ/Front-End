@@ -2,8 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/home/Home'
 import Problemset from '@/components/problemset/Problemset'
-import Problems from '@/components/problemset/Problems'
+import Problem from '@/components/problemset/Problem'
 import Submissions from '@/components/submissions/Submissions'
+import Submission from '@/components/submissions/Submission'
 import Courses from '@/components/courses/Courses'
 import Inbox from '@/components/inbox/Inbox'
 import EmailVerify from '@/components/header/EmailVerify'
@@ -26,14 +27,19 @@ export default new Router({
       component: Problemset
     },
     {
-      path: '/problems/:id',
-      name: 'Problems',
-      component: Problems
+      path: '/problem/:id',
+      name: 'Problem',
+      component: Problem
     },
     {
       path: '/submissions',
       name: 'Submissions',
       component: Submissions
+    },
+    {
+      path: '/submission/:id',
+      name: 'Submission',
+      component: Submission
     },
     {
       path: '/courses',
