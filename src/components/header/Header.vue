@@ -27,7 +27,7 @@
           v-for="link in links"
           :key="link.title"
           :to="link.path"
-          :show="link.show"
+          v-if="link.show"
           class="text-none subtitle-1 hidden-sm-and-down"
           min-width="8vw"
           text
@@ -151,9 +151,9 @@ export default {
       links: [
         {'title': 'Home', 'path': '/', 'show': 'true'},
         {'title': 'Problems', 'path': '/problems', 'show': 'true'},
-        {'title': 'Submissions', 'path': '/submissions', 'show': 'true'},
-        {'title': 'Courses', 'path': '/courses', 'show': 'true'},
-        {'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
+        {'title': 'Submissions', 'path': '/submissions', 'show': this.isLogin},
+        {'title': 'Courses', 'path': '/courses', 'show': this.isLogin},
+        {'title': 'Inbox', 'path': '/inbox', 'show': this.isLogin},
       ],
       drawer: false,
       isLogin: false,
