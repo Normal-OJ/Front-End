@@ -320,7 +320,7 @@
             <v-list-item-content class="ma-3" v-if="mailRender">
               <v-list-item-title class="headline">Subject: {{mail[displayFolder][displayMail].title}}</v-list-item-title>
               <v-divider></v-divider>
-              <vue-markdown>{{mail[displayFolder][displayMail].message}}</vue-markdown>
+              <v-container><vue-markdown class="body-1">{{mail[displayFolder][displayMail].message}}</vue-markdown></v-container>
             </v-list-item-content>
           </v-list-item>
         </v-card-text>
@@ -404,6 +404,8 @@ export default {
     init() {
       this.mail = {'inbox': [], 'sent': []};
       this.courseList = ['Select Course'];
+      this.showMail = false;
+      this.displayMail = -1;
       this.getInbox();
       this.getSent();
       this.getCourse();
@@ -479,33 +481,41 @@ export default {
       // validate form
       // loading btn
       if ( this.$refs.form.validate() ) {
-        this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: this.newMail.receiver})
+        if ( !(this.newMail.receiver) ) {
+          this.errMsg = ['You have to select at least one receiver(and select course before)']
+          this.errAlert = true;
+          return;
+        }
+        this.errMsg = ['User not found', ''];
+        console.log(this.newMail.receiver)
+        this.newMail.receiver.forEach((usr) => {
+          this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: usr})
           .then((response) => {
-            if ( response.data.data.valid === 0 ) {
-              this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message})
-                .then((res) => {
-                  // console.log(res)
-                  this.composeDialog = false
-                  this.init();
-                })
-                .catch((err) => {
-                  // console.log(err);
-                  this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
-                  this.errAlert = true;
-                });
-            } else if ( response.data.data.valid === 1 ) {
-              if ( this.toShow ) {
-                this.errMsg = ['User not found']
-              } else {
-                this.errMsg = ['You have to select at least one receiver(and select course before)']
-              }
-              this.errAlert = true
+            if ( response.data.data.valid === 1 ) {
+              this.errMsg[1] += usr + ' ';
             }
           })
           .catch((error) => {
             this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
             this.errAlert = true;
+            return;
           })
+        })
+        if ( !!(this.errMsg[1]) ) {
+          this.errAlert = true;
+          return;
+        }
+        this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message})
+          .then((res) => {
+            // console.log(res)
+            this.composeDialog = false
+            this.init();
+          })
+          .catch((err) => {
+            // console.log(err);
+            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+            this.errAlert = true;
+          });
       } 
     },
     open(by, i) {
