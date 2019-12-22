@@ -1,101 +1,101 @@
 <template>
-  <v-row no-gutters>
+  <v-row no-gutters style="height: 100%">
     <!-- Side Bar Begin -->
-    <v-col cols="2" class="hidden-sm-and-down">
-      <v-card tile outlined height="93vh">
+    <v-col cols="2" class="hidden-sm-and-down" style="height: 100%">
+      <v-card tile outlined height="100%">
         <v-card-title>
-            <v-dialog v-model="composeDialog" scrollable :width="this.$vuetify.breakpoint.mdAndUp ? '80%' : '100%'" persistent>
-              <template v-slot:activator="{ on }">
-                <v-btn color="primary" fab v-on="on" small>
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </template>
-              <!-- Compose Mail Begin -->
-              <v-card>
-                <v-toolbar color="primary" dark dense>
-                  <div class="subtitle-1">New mail</div>
-                  <v-spacer></v-spacer>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn tile icon @click="cancelCompose()" v-on="on"><v-icon>mdi-close</v-icon></v-btn>
+          <v-dialog v-model="composeDialog" scrollable :width="this.$vuetify.breakpoint.mdAndUp ? '80%' : '100%'" persistent>
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" fab v-on="on" small>
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+            </template>
+            <!-- Compose Mail Begin -->
+            <v-card>
+              <v-toolbar color="primary" dark dense>
+                <div class="subtitle-1">New mail</div>
+                <v-spacer></v-spacer>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn tile icon @click="cancelCompose()" v-on="on"><v-icon>mdi-close</v-icon></v-btn>
+                  </template>
+                  <span>close</span>
+                </v-tooltip>
+              </v-toolbar>
+              <!-- New Mail Form -->
+              <v-card-text class="mt-2">
+                <v-form v-model="validForm" ref="form">
+                  <v-alert
+                    v-model="errAlert"
+                    dismissible
+                    colored-border
+                    border="left"
+                    dense
+                    elevation="2"
+                    type="error"
+                    transition="scroll-y-transition"
+                  ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
+                  <v-select
+                    v-model="selectedCourse"
+                    :items="courseList"
+                    label="Course (Public can view all users)"
+                  ></v-select>
+                  <v-autocomplete
+                    label="To"
+                    v-model="newMail.receiver"
+                    v-if="toShow"
+                    :items="userList"
+                    :rules="[v => !!v || 'Sorry, you have to select at least one User']"
+                    item-text="username"
+                    chips
+                    multiple
+                    clearable
+                    :menu-props="{ maxHeight: '25%' }"
+                    :search-input.sync="userSearchValue"
+                    @change="receiverChg"
+                  >
+                    <template v-slot:no-data>
+                      <v-list-item>
+                        <v-list-item-title>User not found</v-list-item-title>
+                      </v-list-item>
                     </template>
-                    <span>close</span>
-                  </v-tooltip>
-                </v-toolbar>
-                <!-- New Mail Form -->
-                <v-card-text class="mt-2">
-                  <v-form v-model="validForm" ref="form">
-                    <v-alert
-                      v-model="errAlert"
-                      dismissible
-                      colored-border
-                      border="left"
-                      dense
-                      elevation="2"
-                      type="error"
-                      transition="scroll-y-transition"
-                    ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
-                    <v-select
-                      v-model="selectedCourse"
-                      :items="courseList"
-                      label="Course (Public can view all users)"
-                    ></v-select>
-                    <v-autocomplete
-                      label="To"
-                      v-model="newMail.receiver"
-                      v-if="toShow"
-                      :items="userList"
-                      :rules="[v => !!v || 'Sorry, you have to select at least one User']"
-                      item-text="username"
-                      chips
-                      multiple
-                      clearable
-                      :menu-props="{ maxHeight: '25%' }"
-                      :search-input.sync="userSearchValue"
-                      @change="receiverChg"
-                    >
-                      <template v-slot:no-data>
-                        <v-list-item>
-                          <v-list-item-title>User not found</v-list-item-title>
-                        </v-list-item>
-                      </template>
-                      <template v-slot:selection="{ attr, on, item, selected }">
-                        <v-chip
-                          v-bind="attr"
-                          :input-value="selected"
-                          color="primary"
-                          class="white--text"
-                          clearable
-                          v-on="on"
-                        ><span v-text="item.username"></span></v-chip>
-                      </template>
-                      <template v-slot:item="{ item }">
-                        <v-list-item-content>
-                          <v-list-item-title v-text="item.username"></v-list-item-title>
-                          <v-list-item-subtitle v-text="item.displayedName"></v-list-item-subtitle>
-                        </v-list-item-content>
-                      </template>
-                    </v-autocomplete>
-                    <v-text-field 
-                      label="Title" 
-                      counter="32" 
-                      :rules="[v => !!v && v.length <= 32 || 'Sorry, the length must be ≤ 32 characters']" 
-                      v-model="newMail.title"
-                    ></v-text-field>
-                    <v-textarea 
-                      label="Message" 
-                      :rules="[v => !!v || 'Sorry, cannot send empty message']"
-                      v-model="newMail.message"
-                    ></v-textarea>
-                  </v-form>
-                </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
-                    <v-btn dark color="primary" @click="send()">send</v-btn>
-                  </v-card-actions>
-              </v-card>
-            </v-dialog>
+                    <template v-slot:selection="{ attr, on, item, selected }">
+                      <v-chip
+                        v-bind="attr"
+                        :input-value="selected"
+                        color="primary"
+                        class="white--text"
+                        clearable
+                        v-on="on"
+                      ><span v-text="item.username"></span></v-chip>
+                    </template>
+                    <template v-slot:item="{ item }">
+                      <v-list-item-content>
+                        <v-list-item-title v-text="item.username"></v-list-item-title>
+                        <v-list-item-subtitle v-text="item.displayedName"></v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </v-autocomplete>
+                  <v-text-field 
+                    label="Title" 
+                    counter="32" 
+                    :rules="[v => !!v && v.length <= 32 || 'Sorry, the length must be ≤ 32 characters']" 
+                    v-model="newMail.title"
+                  ></v-text-field>
+                  <v-textarea 
+                    label="Message" 
+                    :rules="[v => !!v || 'Sorry, cannot send empty message']"
+                    v-model="newMail.message"
+                  ></v-textarea>
+                </v-form>
+              </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
+                  <v-btn dark color="primary" @click="send()">send</v-btn>
+                </v-card-actions>
+            </v-card>
+          </v-dialog>
           <div class="ml-4">Compose</div>
               <!-- Compose Mail End -->
         </v-card-title>
@@ -118,7 +118,7 @@
     </v-col>
     <!-- Side Bar End -->
     <!-- Middle Area -->
-    <v-col cols="12" md="3" style="overflow-y: hidden;">
+    <v-col cols="12" md="3" style="height: 100%; overflow-y: hidden;">
       <!-- Mobile: Display Mail Begin -->
       <v-slide-x-reverse-transition>
         <v-card
@@ -126,7 +126,7 @@
           tile
           elevation="0" 
           outlined
-          height="93vh" 
+          height="100%" 
           class="hidden-md-and-up"
         >
           <v-card tile elevation="0" height="100%" class="pt-3 px-3">
@@ -175,7 +175,7 @@
       </v-slide-x-reverse-transition>
       <!-- Mobile: Display Mail End -->
       <!-- Mail List Begin -->
-      <v-card tile elevation="0" outlined height="93vh" v-if="this.$vuetify.breakpoint.mdAndUp || !this.showMail">
+      <v-card tile elevation="0" outlined height="100%" v-if="this.$vuetify.breakpoint.mdAndUp || !this.showMail">
         <v-card-title fixed>
           <v-autocomplete
             v-model="searchMail"
@@ -268,8 +268,8 @@
       <!-- Mobile: Compose & Drawer Button End-->
     </v-col>
     <!-- Display Mail Begin -->
-    <v-col cols="7" class="ma-0 hidden-sm-and-down">
-      <v-card tile elevation="0" outlined height="93vh">
+    <v-col cols="7" class="ma-0 hidden-sm-and-down" style="height: 100%">
+      <v-card tile elevation="0" outlined height="100%">
         <v-card-title class="pt-3 px-3">
           <v-list-item v-if="displayMail !== -1" two-line>
             <v-list-item-avatar size="64px">
@@ -450,19 +450,19 @@ export default {
     getCourse() {
       this.$http.get(`${API_BASE_URL}/course`)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           res.data.data.forEach((ele) => {
             this.courseList.push(ele.course);
           })
         })
         .catch((err) => {
-          console.log(err)
+          // console.log(err)
         })
     },
     getUser() {
       this.$http.get(`${API_BASE_URL}/course/${this.selectedCourse}`)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           var data = res.data.data;
           this.userList.push({'username': 'Select All'});
           this.userList.push({'username': data.teacher});
@@ -472,7 +472,7 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         })
     },
     send() {
@@ -484,12 +484,12 @@ export default {
             if ( response.data.data.valid === 0 ) {
               this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message})
                 .then((res) => {
-                  console.log(res)
+                  // console.log(res)
                   this.composeDialog = false
                   this.init();
                 })
                 .catch((err) => {
-                  console.log(err);
+                  // console.log(err);
                   this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
                   this.errAlert = true;
                 });
@@ -512,7 +512,7 @@ export default {
       if ( by === 'id' ) {
         i = this.mail[this.displayFolder].map(function(e) { return e.messageId; }).indexOf(i);
       }
-      console.log(by, i);
+      // console.log(by, i);
       this.showMail = true
       this.displayMail = i
       if ( this.mail[this.displayFolder][i].status === 0 ) {
@@ -536,10 +536,10 @@ export default {
       }
       this.$http.delete(`${API_BASE_URL}/inbox${url}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f][idx].messageId}})
         .then((res) => {
-          console.log(res);
+          // console.log(res);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         })
       this.mail[f].splice(idx, 1)
       this.showMail = false
@@ -562,15 +562,15 @@ export default {
       this.mail[f][idx].status ^= 1;
       this.$http.put(`${API_BASE_URL}/inbox`, {'messageId': this.mail[f][idx].messageId})
         .then((res) => {
-          console.log(res);
+          // console.log(res);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         })
     },
     receiverChg() {
       this.userSearchValue = '';
-      console.log(this.newMail.receiver)
+      // console.log(this.newMail.receiver)
       if ( this.newMail.receiver.indexOf('Select All') >= 0 ) {
         this.newMail.receiver = this.userList;
         this.newMail.receiver.splice(0, 1);
