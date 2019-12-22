@@ -149,11 +149,11 @@ export default {
   data () {
     return {
       links: [
-        {'title': 'Home', 'path': '/', 'show': 'true'},
-        {'title': 'Problems', 'path': '/problems', 'show': 'true'},
-        {'title': 'Submissions', 'path': '/submissions', 'show': this.isLogin},
-        {'title': 'Courses', 'path': '/courses', 'show': this.isLogin},
-        {'title': 'Inbox', 'path': '/inbox', 'show': this.isLogin},
+        {'title': 'Home', 'path': '/', 'show': true},
+        {'title': 'Problems', 'path': '/problems', 'show': true},
+        {'title': 'Submissions', 'path': '/submissions', 'show': false},
+        {'title': 'Courses', 'path': '/courses', 'show': false},
+        {'title': 'Inbox', 'path': '/inbox', 'show': false},
       ],
       drawer: false,
       isLogin: false,
@@ -173,7 +173,7 @@ export default {
 
   methods: {
     async showAlert(type) {
-      this.isLogin = true;
+      this.$forceUpdate();
       this.setProfile();
       this.drawer = false;
       this.alertBar = true;
@@ -196,6 +196,9 @@ export default {
         this.payload = this.parseJwt(this.$cookies.get('jwt'));
         if ( this.payload.active === true ) {
           this.isLogin = true;
+          this.links.forEach((obj) => {
+            obj.show = true;
+          })
           this.username = this.payload.username;
           this.displayedName = this.payload.profile.displayedName;
         }
@@ -211,6 +214,11 @@ export default {
           console.log(res);
           this.showAlert(1);
           this.isLogin = false;
+          this.links.forEach((obj) => {
+            if ( obj.title != 'Home' && obj.title != 'Problems' )
+              obj.show = false;
+          })
+          this.$forceUpdate();
         })
         .catch((err) => {
           console.log(err);
