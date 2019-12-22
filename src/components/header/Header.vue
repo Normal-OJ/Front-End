@@ -173,6 +173,7 @@ export default {
 
   methods: {
     async showAlert(type) {
+      this.$forceUpdate();
       this.setProfile();
       this.drawer = false;
       this.alertBar = true;
@@ -214,8 +215,10 @@ export default {
           this.showAlert(1);
           this.isLogin = false;
           this.links.forEach((obj) => {
-            obj.show = false;
+            if ( obj.title != 'Home' && obj.title != 'Problems' )
+              obj.show = false;
           })
+          this.$forceUpdate();
         })
         .catch((err) => {
           console.log(err);
