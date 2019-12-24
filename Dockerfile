@@ -20,4 +20,4 @@ COPY . .
 
 # CMD [ "http-server", "dist" ]
 # CMD [ "npm", "run", "serve" ]
-CMD [ "sh run.sh" ]
+CMD [ "sh", "run.sh" ]
