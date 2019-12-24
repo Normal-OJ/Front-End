@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters style="height: 100%;">
     <v-col cols="6" style="height: 100%;">
-      <v-card tile outlined elevation="0" height="100%">
+      <v-card tile outlined elevation="0" height="100%" max-height="100%" style="overflow-y: scroll;">
         <v-row no-gutters justify="center">
           <v-card-title class="display-2 font-weight-bold" text>{{ id }} - Name</v-card-title>
         </v-row>
@@ -34,12 +34,14 @@
       </v-card>
     </v-col>
     <v-col cols="6">
+      <Editor/>
     </v-col>
   </v-row>
 </template>
 
 <script>
 import VueMarkdown from 'vue-markdown'
+import Editor from './Editor'
 
 const API_BASE_URL = '/api';
 
@@ -49,6 +51,7 @@ export default {
 
   components: {
     VueMarkdown,
+    'Editor': Editor,
   },
 
   data () {
