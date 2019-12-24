@@ -23,7 +23,7 @@
       autofocus
       ref="email"
       :rules="mailRule"
-      @keypress="keying('email')"
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-text-field
@@ -34,7 +34,7 @@
       counter="16"
       ref="username"
       :rules="usernameRule"
-      @keypress="keying('username')"
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-text-field
@@ -45,6 +45,7 @@
       :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
       :type="showPassword ? 'text' : 'password'"
       @click:append="showPassword = !showPassword"
+      @keyup.enter="submit"
     ></v-text-field>
 
     <v-icon color="white">mdi-lock</v-icon>
@@ -114,6 +115,24 @@ export default {
     }
   },
 
+  computed: {
+    email() {
+      return this.authData.email;
+    },
+    username() {
+      return this.authData.username;
+    },
+  },
+
+  watch: {
+    email() {
+      this.keying('email');
+    },
+    username() {
+      this.keying('username');
+    }
+  },
+
   mounted () {
     this.$nextTick(() => {
       this.$refs.email.focus();
@@ -136,9 +155,8 @@ export default {
             // console.log(response.data);
           })
           .catch((error) => {
-            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+            this.errMsg = [error.response.data.data.email, error.response.data.data.username, error.response.data.data.password];
             this.errAlert = true;
-            // console.log(error.response.data);
           });
       }
       this.btnLoading = false;
