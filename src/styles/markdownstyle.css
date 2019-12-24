@@ -9,8 +9,8 @@ Description: Github README style. Includes theme for Pygmentized code blocks.
 */
 
 @font-face {
-  font-family: "Roboto Mono";
-  src: url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
+  font-family: "Monaco";
+  src: url("/monaco.ttf") format("truetype");
 }
 
 *:not('#mkdbuttons') {
@@ -28,6 +28,7 @@ Description: Github README style. Includes theme for Pygmentized code blocks.
   -webkit-border-radius: 3px; }
 
 p {
+  font-size: 20px;
   margin: 1em 0; }
 
 a {
@@ -121,7 +122,7 @@ h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p, ul li > :first-child, ol li > :f
 dl {
   padding: 0; }
   dl dt {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
     font-style: italic;
     padding: 0;
@@ -138,7 +139,7 @@ dl {
     dl dd > :first-child {
       margin-top: 0; }
     dl dd > :last-child {
-      margin-bottom: 0; }
+      margin-bottom: 0; } 
 
 blockquote {
   border-left: 4px solid #DDD;
@@ -177,8 +178,8 @@ code, tt {
   border: 1px solid #eaeaea;
   background-color: #f8f8f8;
   border-radius: 3px;
-  font-family: 'Roboto Mono', Consolas, 'Liberation Mono', Courier, monospace;
-  font-size: 13px;
+  font-family: Monaco !important;
+  font-size: 18px;
   color: #e72b77; }
 
 pre > code {
@@ -191,7 +192,7 @@ pre > code {
 .highlight pre {
   background-color: #f8f8f8;
   border: 1px solid #ccc;
-  font-size: 13px;
+  font-size: 18px;
   line-height: 19px;
   overflow: auto;
   padding: 6px 10px;
@@ -200,7 +201,7 @@ pre > code {
 pre {
   background-color: #f8f8f8;
   border: 1px solid #ccc;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 19px;
   overflow: auto;
   padding: 6px 10px;
