@@ -112,7 +112,7 @@ export default {
                 .then((response) => {
                   // console.log(response.data);
                   if ( response.data.data.valid === 1 ) {
-                    this.errMsg = ['Sorry, we couldn\'t find an account with that ' + type + '.'];
+                    this.errMsg = ['Sorry, we couldn\'t find an account with that E-mail/Username.'];
                     this.errAlert = true;
                   } else if ( response.data.data.valid === 0 ) {
                     this.signin();
