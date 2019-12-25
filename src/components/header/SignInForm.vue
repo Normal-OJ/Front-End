@@ -106,7 +106,7 @@ export default {
             // console.log(response.data);
             if ( response.data.data.valid === 1 ) {
               // this user is not exist
-              type = (type==='email') ? 'E-mail' : 'Username';
+              type = (type==='email') ? 'username' : 'email';
 
               this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData.username})
                 .then((response) => {
