@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div class="ma-0 pa-0">
     <v-app-bar
       app
       id="navbar"
       color="#003865"
+      height="70%"
       dark
       dense
     >
@@ -18,6 +19,7 @@
         :src="require('@/assets/NOJ-LOGO.png')"
         :aspect-ratio="1080/182"
         height="100%"
+        min-width="20vw"
         contain
         class="mr-3"
       ></v-img>
@@ -28,39 +30,40 @@
           :key="link.title"
           :to="link.path"
           v-if="link.show"
-          class="text-none subtitle-1 hidden-sm-and-down"
+          class="text-none title hidden-sm-and-down"
           min-width="8vw"
+          max-width="13vw"
           text
-        >{{ link.title }}</v-btn>
+          v-text="link.title"
+        ></v-btn>
       </v-toolbar-items>
 
       <v-spacer></v-spacer>
 
-      <div v-if="isLogin && $vuetify.breakpoint.mdAndUp" class="headline text-none">
-        <v-menu offset-y>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              dark
-              text
-              v-on="on"
-            >{{ displayedName }}({{ username }})</v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              link
-              :to="{path: '/profile'}"
-            >
-              <v-list-item-title class="body-1">Profile</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              link
-              @click="signout"
-            >
-              <v-list-item-title class="body-1">Sign Out</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </div>
+      <v-menu v-if="isLogin" class="hidden-sm-and-down" offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            class="text-none title"
+            v-on="on"
+            min-width="5vw"
+            max-width="15vw"
+            text
+            v-text="displayedName+'('+username+')'"
+          ></v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            link
+            :to="{path: '/profile'}"
+          ><v-list-item-title class="body-1" v-text="'Profile'"></v-list-item-title></v-list-item>
+          <v-list-item
+            link
+            @click="signout"
+          >
+            <v-list-item-title class="body-1" v-text="'Sign Out'"></v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <Auth v-else :smDown="false" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
 
     </v-app-bar>
@@ -70,24 +73,17 @@
       app
       disable-resize-watcher
     >
-      <v-list-item v-if="isLogin">
-        <v-list-item-avatar>
+      <v-list-item>
+        <v-list-item-avatar v-if="isLogin">
           <v-img
-            :src="require('@/assets/NOJ.png')"
+            :src="avatar"
             :aspect-ratio="1"
             height="100%"
             contain
           ></v-img>
         </v-list-item-avatar>
-        <v-list-item-title>{{ displayedName }}({{ username }})</v-list-item-title>
-        <v-btn
-          icon
-          @click.stop="drawer = !drawer"
-        ><v-icon>mdi-chevron-left</v-icon></v-btn>
-      </v-list-item>
-      
-      <v-list-item v-else>
-        <v-list-item-title>
+        <v-list-item-title v-if="isLogin" v-text="displayedName+'('+username+')'"></v-list-item-title>
+        <v-list-item-title v-else>
           <Auth :smDown="true" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
         </v-list-item-title>
         <v-btn
@@ -104,9 +100,17 @@
           :key="link.title"
           :to="link.path"
           link
-        >
-          <v-list-item-title>{{ link.title }}</v-list-item-title>
-        </v-list-item>
+        ><v-list-item-title v-text="link.title"></v-list-item-title></v-list-item>
+        <v-list-item
+          link
+          v-if="isLogin"
+          :to="{path: '/profile'}"
+        ><v-list-item-title v-text="'Profile'"></v-list-item-title></v-list-item>
+        <v-list-item
+          link
+          v-if="isLogin"
+          @click="signout"
+        ><v-list-item-title v-text="'Sign Out'"></v-list-item-title></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -133,7 +137,8 @@
 </template>
 
 <script>
-import Auth from './Auth'
+import Auth from './Auth';
+import MD5 from './utils.js';
 
 const API_BASE_URL = '/api';
 const MSG = ['Welcome! Signed in successfully!', 'Bye! Signed out successfully'];
@@ -162,6 +167,7 @@ export default {
       progress: 0,
       showProgress: true,
       payload: null,
+      avatar: null,
       username: '',
       displayedName: '',
     }
@@ -201,8 +207,12 @@ export default {
           })
           this.username = this.payload.username;
           this.displayedName = this.payload.profile.displayedName;
+          this.setAvatar(this.payload.email);
         }
       }
+    },
+    setAvatar(payload) {
+      this.avatar = `https://www.gravatar.com/avatar/${MD5(payload)}`;
     },
     parseJwt(token) {
       console.log(atob(token.split('.')[1]));
