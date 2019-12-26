@@ -1,41 +1,45 @@
 <template>
   <v-row no-gutters style="height: 100%;">
-    <v-col cols="6" style="height: 100%;">
-      <v-card tile outlined elevation="0" height="100%" max-height="100%" style="overflow-y: scroll;">
-        <v-row no-gutters justify="center">
-          <v-card-title class="display-2 font-weight-bold" text>{{ id }} - Name</v-card-title>
-        </v-row>
-        <v-divider color="dark"></v-divider>
-        <v-card-subtitle class="py-1">
-          Tags:
-          <v-chip 
-            class="ma-1" 
-            v-for="tag in tags" 
-            :key="tag" 
-            label
-            small
-          >{{ tag }}</v-chip>
-          Type: 
-        </v-card-subtitle>
-        <v-tabs v-model="tab" fixed-tabs slider-size="4">
-          <v-tab>Problem</v-tab>
-          <v-tab>Submission</v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab">
-          <v-tab-item style="height: 100%;">
-            <div class="px-12">
-              <vue-markdown :source="desc"></vue-markdown>
-            </div>
-          </v-tab-item>
-          <v-tab-item>
-            <!-- Table of Submissions -->
-          </v-tab-item>
-        </v-tabs-items>
-      </v-card>
-    </v-col>
-    <v-col cols="6">
-      <Editor/>
-    </v-col>
+    <v-row no-gutters style="height: 100%;">
+      <v-col cols="6" style="height: 100%;">
+        <v-card tile outlined elevation="0" height="100%">
+          <v-row no-gutters justify="center">
+            <v-card-title class="display-2 font-weight-bold">{{ id }} - Name</v-card-title>
+          </v-row>
+          <v-divider color="dark"></v-divider>
+          <v-card-subtitle class="py-1">
+            Tags:
+            <v-chip 
+              class="ma-1" 
+              v-for="tag in tags" 
+              :key="tag" 
+              label
+              small
+            >{{ tag }}</v-chip>
+            Type: 
+          </v-card-subtitle>
+          <v-tabs v-model="tab" fixed-tabs slider-size="4">
+            <v-tab>Problem</v-tab>
+            <v-tab>Submission</v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tab">
+            <v-tab-item>
+              <div class="px-6">
+                <vue-markdown :source="desc"></vue-markdown>
+              </div>
+            </v-tab-item>
+            <v-tab-item>
+              <div>
+              <!-- Table of Submissions -->
+              </div>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-card>
+      </v-col>
+      <v-col cols="6" style="height: 100%;">
+        <Editor/>
+      </v-col>
+    </v-row>
   </v-row>
 </template>
 
