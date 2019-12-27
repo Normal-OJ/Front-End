@@ -15,7 +15,7 @@
       v-if="show"
       ref="CM"
       :options="cmOption"
-      :style="{ height: '75%', fontSize: editorConfig.fontSize+'px' }"
+      :style="{ height: '75%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
     <v-row class="pa-3" style="height: 15%;">
       <v-spacer></v-spacer>
@@ -23,6 +23,7 @@
         class="text-none headline"
         color="primary"
         large
+        @click="submit"
       ><v-icon>mdi-send</v-icon>Submit</v-btn>
       <v-spacer></v-spacer>
     </v-row>
@@ -31,33 +32,16 @@
 
 <script>
 import { codemirror } from 'vue-codemirror';
-import 'codemirror/lib/codemirror.css'
-// language
-import 'codemirror/mode/python/python.js'
-import 'codemirror/mode/clike/clike.js'
-// theme css
-import 'codemirror/theme/monokai.css'
-import 'codemirror/theme/dracula.css'
-import 'codemirror/theme/base16-dark.css'
-import 'codemirror/theme/base16-light.css'
-import 'codemirror/theme/eclipse.css'
-import 'codemirror/theme/material.css'
-// require active-line.js
-import 'codemirror/addon/selection/active-line.js'
-// closebrackets
-import 'codemirror/addon/edit/closebrackets.js'
-// scrollbars
-import 'codemirror/addon/scroll/simplescrollbars.js'
-// keyMap
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/comment/comment.js'
-import 'codemirror/addon/dialog/dialog.js'
-import 'codemirror/addon/dialog/dialog.css'
-import 'codemirror/addon/search/searchcursor.js'
-import 'codemirror/addon/search/search.js'
-import 'codemirror/keymap/sublime.js'
+import './EditorConfig.js';
+import JSZip from 'jszip';
 
 var LANG = ['text/x-csrc', 'text/x-c++src', {name: "python", version: 3}];
+var LANG_EXT = ['.c', '.cpp', '.py'];
+var DEFAULT_CODE = [
+  '#include<stdio.h>\n\nint main() {\n\n\n\treturn 0;\n}',
+  '#include<iostream>\nusing namespace std;\n\nint main() {\n\n\n\treturn 0;\n}',
+  ''
+];
 var FONT_SIZE = [], THEME_ITEM = ['default', 'monokai', 'dracula', 'base16-dark', 'base16-light', 'eclipse', 'material'], THEME = [];
 for ( var i=8; i<=28; ++i ) FONT_SIZE.push({ 'text': `${i}`, 'value': i });
 THEME_ITEM.forEach((theme) => {THEME.push({ 'text': theme, 'value': theme })});
@@ -97,7 +81,7 @@ export default {
           { 'text': '8', 'value': 8 },
         ],
       },
-      code: 'print([int(i) for i in range(0,5) if i >= 0])\nprintf("%d", n);\ncout << n << endl;',
+      code: '',
       cmOption: {
         autoCloseBrackets: true,
         indentUnit: 4,
@@ -126,6 +110,35 @@ export default {
     this.setConfig();
   },
   methods: {
+    async submit() {
+      var zip = new JSZip();
+      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.src);
+      var code = await zip.generateAsync({type:"blob"});
+      var formData = new FormData();
+      formData.append( 'code', code, 'stupidPM' ); 
+      console.log(formData);
+      this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
+        .then((res) => {
+          console.log(res);
+          var submissionId = res.data.data.submissionId;
+          this.$http.put(`/api/submission/${res.data.data.submissionId}?token=${res.data.data.token}`, 
+            formData,
+            {
+              headers: {'Content-Type':'multipart/form-data'}, 
+            })
+            .then((res) => {
+              console.log(res);
+              console.log('submissionId:'+ submissionId);
+              this.$emit('getSubmission', submissionId);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     setConfig() {
       if ( this.$cookies.isKey('jwt') ) {
         var payload = this.parseJwt(this.$cookies.get('jwt'));
@@ -141,6 +154,7 @@ export default {
               'language': 0, // 0: c, 1: cpp, 2: py
             }
           }
+          this.code = DEFAULT_CODE[this.editorConfig.language];
           this.updateOption();
         }
       }
@@ -161,6 +175,7 @@ export default {
       this.cmOption.indentUnit = this.editorConfig.tabSize;
       this.cmOption.theme = this.editorConfig.theme;
       this.cmOption.mode = LANG[this.editorConfig.language];
+      this.code = DEFAULT_CODE[this.editorConfig.language];
     },
     parseJwt(token) {
       return JSON.parse(atob(token.split('.')[1])).data;
