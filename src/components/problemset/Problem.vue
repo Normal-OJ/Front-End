@@ -4,7 +4,7 @@
 <script>
 export default {
 
-  name: 'Problems',
+  name: 'Problem',
 
   data () {
     return {

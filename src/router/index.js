@@ -2,8 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/home/Home'
 import Problemset from '@/components/problemset/Problemset'
-import Problems from '@/components/problemset/Problems'
+import Problem from '@/components/problemset/Problem'
 import Submissions from '@/components/submissions/Submissions'
+import Submission from '@/components/submissions/Submission'
 import Courses from '@/components/courses/Courses'
 import Course from '@/components/courses/Course'
 import CoursesAnnouncement from '@/components/courses/element/CoursesAnnouncement'
@@ -15,6 +16,7 @@ import CoursesManage from '@/components/courses/element/CoursesManage'
 import Inbox from '@/components/inbox/Inbox'
 import EmailVerify from '@/components/header/EmailVerify'
 import EmailResend from '@/components/header/EmailResend'
+import Profile from '@/components/header/Profile'
 
 Vue.use(Router)
 
@@ -32,14 +34,19 @@ export default new Router({
       component: Problemset
     },
     {
-      path: '/problems/:id',
-      name: 'Problems',
-      component: Problems
+      path: '/problem/:id',
+      name: 'Problem',
+      component: Problem
     },
     {
       path: '/submissions',
       name: 'Submissions',
       component: Submissions
+    },
+    {
+      path: '/submission/:id',
+      name: 'Submission',
+      component: Submission
     },
     {
       path: '/courses',
@@ -76,6 +83,11 @@ export default new Router({
       path: '/email_resend',
       name: 'EmailResend',
       component: EmailResend
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
     }
   ]
 })

@@ -16,7 +16,7 @@
 
       <v-img
         :src="require('@/assets/NOJ-LOGO.png')"
-        :aspect-ratio="29167/4921"
+        :aspect-ratio="1080/182"
         height="100%"
         contain
         class="mr-3"
@@ -27,7 +27,7 @@
           v-for="link in links"
           :key="link.title"
           :to="link.path"
-          :show="link.show"
+          v-if="link.show"
           class="text-none subtitle-1 hidden-sm-and-down"
           min-width="8vw"
           text
@@ -36,8 +36,32 @@
 
       <v-spacer></v-spacer>
 
-      <div v-if="isLogin && $vuetify.breakpoint.mdAndUp" class="headline">{{ displayedName }}({{ username }})</div>
-      <Auth v-else :smDown="false" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
+      <div v-if="isLogin && $vuetify.breakpoint.mdAndUp" class="headline text-none">
+        <v-menu offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              dark
+              text
+              v-on="on"
+            >{{ displayedName }}({{ username }})</v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              link
+              :to="{path: '/profile'}"
+            >
+              <v-list-item-title class="body-1">Profile</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              link
+              @click="signout"
+            >
+              <v-list-item-title class="body-1">Sign Out</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+      <Auth v-else :smDown="false" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
 
     </v-app-bar>
 
@@ -64,7 +88,7 @@
       
       <v-list-item v-else>
         <v-list-item-title>
-          <Auth :smDown="true" v-on:signinSuccessToHeader="signinSuccessShowAlert"></Auth>
+          <Auth :smDown="true" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
         </v-list-item-title>
         <v-btn
           icon
@@ -90,7 +114,8 @@
       v-model="alertBar"
       color="success"
       vertical
-      top
+      bottom
+      right
       :timeout="4000"
     >
       <h3>{{ alertText }}</h3>
@@ -110,6 +135,9 @@
 <script>
 import Auth from './Auth'
 
+const API_BASE_URL = '/api';
+const MSG = ['Welcome! Signed in successfully!', 'Bye! Signed out successfully'];
+
 export default {
 
   name: 'Header',
@@ -121,16 +149,16 @@ export default {
   data () {
     return {
       links: [
-        { 'title': 'Home', 'path': '/', 'show': 'true'},
-        { 'title': 'Problems', 'path': '/problems', 'show': 'true'},
-        { 'title': 'Submissions', 'path': '/submissions', 'show': 'true'},
-        { 'title': 'Courses', 'path': '/courses', 'show': 'true'},
-        { 'title': 'Inbox', 'path': '/inbox', 'show': 'true'},
+        {'title': 'Home', 'path': '/', 'show': true},
+        {'title': 'Problems', 'path': '/problems', 'show': true},
+        {'title': 'Submissions', 'path': '/submissions', 'show': false},
+        {'title': 'Courses', 'path': '/courses', 'show': false},
+        {'title': 'Inbox', 'path': '/inbox', 'show': false},
       ],
       drawer: false,
       isLogin: false,
       alertBar: false,
-      alertText: 'Welcome! Signed in successfully!',
+      alertText: '',
       progress: 0,
       showProgress: true,
       payload: null,
@@ -144,13 +172,15 @@ export default {
   },
 
   methods: {
-    async signinSuccessShowAlert() {
-      this.isLogin = true;
+    async showAlert(type) {
+      this.$forceUpdate();
       this.setProfile();
       this.drawer = false;
       this.alertBar = true;
+      this.alertText = MSG[type];
+      this.progress = 100;
       for ( let i=0; i<40; ++i ) {
-        this.progress += 2.5;
+        this.progress -= 2.5;
         await this.delay(100);
       }
     },
@@ -166,6 +196,9 @@ export default {
         this.payload = this.parseJwt(this.$cookies.get('jwt'));
         if ( this.payload.active === true ) {
           this.isLogin = true;
+          this.links.forEach((obj) => {
+            obj.show = true;
+          })
           this.username = this.payload.username;
           this.displayedName = this.payload.profile.displayedName;
         }
@@ -175,6 +208,22 @@ export default {
       console.log(atob(token.split('.')[1]));
       return JSON.parse(atob(token.split('.')[1])).data;
     },
+    signout() {
+      this.$http.get(`${API_BASE_URL}/auth/session`)
+        .then((res) => {
+          console.log(res);
+          this.showAlert(1);
+          this.isLogin = false;
+          this.links.forEach((obj) => {
+            if ( obj.title != 'Home' && obj.title != 'Problems' )
+              obj.show = false;
+          })
+          this.$forceUpdate();
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    }
   }
 }
 </script>
