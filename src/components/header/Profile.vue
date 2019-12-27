@@ -34,14 +34,16 @@
               v-model="info.username"
               label="Username"
               class="mx-1"
-              outlined
+              color="secondary"
+              filled
               readonly
             ></v-text-field>
             <v-text-field
               v-model="info.email"
               label="Email"
               class="mx-1"
-              outlined
+              color="secondary"
+              filled
               readonly
             ></v-text-field>
           </v-row>
