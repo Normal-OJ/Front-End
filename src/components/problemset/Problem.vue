@@ -45,7 +45,7 @@
                           v-for="header in submHeader"
                           :key="header"
                           class="text-left"
-                        ><p v-text="header"></p></th>
+                        ><p class="title" v-text="header"></p></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -56,10 +56,10 @@
                         <td
                           v-for="header in submHeader"
                           :key="header"
-                        ><p v-if="header=='Status'"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="data[header]"></a></p>
-                         <p v-else-if="header==='Run Time' && data[header]" v-text="data[header]+'ms'"></p>
-                         <p v-else-if="header==='Memory Usage' && data[header]" v-text="data[header]+'KB'"></p>
-                         <p v-else v-text="data[header]"></p></td>
+                        ><p class="title" v-if="header=='Status'"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="data[header]"></a></p>
+                         <p class="body-1" v-else-if="header==='Run Time' && data[header]" v-text="data[header]+'ms'"></p>
+                         <p class="body-1" v-else-if="header==='Memory' && data[header]" v-text="data[header]+'KB'"></p>
+                         <p class="body-1" v-else v-text="data[header]"></p></td>
                       </tr>
                     </tbody>
                   </template>
@@ -102,7 +102,7 @@ export default {
       owner: '',
       desc: '',
       tab: null,
-      submHeader: ['Timestamp', 'Status', 'Score', 'Run Time', 'Memory Usage', 'Language'],
+      submHeader: ['Timestamp', 'Status', 'Score', 'Run Time', 'Memory', 'Language'],
       submData: [],
       show: true,
     }
@@ -133,11 +133,11 @@ export default {
           console.log('subm:', res);
           res.data.data.submissions.forEach((ele) => {
             this.submData.push({
-              'Timestamp': this.timeFormat(ele.timestamp/1000),
+              'Timestamp': this.timeFormat(ele.timestamp),
               'Status': STATUS[ele.status+1],
               'Score': ele.score,
               'Run Time': ele.runTime,
-              'Memory Usage': ele.memoryUsage,
+              'Memory': ele.memoryUsage,
               'Language': LANG[ele.languageType],
               'id': ele.submissionId,
             })
@@ -155,7 +155,7 @@ export default {
         'Status': STATUS[0],
         'Score': null,
         'Run Time': null,
-        'Memory Usage': null,
+        'Memory': null,
         'Language': null,
       });
       this.tab = 1;
@@ -182,7 +182,7 @@ export default {
             //   'Status': STATUS[data.status+1],
             //   'Score': data.score,
             //   'Run Time': data.runTime,
-            //   'Memory Usage': data.memoryUsage,
+            //   'Memory': data.memoryUsage,
             //   'Language': LANG[data.languageType],
             // });
             // this.show = false;
@@ -211,4 +211,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+a:hover {
+  text-decoration: underline;
+}
 </style>
