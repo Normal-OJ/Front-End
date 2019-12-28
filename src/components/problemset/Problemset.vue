@@ -7,6 +7,15 @@
       :headers="headers"
       :items="items"
     >
+      <template v-slot:item.acRate="{item}">
+        <v-progress-circular
+          color="green"
+          :rotate="-90"
+          :value="item.acRate"
+        >
+          <span class="caption">{{item.acRate}}</span>
+        </v-progress-circular>
+      </template>
     </v-data-table>
   </v-card>
 </template>
