@@ -13,9 +13,28 @@
           :rotate="-90"
           :value="item.acRate"
         >
-          <span class="caption">{{item.acRate}}</span>
+          <span class="caption" style="color: black">
+            {{item.acRate}}
+          </span>
         </v-progress-circular>
       </template>
+
+      <template v-slot:item.tags="{item}">
+        <v-chip-group
+          :column="true"
+        >
+          <v-chip v-for="tag in item.tags" :key="tag"
+            color="secondary"
+            :label="true"
+            :outlined="true"
+            :ripple="false"
+            x-small
+          >
+            {{tag}}
+          </v-chip>
+        </v-chip-group>
+      </template>
+
     </v-data-table>
   </v-card>
 </template>
@@ -48,6 +67,11 @@ export default {
         {
           text: 'Title',
           value: 'problemName',
+          align: 'left'
+        },
+        {
+          text: 'tags',
+          value: 'tags',
           align: 'left'
         },
         {
