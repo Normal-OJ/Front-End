@@ -81,7 +81,7 @@ import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
 
 const LANG = ['C (c11)', 'C++ (c++11)', 'Python (py3)'];
-const STATUS = ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceen', 'Runtime Error', 'Judge Error'];
+const STATUS = ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error'];
 const API_BASE_URL = '/api';
 
 export default {
