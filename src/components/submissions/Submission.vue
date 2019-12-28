@@ -167,7 +167,6 @@ export default {
           if ( this.isKey('code', data) ) {
             this.codeShow = true;
             this.code = data.code;
-            this.code = '#include<stdio.h>\nint main() {\n\n\n  return 0;\n}';
           } else {
             this.codeShow = false;
           }
