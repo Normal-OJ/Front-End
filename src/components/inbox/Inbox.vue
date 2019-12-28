@@ -65,7 +65,8 @@
                         :input-value="selected"
                         color="primary"
                         class="white--text"
-                        clearable
+                        close
+                        @click:close="removeUser(item)"
                         v-on="on"
                       ><span v-text="item.username"></span></v-chip>
                     </template>
@@ -76,6 +77,7 @@
                       </v-list-item-content>
                     </template>
                   </v-autocomplete>
+                  {{ newMail.receiver }}
                   <v-text-field 
                     label="Title" 
                     counter="32" 
@@ -117,7 +119,7 @@
       </v-card>
     </v-col>
     <!-- Side Bar End -->
-    <!-- Middle Area -->
+    <!-- Middle Area --> 
     <v-col cols="12" md="3" style="height: 100%; overflow-y: hidden;">
       <!-- Mobile: Display Mail Begin -->
       <v-slide-x-reverse-transition>
@@ -148,13 +150,6 @@
             <v-divider></v-divider>
             <!-- why icon??? -->
             <v-card-text>
-              <!-- <v-list-item v-if="displayMail === -1">
-                <v-list-item-content>
-                  <v-icon size="200" color="grey">mdi-email-outline</v-icon>
-                  <v-list-item-subtitle class="text-center display-1">Empty</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item v-else> -->
               <v-list-item>
                 <v-list-item-content class="ma-3" v-if="mailRender">
                   <v-list-item-title class="headline">Subject: {{mail[displayFolder][displayMail].title}}</v-list-item-title>
@@ -164,13 +159,6 @@
               </v-list-item>
             </v-card-text>
           </v-card>
-          <!-- <v-divider></v-divider> -->
-          <!-- <v-card tile elevation="0" height="5%">
-            <v-list-item v-if="displayMail === -1"></v-list-item>
-            <v-list-item v-else>
-              <v-list-item-subtitle>Attachment</v-list-item-subtitle>
-            </v-list-item>
-          </v-card>-->
         </v-card>
       </v-slide-x-reverse-transition>
       <!-- Mobile: Display Mail End -->
@@ -324,13 +312,6 @@
             </v-list-item-content>
           </v-list-item>
         </v-card-text>
-        <!-- <v-divider></v-divider> -->
-        <!-- <v-card tile elevation="0" height="10%">
-          <v-list-item v-if="displayMail === -1"></v-list-item>
-          <v-list-item v-else>
-            <v-list-item-subtitle>Attachment</v-list-item-subtitle>
-          </v-list-item>
-        </v-card> -->
       </v-card>
     </v-col>
     <!-- Display Mail End -->
@@ -381,7 +362,6 @@ export default {
       searchMail: '',
       courseList: [],
       userList: [],
-      disableSearch: false,
       userSearchValue: '',
       selectedCourse: 'Select Course',
       toShow: false,
@@ -582,9 +562,17 @@ export default {
       this.userSearchValue = '';
       // console.log(this.newMail.receiver)
       if ( this.newMail.receiver.indexOf('Select All') >= 0 ) {
-        this.newMail.receiver = this.userList;
-        this.newMail.receiver.splice(0, 1);
+        this.newMail.receiver = this.userList.slice();
+        this.newMail.receiver.shift();
       }
+      console.dir('recei:',this.newMail.receiver);
+      console.dir('userL:',this.userList);
+      // if ( this.newMail.receiver.length < this.userList-1 &&  )
+    },
+    removeUser(item) {
+      this.newMail.receiver.splice(this.newMail.receiver.indexOf(item),1);
+      console.dir('recei:',this.newMail.receiver);
+      console.dir('userL:',this.userList);
     }
   },
 }
