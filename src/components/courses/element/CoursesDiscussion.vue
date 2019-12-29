@@ -21,11 +21,11 @@
           class="text-none subtitle-1"
           text
           outlined
-          @click="showComments = !showComments"
+          @click="pushNewComment(i,-1)"
         >Comment</v-btn>
       </v-card-actions>
       <v-divider></v-divider>
-      <v-list two-line expand class="pa-0" v-if="showComments">
+      <v-list two-line expand class="pa-0" dense>
         <!-- Comments With Subcomment -->
         <v-list-group
           v-for="(msg, j) in item.comment"
@@ -36,9 +36,9 @@
         >
           <template v-slot:activator> 
             <v-col cols="1" class="pa-0">
-              <v-avatar class="ml-1">
+              <v-list-item-avatar class="ml-1">
                 <v-img :src="msg.avatar"></v-img>
-              </v-avatar>
+              </v-list-item-avatar>
               <v-list-item-title class="font-weight-medium text-center">{{msg.name}}</v-list-item-title>
             </v-col>
             <!-- Edit Message -->
@@ -46,12 +46,14 @@
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,-1)"
-                  @blur="msg.editComment = false"
+                  @blur="checkTrim(msg.message) ? msg.editComment = false : deleteComment(item.comment,j)"
                   v-model="msg.message"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
+                  :label="msg.message == '' ? 'Write some comment...' : ''"
+                  :rules="[commentRules.required]"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
@@ -72,7 +74,7 @@
                   <v-list-item
                     v-for="(item, idx) in commentMenu"
                     :key="idx"
-                    @click="optionMenu(idx, i, j)"
+                    @click="optionMenu(idx,i,j,-1)"
                   >
                     <v-list-item-title>{{item}}</v-list-item-title>
                   </v-list-item>
@@ -86,9 +88,9 @@
             :key="k"
           >
             <v-col cols="1" class="pa-0">
-              <v-avatar class="ml-1">
+              <v-list-item-avatar class="ml-1">
                 <v-img :src="submsg.avatar"></v-img>
-              </v-avatar>
+              </v-list-item-avatar>
               <v-list-item-title class="font-weight-medium text-center">{{submsg.name}}</v-list-item-title>
             </v-col>
             <!-- Edit SubMessage -->
@@ -96,12 +98,14 @@
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,k)"
-                  @blur="submsg.editComment = false"
+                  @blur="checkTrim(submsg.message) ? submsg.editComment = false : deleteComment(msg.subcomment,k)"
                   v-model="submsg.message"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
+                  :label="submsg.message == '' ? 'Write some comment...' : ''"
+                  :rules="[commentRules.required]"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
@@ -123,7 +127,8 @@
                   <v-list-item
                     v-for="(item, idx) in commentMenu"
                     :key="idx"
-                    @click="submsg.editComment = true"
+                    @click="optionMenu(idx,i,j,k)"
+                    v-if="idx != 0"
                   >
                     <v-list-item-title>{{item}}</v-list-item-title>
                   </v-list-item>
@@ -135,9 +140,9 @@
         <!-- Comments Without Subcomment -->
         <v-list-item v-else class="pt-1">
           <v-col cols="1" class="pa-0">
-            <v-avatar class="ml-1">
+            <v-list-item-avatar class="ml-1">
               <v-img :src="msg.avatar"></v-img>
-            </v-avatar>
+            </v-list-item-avatar>
             <v-list-item-title class="font-weight-medium text-center">{{msg.name}}</v-list-item-title>
           </v-col>
           <!-- Edit Message -->
@@ -145,12 +150,14 @@
             <v-list-item-content class="py-0">
               <v-textarea
                 @keydown="inputHandler($event,i,j,-1)"
-                @blur="msg.editComment = false"
+                @blur="checkTrim(msg.message) ? msg.editComment = false : deleteComment(item.comment,j)"
                 v-model="msg.message"
                 no-resize
                 auto-grow
                 rows="1"
                 autofocus
+                :label="msg.message == '' ? 'Write some comment...' : ''"
+                :rules="[commentRules.required]"
               ></v-textarea>
             </v-list-item-content>
           </v-col>
@@ -171,33 +178,12 @@
                 <v-list-item
                   v-for="(item, idx) in commentMenu"
                   :key="idx"
-                  @click="optionMenu(idx, i, j)"
+                  @click="optionMenu(idx,i,j,-1)"
                 >
                   <v-list-item-title>{{item}}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
-          </v-col>
-        </v-list-item>
-        <v-list-item>
-          <v-col cols="1" class="pa-0">
-            <v-avatar class="ml-1">
-              <v-img :src="require('@/assets/defaultAvatar.png')"></v-img>
-            </v-avatar>
-          </v-col>
-          <!-- Edit Message -->
-          <v-col cols="10" class="pl-2">
-            <v-list-item-content class="py-0">
-              <v-textarea
-                @keydown="inputHandler($event,i,-1,-1)"
-                v-model="newComment"
-                no-resize
-                auto-grow
-                rows="1"
-                autofocus
-                label="Write some comment..."
-              ></v-textarea>
-            </v-list-item-content>
           </v-col>
         </v-list-item>
       </v-list>
@@ -217,14 +203,14 @@ export default {
 
   data () {
     return {
-      newComment: '',
-      newSubComment: '',
-      showComments: false,
       commentMenu: [
         'reply',
         'edit',
         'delete',
       ],
+      commentRules: {
+        required: v => !!v || 'The message will be delete if the field is blank'
+      },
       post: [
         {
           title: 'Want to eat something...',
@@ -304,21 +290,44 @@ export default {
     }
   },
   methods: {
+    checkTrim(str) {
+      if(str.trim()) return true
+      else return false
+    },
+    deleteComment(arr,idx) {
+      arr.splice(idx,1)
+    },
     inputHandler(e,i,j,k) {
       if (e.keyCode === 13) {
         if(!e.shiftKey) {
-          if(j === -1) {
-            this.post[i].comment.push({'avatar': '', 'name': 'fuji', 'message': this.newComment, 'subcomment': [], 'editComment': false})
-            this.newComment = ''
+          if(k !== -1) {
+            console.log(this.post[i].comment[j].subcomment[k].message.trim())
+            if(!this.post[i].comment[j].subcomment[k].message.trim())
+              this.deleteComment(this.post[i].comment[j].subcomment,k)
+            else this.post[i].comment[j].subcomment[k].editComment = false
           }
-          else if(k !== -1) this.post[i].comment[j].subcomment[k].editComment = false;
-          else this.post[i].comment[j].editComment = false;
+          else {
+            if(!this.post[i].comment[j].message.trim()) this.deleteComment(this.post[i].comment,j)
+            else this.post[i].comment[j].editComment = false
+          }
           // this.editComment()
         }
       }
     },
-    optionMenu(idx,i,j) {
-      if(idx === 1) this.post[i].comment[j].editComment = true
+    optionMenu(idx,i,j,k) {
+      if(k === -1) {
+        if(idx === 0) this.pushNewComment(i,j)
+        else if(idx === 1) this.post[i].comment[j].editComment = true
+        else this.deleteComment(this.post[i].comment,j)
+      }
+      else {
+        if(idx === 1) this.post[i].comment[j].subcomment[k].editComment = true
+        else this.deleteComment(this.post[i].comment[j].subcomment,k)
+      }
+    },
+    pushNewComment(i,j) {
+      if(j === -1) this.post[i].comment.push({'avatar': '', 'name': 'fuji', 'message': '', 'subcomment': [], 'editComment': true})
+      else this.post[i].comment[j].subcomment.push({'avatar': '', 'name': 'fuji', 'message': '', 'subcomment': [], 'editComment': true})
     }
   }
 }
