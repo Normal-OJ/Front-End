@@ -87,6 +87,7 @@ export default {
       dialog: false,
       diaTitle: '',
       diaText: '',
+      diaIdx: null,
       email: null,
       text: ['verify that account by sending email.', 'send email to recovery your password.'],
       items: [
@@ -107,6 +108,7 @@ export default {
       this.diaTitle = this.items[idx].title;
       this.diaText = `Please enter Email address which you registered with, we\'ll ${this.text[idx]}`;
       this.dialog = true;
+      this.diaIdx = idx;
     },
     submit() {
       if ( this.$refs.form.validate() ) {
@@ -116,7 +118,15 @@ export default {
               this.errMsg = ['Sorry, we couldn\'t find any account with this E-mail.'];
               this.errAlert = true;
             } else {
-              // do something
+              this.$http.post(`/api/auth/${this.diaIdx ? 'password-recovery' : 'resend-email'}`, {'email': this.email})
+                .then(res => {
+                  // Nothing to do
+                  console.log(res.data);
+                })
+                .catch(err => {
+                  // Something to do
+                  console.log(err.response.data);
+                })
               this.show = false;
             }
           })
