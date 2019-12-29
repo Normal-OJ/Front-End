@@ -4,15 +4,18 @@
       class="my-6 flex-column d-flex"
       elevation="6"
       width="50vw"
-      v-for="(item, i) in post"
+      v-for="(item, i) in posts"
       :key="i"
     >
       <v-card-subtitle>
-        Posted by <a>{{ item.author }}</a>, {{ item.createdTime }}.<br>
+        Postsed by <a>{{ item.author }}</a>, {{ item.createdTime }}.<br>
           <i>Last update on {{ item.lastUpdatedTime }}.</i>
       </v-card-subtitle>
-      <v-card-title class="headline ma-1">
+      <v-card-title class="headline ma-1 py-0">
         <vue-markdown>{{item.title}}</vue-markdown>
+      </v-card-title>
+      <v-card-title class="my-1 py-0 px-6">
+        <vue-markdown>{{item.content}}</vue-markdown>
       </v-card-title>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -42,11 +45,11 @@
               <v-list-item-title class="font-weight-medium text-center">{{msg.name}}</v-list-item-title>
             </v-col>
             <!-- Edit Message -->
-            <v-col cols="10" class="pl-2" v-if="msg.editComment == true">
+            <v-col cols="10" class="pl-2" v-if="msg.editing == true">
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,-1)"
-                  @blur="checkTrim(msg.message) ? msg.editComment = false : deleteComment(item.comment,j)"
+                  @blur="checkTrim(msg.message) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
                   v-model="msg.message"
                   no-resize
                   auto-grow
@@ -57,6 +60,7 @@
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
+            <!-- Show Message -->
             <v-col cols="10" class="pl-2" v-else>
               <v-list-item-content class="py-0">
                 <vue-markdown>{{msg.message}}</vue-markdown>
@@ -94,11 +98,11 @@
               <v-list-item-title class="font-weight-medium text-center">{{submsg.name}}</v-list-item-title>
             </v-col>
             <!-- Edit SubMessage -->
-            <v-col cols="10" class="pl-2" v-if="submsg.editComment == true">
+            <v-col cols="10" class="pl-2" v-if="submsg.editing == true">
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,k)"
-                  @blur="checkTrim(submsg.message) ? submsg.editComment = false : deleteComment(msg.subcomment,k)"
+                  @blur="checkTrim(submsg.message) ? edit(submsg.id,i,j,k) : deletemsg(submsg.id)"
                   v-model="submsg.message"
                   no-resize
                   auto-grow
@@ -109,7 +113,7 @@
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
-            <!-- SubMessage -->
+            <!-- Show SubMessage -->
             <v-col cols="10" class="pl-2" v-else>
               <v-list-item-content class="py-0">
                 <vue-markdown>{{submsg.message}}</vue-markdown>
@@ -146,11 +150,11 @@
             <v-list-item-title class="font-weight-medium text-center">{{msg.name}}</v-list-item-title>
           </v-col>
           <!-- Edit Message -->
-          <v-col cols="10" class="pl-2" v-if="msg.editComment == true">
+          <v-col cols="10" class="pl-2" v-if="msg.editing == true">
             <v-list-item-content class="py-0">
               <v-textarea
                 @keydown="inputHandler($event,i,j,-1)"
-                @blur="checkTrim(msg.message) ? msg.editComment = false : deleteComment(item.comment,j)"
+                @blur="checkTrim(msg.message) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
                 v-model="msg.message"
                 no-resize
                 auto-grow
@@ -161,6 +165,7 @@
               ></v-textarea>
             </v-list-item-content>
           </v-col>
+          <!-- Show Message -->
           <v-col cols="10" class="pl-2" v-else>
             <v-list-item-content class="py-0">
               <vue-markdown>{{msg.message}}</vue-markdown>
@@ -188,11 +193,55 @@
         </v-list-item>
       </v-list>
     </v-card>
+    <!-- New Post Form -->
+    <v-dialog v-model="postDialog" :width="this.$vuetify.breakpoint.mdAndUp ? '80%' : '100%'" persistent>
+      <template v-slot:activator="{ on }">
+        <v-btn right bottom fixed color="primary" fab v-on="on">
+          <v-icon large>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+      <v-card>
+        <v-toolbar color="primary" dark dense>
+          <div class="subtitle-1">New Post</div>
+          <v-spacer></v-spacer>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn tile icon @click="cancelDialog()" v-on="on"><v-icon>mdi-close</v-icon></v-btn>
+            </template>
+            <span>close</span>
+          </v-tooltip>
+        </v-toolbar>
+        <v-card-text class="mt-2">
+          <v-form>
+            <v-text-field
+              label="Title"
+              counter="64" 
+              :rules="[v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters']" 
+              v-model="newPost.title">
+            </v-text-field>
+            <v-textarea 
+              label="Post Content" 
+              :rules="[v => !!v || 'Sorry, the post content cannot be empty']"
+              v-model="newPost.content"
+              no-resize
+              auto-grow
+            ></v-textarea>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn outlined color="secondary" @click="cancelDialog()">cancel</v-btn>
+          <v-btn dark color="primary" @click="post()">post</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
 <script>
 import VueMarkdown from 'vue-markdown'
+const API_BASE_URL = '/api';
+
 export default {
 
   name: 'CoursesDiscussion',
@@ -203,6 +252,11 @@ export default {
 
   data () {
     return {
+      postDialog: false,
+      newPost: {
+        'content': '',
+        'title': ''
+      },
       commentMenu: [
         'reply',
         'edit',
@@ -211,37 +265,38 @@ export default {
       commentRules: {
         required: v => !!v || 'The message will be delete if the field is blank'
       },
-      post: [
+      posts: [
         {
           title: 'Want to eat something...',
+          content: 'kkk',
           author: 'fuji',
           createdTime: '2019/12/10 13:59',
           lastUpdatedTime: '2019/12/24 21:21',
-          editComment: false,
+          editing: false,
           comment: [
             {
               avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
               name: '七大卡',
               message: '~~7 kcal~~',
-              editComment: false,
+              editing: false,
               subcomment: [
                 {
                   avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
                   name: '八卡',
                   message: '8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal ',
-                  editComment: false,
+                  editing: false,
                 },
                 {
                   avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
                   name: 'fuji',
                   message: '-43',
-                  editComment: false,
+                  editing: false,
                 },
                 {
                   avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
                   name: '九大卡',
                   message: '9 kcal',
-                  editComment: false,
+                  editing: false,
                 },
               ]
             },
@@ -251,7 +306,7 @@ export default {
               message: 'fujiwara',
               subcomment: [
               ],
-              editComment: false,
+              editing: false,
             },
             {
               avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
@@ -262,10 +317,10 @@ export default {
                   avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
                   name: '九大卡',
                   message: '9 kcal',
-                  editComment: false,
+                  editing: false,
                 },
               ],
-              editComment: false,
+              editing: false,
             },
             {
               avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
@@ -273,61 +328,139 @@ export default {
               message: 'chika',
               subcomment: [
               ],
-              editComment: false,
+              editing: false,
             },
           ]
         },
         {
           title: '**test** *test*',
+          content: '- rrr',
           author: 'jkdf',
           createdTime: '2019/12/10 04:00',
           lastUpdatedTime: '2019/12/24 21:21',
-          editComment: false,
+          editing: false,
           comment: [
           ]
         }
       ],
     }
   },
+  beforeMount() {
+    this.init();
+  },
   methods: {
+    init() {
+      // this.posts = [];
+      this.getPosts();
+    },
+    timeFormat(time) {
+      var tmp = new Date(time * 1000);
+      var year = tmp.getFullYear();
+      var month = '0' + (tmp.getMonth()+1);
+      var date = '0' + tmp.getDate();
+      var hour = '0' + tmp.getHours();
+      var min = '0' + tmp.getMinutes();
+      var sec = '0' + tmp.getSeconds();
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
+      return time;
+    },
+    getPosts() {
+      this.$http.get(`${API_BASE_URL}/post/${this.$route.params.name}`)
+        .then((res) => {
+          console.log(res)
+          res.data.data.forEach(ele => {
+            this.posts.push({
+              'title': ele.title,
+              'thread': [],
+            });
+          })
+          this.init()
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    post() {
+      this.$http.post(`${API_BASE_URL}/post`, {'course': this.$route.params.name, 'title': this.newPost.title, 'content': this.newPost.content, 'target_thread_id': undefined})
+        .then((res) => {
+          this.cancelDialog()
+          this.init()
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    reply(threadId) {
+      this.$http.post(`${API_BASE_URL}/post`, {'course': undefined, 'title': this.newPost.title, 'content': this.newPost.content, 'target_thread_id': threadId})
+        .then((res) => {
+          this.init()
+          // console.log(err);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    edit(threadId,i,j,k) {
+      this.$http.put(`${API_BASE_URL}/post`, {'course': undefined, 'title': this.newPost.title, 'content':this.newPost.content, 'target_thread_id': threadId})
+        .then((res) => {
+          this.init()
+          if(k === -1) this.posts[i].comment[j].editing = false
+          else this.posts[i].comment[j].subcomment[k].editing = false
+          // console.log(err);
+        })
+        .catch((err) => {
+          // console.log(err);
+        });
+    },
+    deletemsg(threadId) {
+      this.$http.delete(`${API_BASE_URL}/post`, {'course': undefined, 'title': this.newPost.title, 'content': this.newPost.content, 'target_thread_id': threadId})
+        .then((res) => {
+          this.init()
+          // console.log(err);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    cancelDialog() {
+      this.newPost.title = ''
+      this.newPost.content = ''
+      this.postDialog = false
+    },
     checkTrim(str) {
       if(str.trim()) return true
       else return false
-    },
-    deleteComment(arr,idx) {
-      arr.splice(idx,1)
     },
     inputHandler(e,i,j,k) {
       if (e.keyCode === 13) {
         if(!e.shiftKey) {
           if(k !== -1) {
-            console.log(this.post[i].comment[j].subcomment[k].message.trim())
-            if(!this.post[i].comment[j].subcomment[k].message.trim())
-              this.deleteComment(this.post[i].comment[j].subcomment,k)
-            else this.post[i].comment[j].subcomment[k].editComment = false
+            if(!this.posts[i].comment[j].subcomment[k].message.trim())
+              this.deletemsg(this.posts[i].comment[j].subcomment[k].id)
+            else edit(this.posts[i].comment[j].subcomment[k].id,i,j,k)
           }
           else {
-            if(!this.post[i].comment[j].message.trim()) this.deleteComment(this.post[i].comment,j)
-            else this.post[i].comment[j].editComment = false
+            if(!this.posts[i].comment[j].message.trim())
+              this.deletemsg(this.posts[i].comment[j].id)
+            else edit(this.posts[i].comment[j].editing.id,i,j,k)
           }
-          // this.editComment()
         }
       }
     },
     optionMenu(idx,i,j,k) {
       if(k === -1) {
         if(idx === 0) this.pushNewComment(i,j)
-        else if(idx === 1) this.post[i].comment[j].editComment = true
-        else this.deleteComment(this.post[i].comment,j)
+        else if(idx === 1) this.posts[i].comment[j].editing = true
+        else this.deletemsg(this.posts[i].comment[j].id)
       }
       else {
-        if(idx === 1) this.post[i].comment[j].subcomment[k].editComment = true
-        else this.deleteComment(this.post[i].comment[j].subcomment,k)
+        if(idx === 1) this.posts[i].comment[j].subcomment[k].editing = true
+        else this.deletemsg(this.posts[i].comment[j].subcomment[k].id)
       }
     },
     pushNewComment(i,j) {
-      if(j === -1) this.post[i].comment.push({'avatar': '', 'name': 'fuji', 'message': '', 'subcomment': [], 'editComment': true})
-      else this.post[i].comment[j].subcomment.push({'avatar': '', 'name': 'fuji', 'message': '', 'subcomment': [], 'editComment': true})
+      if(j === -1) this.reply(posts[i].id)
+      else this.reply(this.posts[i].comment[j].id)
     }
   }
 }
