@@ -129,7 +129,7 @@ export default {
             .then((res) => {
               console.log(res);
               console.log('submissionId:'+ submissionId);
-              this.$emit('getSubmission', submissionId);
+              this.$emit('getSubmission');
             })
             .catch((err) => {
               console.log(err);
