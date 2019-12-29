@@ -2,7 +2,7 @@
   <v-container fuild>
     <v-row justify="center" align="center">
       <v-col cols="12">
-        <v-row justify="center" class="px-3">
+        <v-row justify="center" class="px-3 my-12">
           <h2>Hi, how can we help you?</h2>
         </v-row>
         <v-row justify="center">
@@ -11,11 +11,11 @@
             :key="idx"
           >
             <v-hover v-slot:default="{ hover }">
-              <v-card :elevation="hover ? 12 : 2" class="ma-auto" height="200" width="400" @click="open(idx)" style="cursor: pointer;" ripple>
-                <v-card-subtitle class="display-1" style="text-align: center; color: black;">{{ item.title }}</v-card-subtitle>
-                <!-- <v-row justify="center" align="center"><h3>{{ item.title }}</h3></v-row> -->
-                <v-card-subtitle class="title" style="text-align: center;">{{ item.text[0] }}<br>{{ item.text[1] }}</v-card-subtitle>
-                <!-- <v-row justify="center" align="center"><h6>{{ item.text[0] }}<br>{{ item.text[1] }}</h6></v-row> -->
+              <v-card :elevation="hover ? 12 : 2" class="ma-auto" height="40vh" :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '70vw'" @click="open(idx)" style="cursor: pointer;" ripple>
+                <v-col align="center">
+                  <v-card-subtitle class="display-1" style="text-align: center; color: black;">{{ item.title }}</v-card-subtitle>
+                  <v-card-subtitle class="title" style="text-align: center;">{{ item.text[0] }}<br>{{ item.text[1] }}</v-card-subtitle>
+                </v-col>
               </v-card>
             </v-hover>
           </v-col>
@@ -39,9 +39,9 @@
                   type="error"
                   transition="scroll-y-transition"
                 ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
-                <p>{{ diaText }}</p>
-                <v-row class="my-3" justify="center">
-                  <v-form v-model="form" ref="form">
+                <p class="my-3">{{ diaText }}</p>
+                <v-row class="mt-6" justify="center">
+                  <v-form v-model="form" ref="form" lazy-validation>
                     <v-text-field
                       class="title"
                       label="Email address"
@@ -52,7 +52,7 @@
                     ></v-text-field>
                   </v-form>
                 </v-row>
-                <v-row class="my-3" justify="center">
+                <v-row class="mb-3" justify="center">
                   <v-btn
                     class="title text-none"
                     color="primary"
@@ -107,6 +107,7 @@ export default {
       this.diaTitle = this.items[idx].title;
       this.diaText = `Please enter Email address which you registered with, we\'ll ${this.text[idx]}`;
       this.dialog = true;
+      this.$refs.form.reset();
     },
     submit() {
       if ( this.$refs.form.validate() ) {

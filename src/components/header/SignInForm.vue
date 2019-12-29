@@ -76,6 +76,10 @@ export default {
     }
   },
 
+  beforeMount() {
+    this.$refs.form.reset();
+  },
+
   mounted () {
     this.$nextTick(() => {
       this.$refs.username.focus();
