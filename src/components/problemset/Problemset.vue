@@ -6,7 +6,44 @@
     <v-data-table
       :headers="headers"
       :items="items"
+      :sort-by="['problemId']"
+      :sort-desc="[false]"
     >
+
+      <template v-slot:item.problemName="{item}">
+        <a :href="item.link" title="Click to view the problem.">
+          {{item.problemName}}
+        </a>
+      </template>
+
+      <template v-slot:item.acRate="{item}">
+        <v-progress-circular
+          color="green"
+          :rotate="-90"
+          :value="item.acRate"
+        >
+          <span class="caption" style="color: black">
+            {{item.acRate}}
+          </span>
+        </v-progress-circular>
+      </template>
+
+      <template v-slot:item.tags="{item}">
+        <v-chip-group
+          :column="true"
+        >
+          <v-chip v-for="tag in item.tags" :key="tag"
+            color="secondary"
+            :label="true"
+            :outlined="true"
+            :ripple="false"
+            x-small
+          >
+            {{tag}}
+          </v-chip>
+        </v-chip-group>
+      </template>
+
     </v-data-table>
   </v-card>
 </template>
@@ -32,13 +69,18 @@ export default {
           // sort?: (a: any, b: any) => number
         },
         {
+          text: 'Title',
+          value: 'problemName',
+          align: 'left'
+        },
+        {
           text: 'Type',
           value: 'type',
           align: 'left'
         },
         {
-          text: 'Title',
-          value: 'problemName',
+          text: 'tags',
+          value: 'tags',
           align: 'left'
         },
         {
@@ -79,16 +121,21 @@ export default {
           console.log(err);
         })
     },
+
     transformProblems(problems) {
       const items = [];
       problems.forEach(problem => {
         items.push({
           ...problem,
+          type: problem.type == 0 ? 'Normal' : 'Fill-in-the-blank',
           acRate: `${Math.round(problem.ACUser / problem.submitter * 100)}%`,
-          activity: `${problem.ACUser}/${problem.submitter}`});
+          activity: `${problem.ACUser}/${problem.submitter}`,
+          link: `/problem/${problem.problemId}`
+        });
       });
       return items;
     },
+
     getFakeProblems() {
       return [{
         problemId: '0087',
@@ -100,10 +147,10 @@ export default {
       },
       {
         problemId: '0070',
-        type: 0,
+        type: 1,
         problemName: 'Forest',
         tags: ['DP', 'bonus'],
-        ACUser: 2,
+        ACUser: 7,
         submitter: 60
       }];
     }
