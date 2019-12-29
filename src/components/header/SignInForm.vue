@@ -48,7 +48,14 @@
       text
       x-small
       @click="emailResend"
-    ><u>haven't verify your mail?</u></v-btn>
+    ><u>Haven't Verify Email?</u></v-btn>
+    <v-btn
+      class="text-none subtitle-1 mx-2"
+      color="primary"
+      text
+      x-small
+      @click="emailResend"
+    ><u>Forget Password?</u></v-btn>
 
   </v-form>
 </template>

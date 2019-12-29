@@ -48,7 +48,6 @@
                       outlined
                       v-model="email"
                       :rules="rule"
-                      @keyup.enter="submit"
                     ></v-text-field>
                   </v-form>
                 </v-row>
@@ -100,6 +99,12 @@ export default {
       ],
       errAlert: false,
       errMsg: null,
+    }
+  },
+
+  beforeMount() {
+    if ( this.$cookies.isKey('jwt') ) {
+      this.$router.push('/');
     }
   },
 
