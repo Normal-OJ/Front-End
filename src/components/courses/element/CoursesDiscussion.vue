@@ -10,7 +10,7 @@
       <v-card-subtitle>
         Postsed by <a>{{ item.author }}</a>, {{ item.created }}.<br>
           <i>Last update on {{ item.updated }}.</i>
-          <v-btn icon right bottom @click="deletemsg(item.id)"><v-icon>mdi-delete</v-icon></v-btn>
+          <v-btn icon right bottom @click="deletemsg(i,-1,-1)"><v-icon>mdi-delete</v-icon></v-btn>
       </v-card-subtitle>
       <v-card-title class="headline ma-1 py-0">
         <vue-markdown>{{item.title}}</vue-markdown>
@@ -25,15 +25,15 @@
           class="text-none subtitle-1"
           text
           outlined
-          @click="reply(i)"
+          @click="pushNewReply(i,-1)"
         >Comment</v-btn>
       </v-card-actions>
       <v-divider></v-divider>
       <v-list two-line expand class="pa-0" dense>
         <!-- Comments With Subcomment -->
         <v-list-group
-          v-for="(msg, j) in item.comment"
-          v-if="msg.subcomment.length !== 0"
+          v-for="(msg, j) in item.reply"
+          v-if="msg.reply.length !== 0"
           :key="j"
           no-action
           class="pt-1"
@@ -43,21 +43,21 @@
               <v-list-item-avatar class="ml-1">
                 <v-img :src="msg.avatar"></v-img>
               </v-list-item-avatar>
-              <v-list-item-title class="font-weight-medium text-center">{{msg.name}}</v-list-item-title>
+              <v-list-item-title class="font-weight-medium text-center">{{msg.author}}</v-list-item-title>
             </v-col>
             <!-- Edit Message -->
             <v-col cols="10" class="pl-2" v-if="msg.editing == true">
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,-1)"
-                  @blur="checkTrim(msg.content) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
+                  @blur="checkTrim(msg.content) ? edit(i,j,-1) : deletemsg(i,j,-1)"
                   v-model="msg.content"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
                   :label="msg.content == '' ? 'Write some comment...' : ''"
-                  :rules="[commentRules.required]"
+                  :rules="[v => !!v || 'The message will be delete if the field is blank']"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
@@ -96,21 +96,21 @@
               <v-list-item-avatar class="ml-1">
                 <v-img :src="submsg.avatar"></v-img>
               </v-list-item-avatar>
-              <v-list-item-title class="font-weight-medium text-center">{{submsg.name}}</v-list-item-title>
+              <v-list-item-title class="font-weight-medium text-center">{{submsg.author}}</v-list-item-title>
             </v-col>
             <!-- Edit Submessage -->
             <v-col cols="10" class="pl-2" v-if="submsg.editing == true">
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,k)"
-                  @blur="checkTrim(submsg.content) ? edit(submsg.id,i,j,k) : deletemsg(submsg.id)"
+                  @blur="checkTrim(submsg.content) ? edit(i,j,k) : deletemsg(i,j,k)"
                   v-model="submsg.content"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
                   :label="submsg.content == '' ? 'Write some comment...' : ''"
-                  :rules="[commentRules.required]"
+                  :rules="[v => !!v || 'The message will be delete if the field is blank']"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
@@ -148,21 +148,21 @@
             <v-list-item-avatar class="ml-1">
               <v-img :src="msg.avatar"></v-img>
             </v-list-item-avatar>
-            <v-list-item-title class="font-weight-medium text-center">{{msg.name}}</v-list-item-title>
+            <v-list-item-title class="font-weight-medium text-center">{{msg.author}}</v-list-item-title>
           </v-col>
           <!-- Edit Message -->
           <v-col cols="10" class="pl-2" v-if="msg.editing == true">
             <v-list-item-content class="py-0">
               <v-textarea
                 @keydown="inputHandler($event,i,j,-1)"
-                @blur="checkTrim(msg.content) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
+                @blur="checkTrim(msg.content) ? edit(i,j,-1) : deletemsg(i,j,-1)"
                 v-model="msg.content"
                 no-resize
                 auto-grow
                 rows="1"
                 autofocus
                 :label="msg.content == '' ? 'Write some comment...' : ''"
-                :rules="[commentRules.required]"
+                :rules="[v => !!v || 'The message will be delete if the field is blank']"
               ></v-textarea>
             </v-list-item-content>
           </v-col>
@@ -213,17 +213,17 @@
           </v-tooltip>
         </v-toolbar>
         <v-card-text class="mt-2">
-          <v-form>
+          <v-form v-model="validForm" ref="form">
             <v-text-field
               label="Title"
               counter="64" 
               :rules="[v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters']" 
-              v-model="newPost.title">
+              v-model="target.title">
             </v-text-field>
             <v-textarea 
               label="Post Content" 
               :rules="[v => !!v || 'Sorry, the post content cannot be empty']"
-              v-model="newPost.content"
+              v-model="target.content"
               no-resize
               auto-grow
             ></v-textarea>
@@ -254,9 +254,11 @@ export default {
   data () {
     return {
       postDialog: false,
-      newPost: {
+      validForm: false,
+      target: {
+        'title': '',
         'content': '',
-        'title': ''
+        'targetThreadId': ''
       },
       commentMenu: [
         'reply',
@@ -266,9 +268,7 @@ export default {
       commentRules: {
         required: v => !!v || 'The message will be delete if the field is blank'
       },
-      posts: [
-      ],
-      id: '5e09e5419d06607b2fca2b5d',
+      posts: [],
     }
   },
   beforeMount() {
@@ -277,6 +277,7 @@ export default {
   methods: {
     init() {
       this.posts = [];
+      this.target = {'title': '', 'content': '', 'targetThreadId': ''};
       this.getPosts();
     },
     timeFormat(time) {
@@ -293,8 +294,11 @@ export default {
     getPosts() {
       this.$http.get(`${API_BASE_URL}/post/${this.$route.params.name}`)
         .then((res) => {
-          console.log(res)
           res.data.data.forEach(ele => {
+            ele.thread.reply.forEach(rpl => {
+              rpl.created = this.timeFormat(rpl.created);
+              rpl.updated = this.timeFormat(rpl.updated);
+            })
             this.posts.push({
               'id': ele.thread.id,
               'title': ele.title,
@@ -303,51 +307,74 @@ export default {
               'created': this.timeFormat(ele.thread.created),
               'updated': this.timeFormat(ele.thread.updated),
               'reply': ele.thread.reply,
+              'editing': false
             });
           })
         })
         .catch((err) => {
           console.log(err);
         });
-        console.log(this.posts);
     },
     post() {
-      this.$http.post(`${API_BASE_URL}/post`, {'course': this.$route.params.name, 'title': this.newPost.title, 'content': this.newPost.content})
+      if(this.$refs.form.validate()) {
+        this.$http.post(`${API_BASE_URL}/post`, {'course': this.$route.params.name, 'title': this.target.title, 'content': this.target.content})
+          .then((res) => {
+            this.cancelDialog()
+            this.init()
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    },
+    setTarget(i,j,k) {
+      if(k !== -1){
+        this.target.title = ''
+        this.target.content = this.posts[i].reply[j].reply[k].content
+        this.target.targetThreadId = this.posts[i].reply[j].reply[k].id
+      }
+      else if(j !== -1){
+        this.target.title = ''
+        this.target.content = this.posts[i].reply[j].content
+        this.target.targetThreadId = this.posts[i].reply[j].id
+      }
+      else{
+        this.target.title = this.posts[i].title
+        this.target.content = this.posts[i].content
+        this.target.targetThreadId = this.posts[i].id
+      }
+    },
+    reply(i,j,k) {
+      this.setTarget(i,j,-1);
+      if(k !== -1) this.target.content = this.posts[i].reply[j].reply[k].content
+      else this.target.targetThreadId = this.posts[i].id
+      this.$http.post(`${API_BASE_URL}/post`, this.target)
         .then((res) => {
-          this.cancelDialog()
           this.init()
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    reply(threadId) {
-      console.log(threadId);
-      this.$http.post(`${API_BASE_URL}/post`, {'content': this.newPost.content, 'target_thread_id': threadId})
-        .then((res) => {
-          this.init()
-          // console.log(err);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    pushNewReply(i,j) {
+      if(j === -1) this.posts[i].reply.push({'reply': [], 'content': '', 'editing': true})
+      else this.posts[i].reply[j].reply.push({'content': '', 'editing': true})
     },
-    edit(threadId,i,j,k) {
-      this.$http.put(`${API_BASE_URL}/post`, {'title': this.newPost.title, 'content':this.newPost.content, 'target_thread_id': threadId})
+    edit(i,j,k) {
+      this.setTarget(i,j,k);
+      if(k === -1) this.posts[i].reply[j].editing = false
+      else this.posts[i].reply[j].reply[k].editing = false
+      this.$http.put(`${API_BASE_URL}/post`, this.target)
         .then((res) => {
-          this.init()
-          if(k === -1) this.posts[i].reply[j].editing = false
-          else this.posts[i].reply[j].reply[k].editing = false
           // console.log(res);
         })
         .catch((err) => {
           // console.log(err);
         });
     },
-    deletemsg(threadId) {
-      console.log(threadId);
-      console.log(threadId);
-      this.$http.delete(`${API_BASE_URL}/post`, {'target_thread_id': threadId})
+    deletemsg(i,j,k) {
+      this.setTarget(i,j,k);
+      this.$http.delete(`${API_BASE_URL}/post`, this.target)
         .then((res) => {
           this.init()
           // console.log(res);
@@ -357,8 +384,8 @@ export default {
         });
     },
     cancelDialog() {
-      this.newPost.title = ''
-      this.newPost.content = ''
+      this.target.title = ''
+      this.target.content = ''
       this.postDialog = false
     },
     checkTrim(str) {
@@ -369,27 +396,27 @@ export default {
       if (e.keyCode === 13) {
         if(!e.shiftKey) {
           if(k !== -1) {
-            if(!this.posts[i].reply[j].reply[k].content.trim())
-              this.deletemsg(this.posts[i].reply[j].reply[k].id)
-            else edit(this.posts[i].reply[j].reply[k].id,i,j,k)
+            if(!this.posts[i].reply[j].reply[k].content.trim()) this.deletemsg(i,j,k)
+            else if(!this.posts[i].reply[j].reply[k].id) this.reply(i,j,k)
+            else this.edit(i,j,k)
           }
           else {
-            if(!this.posts[i].reply[j].content.trim())
-              this.deletemsg(this.posts[i].reply[j].id)
-            else edit(this.posts[i].reply[j].editing.id,i,j,k)
+            if(!this.posts[i].reply[j].content.trim()) this.deletemsg(i,j,k)
+            else if(!this.posts[i].reply[j].id) this.reply(i,j,k)
+            else this.edit(i,j,k)
           }
         }
       }
     },
     optionMenu(idx,i,j,k) {
       if(k === -1) {
-        if(idx === 0) this.reply(this.posts[i].reply[j].id)
+        if(idx === 0) this.pushNewReply(i,j)
         else if(idx === 1) this.posts[i].reply[j].editing = true
-        else this.deletemsg(this.posts[i].reply[j].id)
+        else this.deletemsg(i,j,k)
       }
       else {
         if(idx === 1) this.posts[i].reply[j].reply[k].editing = true
-        else this.deletemsg(this.posts[i].reply[j].reply[k].id)
+        else this.deletemsg(i,j,k)
       }
     }
   }
