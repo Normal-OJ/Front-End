@@ -8,8 +8,9 @@
       :key="i"
     >
       <v-card-subtitle>
-        Postsed by <a>{{ item.author }}</a>, {{ item.createdTime }}.<br>
-          <i>Last update on {{ item.lastUpdatedTime }}.</i>
+        Postsed by <a>{{ item.author }}</a>, {{ item.created }}.<br>
+          <i>Last update on {{ item.updated }}.</i>
+          <v-btn icon right bottom @click="deletemsg(item.id)"><v-icon>mdi-delete</v-icon></v-btn>
       </v-card-subtitle>
       <v-card-title class="headline ma-1 py-0">
         <vue-markdown>{{item.title}}</vue-markdown>
@@ -24,7 +25,7 @@
           class="text-none subtitle-1"
           text
           outlined
-          @click="pushNewComment(i,-1)"
+          @click="reply(i)"
         >Comment</v-btn>
       </v-card-actions>
       <v-divider></v-divider>
@@ -49,13 +50,13 @@
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,-1)"
-                  @blur="checkTrim(msg.message) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
-                  v-model="msg.message"
+                  @blur="checkTrim(msg.content) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
+                  v-model="msg.content"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
-                  :label="msg.message == '' ? 'Write some comment...' : ''"
+                  :label="msg.content == '' ? 'Write some comment...' : ''"
                   :rules="[commentRules.required]"
                 ></v-textarea>
               </v-list-item-content>
@@ -63,7 +64,7 @@
             <!-- Show Message -->
             <v-col cols="10" class="pl-2" v-else>
               <v-list-item-content class="py-0">
-                <vue-markdown>{{msg.message}}</vue-markdown>
+                <vue-markdown>{{msg.content}}</vue-markdown>
               </v-list-item-content>
             </v-col>
             <!-- More Option Menu -->
@@ -86,9 +87,9 @@
               </v-menu>
             </v-col>
           </template>
-          <!-- Subcomment -->
+          <!-- Submessage -->
           <v-list-item
-            v-for="(submsg, k) in msg.subcomment"
+            v-for="(submsg, k) in msg.reply"
             :key="k"
           >
             <v-col cols="1" class="pa-0">
@@ -97,26 +98,26 @@
               </v-list-item-avatar>
               <v-list-item-title class="font-weight-medium text-center">{{submsg.name}}</v-list-item-title>
             </v-col>
-            <!-- Edit SubMessage -->
+            <!-- Edit Submessage -->
             <v-col cols="10" class="pl-2" v-if="submsg.editing == true">
               <v-list-item-content class="py-0">
                 <v-textarea
                   @keydown="inputHandler($event,i,j,k)"
-                  @blur="checkTrim(submsg.message) ? edit(submsg.id,i,j,k) : deletemsg(submsg.id)"
-                  v-model="submsg.message"
+                  @blur="checkTrim(submsg.content) ? edit(submsg.id,i,j,k) : deletemsg(submsg.id)"
+                  v-model="submsg.content"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
-                  :label="submsg.message == '' ? 'Write some comment...' : ''"
+                  :label="submsg.content == '' ? 'Write some comment...' : ''"
                   :rules="[commentRules.required]"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
-            <!-- Show SubMessage -->
+            <!-- Show Submessage -->
             <v-col cols="10" class="pl-2" v-else>
               <v-list-item-content class="py-0">
-                <vue-markdown>{{submsg.message}}</vue-markdown>
+                <vue-markdown>{{submsg.content}}</vue-markdown>
               </v-list-item-content>
             </v-col>
             <!-- More Option Menu -->
@@ -154,13 +155,13 @@
             <v-list-item-content class="py-0">
               <v-textarea
                 @keydown="inputHandler($event,i,j,-1)"
-                @blur="checkTrim(msg.message) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
-                v-model="msg.message"
+                @blur="checkTrim(msg.content) ? edit(msg.id,i,j,-1) : deletemsg(msg.id)"
+                v-model="msg.content"
                 no-resize
                 auto-grow
                 rows="1"
                 autofocus
-                :label="msg.message == '' ? 'Write some comment...' : ''"
+                :label="msg.content == '' ? 'Write some comment...' : ''"
                 :rules="[commentRules.required]"
               ></v-textarea>
             </v-list-item-content>
@@ -168,7 +169,7 @@
           <!-- Show Message -->
           <v-col cols="10" class="pl-2" v-else>
             <v-list-item-content class="py-0">
-              <vue-markdown>{{msg.message}}</vue-markdown>
+              <vue-markdown>{{msg.content}}</vue-markdown>
             </v-list-item-content>
           </v-col>
           <!-- More Option Menu -->
@@ -266,83 +267,8 @@ export default {
         required: v => !!v || 'The message will be delete if the field is blank'
       },
       posts: [
-        {
-          title: 'Want to eat something...',
-          content: 'kkk',
-          author: 'fuji',
-          createdTime: '2019/12/10 13:59',
-          lastUpdatedTime: '2019/12/24 21:21',
-          editing: false,
-          comment: [
-            {
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-              name: '七大卡',
-              message: '~~7 kcal~~',
-              editing: false,
-              subcomment: [
-                {
-                  avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-                  name: '八卡',
-                  message: '8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal 8 cal ',
-                  editing: false,
-                },
-                {
-                  avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-                  name: 'fuji',
-                  message: '-43',
-                  editing: false,
-                },
-                {
-                  avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-                  name: '九大卡',
-                  message: '9 kcal',
-                  editing: false,
-                },
-              ]
-            },
-            {
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-              name: '七卡',
-              message: 'fujiwara',
-              subcomment: [
-              ],
-              editing: false,
-            },
-            {
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-              name: '七',
-              message: '7',
-              subcomment: [
-                {
-                  avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-                  name: '九大卡',
-                  message: '9 kcal',
-                  editing: false,
-                },
-              ],
-              editing: false,
-            },
-            {
-              avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-              name: '千花',
-              message: 'chika',
-              subcomment: [
-              ],
-              editing: false,
-            },
-          ]
-        },
-        {
-          title: '**test** *test*',
-          content: '- rrr',
-          author: 'jkdf',
-          createdTime: '2019/12/10 04:00',
-          lastUpdatedTime: '2019/12/24 21:21',
-          editing: false,
-          comment: [
-          ]
-        }
       ],
+      id: '5e09e5419d06607b2fca2b5d',
     }
   },
   beforeMount() {
@@ -350,7 +276,7 @@ export default {
   },
   methods: {
     init() {
-      // this.posts = [];
+      this.posts = [];
       this.getPosts();
     },
     timeFormat(time) {
@@ -370,18 +296,23 @@ export default {
           console.log(res)
           res.data.data.forEach(ele => {
             this.posts.push({
+              'id': ele.thread.id,
               'title': ele.title,
-              'thread': [],
+              'author': ele.thread.author,
+              'content': ele.thread.content,
+              'created': this.timeFormat(ele.thread.created),
+              'updated': this.timeFormat(ele.thread.updated),
+              'reply': ele.thread.reply,
             });
           })
-          this.init()
         })
         .catch((err) => {
           console.log(err);
         });
+        console.log(this.posts);
     },
     post() {
-      this.$http.post(`${API_BASE_URL}/post`, {'course': this.$route.params.name, 'title': this.newPost.title, 'content': this.newPost.content, 'target_thread_id': undefined})
+      this.$http.post(`${API_BASE_URL}/post`, {'course': this.$route.params.name, 'title': this.newPost.title, 'content': this.newPost.content})
         .then((res) => {
           this.cancelDialog()
           this.init()
@@ -391,7 +322,8 @@ export default {
         });
     },
     reply(threadId) {
-      this.$http.post(`${API_BASE_URL}/post`, {'course': undefined, 'title': this.newPost.title, 'content': this.newPost.content, 'target_thread_id': threadId})
+      console.log(threadId);
+      this.$http.post(`${API_BASE_URL}/post`, {'content': this.newPost.content, 'target_thread_id': threadId})
         .then((res) => {
           this.init()
           // console.log(err);
@@ -401,22 +333,24 @@ export default {
         });
     },
     edit(threadId,i,j,k) {
-      this.$http.put(`${API_BASE_URL}/post`, {'course': undefined, 'title': this.newPost.title, 'content':this.newPost.content, 'target_thread_id': threadId})
+      this.$http.put(`${API_BASE_URL}/post`, {'title': this.newPost.title, 'content':this.newPost.content, 'target_thread_id': threadId})
         .then((res) => {
           this.init()
-          if(k === -1) this.posts[i].comment[j].editing = false
-          else this.posts[i].comment[j].subcomment[k].editing = false
-          // console.log(err);
+          if(k === -1) this.posts[i].reply[j].editing = false
+          else this.posts[i].reply[j].reply[k].editing = false
+          // console.log(res);
         })
         .catch((err) => {
           // console.log(err);
         });
     },
     deletemsg(threadId) {
-      this.$http.delete(`${API_BASE_URL}/post`, {'course': undefined, 'title': this.newPost.title, 'content': this.newPost.content, 'target_thread_id': threadId})
+      console.log(threadId);
+      console.log(threadId);
+      this.$http.delete(`${API_BASE_URL}/post`, {'target_thread_id': threadId})
         .then((res) => {
           this.init()
-          // console.log(err);
+          // console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -435,32 +369,28 @@ export default {
       if (e.keyCode === 13) {
         if(!e.shiftKey) {
           if(k !== -1) {
-            if(!this.posts[i].comment[j].subcomment[k].message.trim())
-              this.deletemsg(this.posts[i].comment[j].subcomment[k].id)
-            else edit(this.posts[i].comment[j].subcomment[k].id,i,j,k)
+            if(!this.posts[i].reply[j].reply[k].content.trim())
+              this.deletemsg(this.posts[i].reply[j].reply[k].id)
+            else edit(this.posts[i].reply[j].reply[k].id,i,j,k)
           }
           else {
-            if(!this.posts[i].comment[j].message.trim())
-              this.deletemsg(this.posts[i].comment[j].id)
-            else edit(this.posts[i].comment[j].editing.id,i,j,k)
+            if(!this.posts[i].reply[j].content.trim())
+              this.deletemsg(this.posts[i].reply[j].id)
+            else edit(this.posts[i].reply[j].editing.id,i,j,k)
           }
         }
       }
     },
     optionMenu(idx,i,j,k) {
       if(k === -1) {
-        if(idx === 0) this.pushNewComment(i,j)
-        else if(idx === 1) this.posts[i].comment[j].editing = true
-        else this.deletemsg(this.posts[i].comment[j].id)
+        if(idx === 0) this.reply(this.posts[i].reply[j].id)
+        else if(idx === 1) this.posts[i].reply[j].editing = true
+        else this.deletemsg(this.posts[i].reply[j].id)
       }
       else {
-        if(idx === 1) this.posts[i].comment[j].subcomment[k].editing = true
-        else this.deletemsg(this.posts[i].comment[j].subcomment[k].id)
+        if(idx === 1) this.posts[i].reply[j].reply[k].editing = true
+        else this.deletemsg(this.posts[i].reply[j].reply[k].id)
       }
-    },
-    pushNewComment(i,j) {
-      if(j === -1) this.reply(posts[i].id)
-      else this.reply(this.posts[i].comment[j].id)
     }
   }
 }
