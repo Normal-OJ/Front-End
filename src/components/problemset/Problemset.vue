@@ -2,10 +2,20 @@
   <v-card>
     <v-card-title>
       Problems
+
+      <v-spacer></v-spacer>
+
+      <v-text-field
+        v-model="search"
+        label="Search"
+        single-line
+        hide-details
+      ></v-text-field>
+
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="filteredItems"
       :sort-by="['problemId']"
       :sort-desc="[false]"
     >
@@ -36,7 +46,7 @@
             color="secondary"
             :label="true"
             :outlined="true"
-            :ripple="false"
+            :ripple="false"calories
             x-small
           >
             {{tag}}
@@ -96,7 +106,8 @@ export default {
           sort: (a, b) => (parseInt(a.split('/')[1], 10) - parseInt(b.split('/')[1], 10))
         },
       ],
-      items: []
+      items: [],
+      search: ''
     }
   },
 
@@ -110,9 +121,44 @@ export default {
     });
   },
 
+  computed: {
+    filteredItems() {
+      if (typeof (this.search) !== 'string' || this.search.length === 0)
+        return this.items;
+
+      console.log('search');
+      console.log(this.items);
+
+      let keys = this.search.split(' ');
+      console.log(keys);
+
+      let result = this.items.filter(item => {
+        let ok = false;
+
+        keys.forEach(key => {
+          if (key.length > 0) {
+            key = key.toLowerCase();
+            if (item.problemId.toLowerCase() === key ||
+                item.problemName.toLowerCase().indexOf(key) !== -1 ||
+                item.type.toLowerCase() === key ||
+                item.tags.findIndex(v => v.toLowerCase() === key) !== -1
+                ) {
+              ok = true;
+            }
+          }
+          console.log({item: item.problemName, key, ok});
+        });
+
+        return ok;
+      });
+
+      return result;
+    }
+  },
+
   methods: {
     getProblems() {
-      this.$http.get('/api/problem?offset=0&count=10')
+      this.$http.get('/api/problem', {offset: 0, count: 10, filter: {}})
         .then((res) => {
           console.log(res.data);
           console.log(res.data.length);
