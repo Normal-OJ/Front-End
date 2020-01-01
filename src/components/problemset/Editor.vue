@@ -95,9 +95,7 @@ export default {
         indentWithTabs: true,
         extraKeys: {
           Tab: function(cm) {
-            console.log()
             if ( !cm.getOption("indentWithTabs") ) {
-              console.log(cm.getOption("indentUnit"));
               var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
               cm.replaceSelection(spaces);
             }
@@ -112,11 +110,10 @@ export default {
   methods: {
     async submit() {
       var zip = new JSZip();
-      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.src);
+      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
       var code = await zip.generateAsync({type:"blob"});
       var formData = new FormData();
-      formData.append( 'code', code, 'stupidPM' ); 
-      console.log(formData);
+      formData.append( 'code', code ); 
       this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
         .then((res) => {
           console.log(res);
