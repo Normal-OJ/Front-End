@@ -142,7 +142,7 @@ export default {
           console.log(res);
           var data = res.data.data;
           this.submInfo = [
-            { 'title': 'Username', 'text': data.user, },
+            { 'title': 'Username', 'text': data.user.username, },
             { 'title': 'Timestamp', 'text': this.timeFormat(data.timestamp), },
             { 'title': 'Run Time (ms)', 'text': data.runTime, },
             { 'title': 'Memory (KB)', 'text': data.memoryUsage, },
