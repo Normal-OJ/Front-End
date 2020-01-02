@@ -6,12 +6,19 @@
     <v-data-table
       :headers="headers"
       :items="items"
+      :loading="loading"
+      :footer-props="{itemsPerPageOptions: rowsPerPageItems}"
+      :items-per-page.sync="itemsPerPage"
+      :page.sync="page"
     >
     </v-data-table>
   </v-card>
 </template>
 
 <script>
+
+const API_BASE_URL = '/api';
+
 export default {
 
   name: 'Submissions',
@@ -23,141 +30,101 @@ export default {
           text: '#',
           value: 'submissionId',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Problem ID',
           value: 'problemId',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'User',
           value: 'username',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Result',
           value: 'status',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Run Time',
           value: 'runTime',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Memory Usage',
           value: 'memoryUsage',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Language',
           value: 'languageType',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Score',
           value: 'score',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
         {
           text: 'Timestamp',
           value: 'timestamp',
           align: 'left'
-          // sortable?: false
-          // filterable?: false
-          // divider?: false
-          // class?: string | string[]
-          // width?: string | number
-          // filter?: (value: any, search: string, item: any) => boolean
-          // sort?: (a: any, b: any) => number
         },
       ],
-      items: []
+      items: [],
+      itemsPerPage: 10,
+      loading: false,
+      page: 1,
+      rowsPerPageItems: [5, 10, 20, 50, 100]
     }
   },
 
   created () {
-    for ( let i=0; i<10; i++ ) {
-      this.$http.post('/api/submission', {'problemId': `ds0${i}`, 'languageType': 0})
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-    }
+    // for ( let i=0; i<10; i++ ) {
+    //   this.$http.post(`${API_BASE_URL}/submission`, {'problemId': `ds0${i}`, 'languageType': 0})
+    //     .then((res) => {
+    //       console.log(res.data);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     })
+    // }
   },
 
   beforeMount () {
-    this.getSubmission();
+    this.getSubmissions();
+  },
+
+  watch: {
+    page() {
+      this.getSubmissions();
+    },
+    itemsPerPage() {
+      this.getSubmissions();
+    }
   },
 
   methods: {
-    getSubmission() {
-      this.$http.get('/api/submission?offset=0&count=10')
+    getSubmissions() {
+      const offset = (this.page - 1) * this.itemsPerPage;
+      const count = this.itemsPerPage;
+      this.loading = true;
+
+      this.$http.get(`${API_BASE_URL}/submission?offset=${offset}&count=${count}`)
         .then((res) => {
+          this.loading = false;
           console.log(res.data);
-          console.log(res.data.length);
+          this.showSubmissions(res.data.submissions);
         })
         .catch((err) => {
+          this.loading = false;
           console.log(err);
-        })
+        });
+    },
+
+    showSubmissions(submissions) {
+      this.items = submissions;
     }
   }
 }
