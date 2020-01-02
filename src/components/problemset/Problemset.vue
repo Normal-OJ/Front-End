@@ -204,24 +204,24 @@ export default {
       this.items = items;
     },
 
-    getFakeProblems() {
-      return [{
-        problemId: '0087',
-        type: 0,
-        problemName: 'Triangle Wave',
-        tags: ['DP'],
-        ACUser: 34,
-        submitter: 42
-      },
-      {
-        problemId: '0070',
-        type: 1,
-        problemName: 'Forest',
-        tags: ['DP', 'bonus'],
-        ACUser: 7,
-        submitter: 60
-      }];
-    }
+    // getFakeProblems() {
+    //   return [{
+    //     problemId: '0087',
+    //     type: 0,
+    //     problemName: 'Triangle Wave',
+    //     tags: ['DP'],
+    //     ACUser: 34,
+    //     submitter: 42
+    //   },
+    //   {
+    //     problemId: '0070',
+    //     type: 1,
+    //     problemName: 'Forest',
+    //     tags: ['DP', 'bonus'],
+    //     ACUser: 7,
+    //     submitter: 60
+    //   }];
+    // }
   }
 }
 </script>
