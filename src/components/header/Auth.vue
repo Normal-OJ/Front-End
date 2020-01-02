@@ -10,7 +10,7 @@
         min-width="8vw"
         v-on="on"
         v-show="$vuetify.breakpoint.mdAndUp || smDown"
-        :class="smDown ? 'subtitle-2' : 'subtitle-1'"
+        :class="smDown ? 'subtitle-2' : 'headline'"
         :color="smDown ? 'primary' : 'white'"
         :small="smDown ? true : false"
         :outlined="sign.outline"

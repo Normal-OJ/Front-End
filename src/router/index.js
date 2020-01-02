@@ -8,9 +8,11 @@ import Submission from '@/components/submissions/Submission'
 import Courses from '@/components/courses/Courses'
 import Course from '@/components/courses/Course'
 import CoursesAnnouncement from '@/components/courses/element/CoursesAnnouncement'
+import CoursesAnnouncementPost from '@/components/courses/element/CoursesAnnouncementPost'
 import CoursesHomework from '@/components/courses/element/CoursesHomework'
 import CoursesContest from '@/components/courses/element/CoursesContest'
 import CoursesDiscussion from '@/components/courses/element/CoursesDiscussion'
+import CoursesDiscussionPost from '@/components/courses/element/CoursesDiscussionPost'
 import CoursesScore from '@/components/courses/element/CoursesScore'
 import CoursesManage from '@/components/courses/element/CoursesManage'
 import Inbox from '@/components/inbox/Inbox'
@@ -59,11 +61,11 @@ export default new Router({
       component: Course,
       children: [
         { path: 'announcement', component: CoursesAnnouncement },
-        // { path: 'announcement/:id', component: CoursesAnnouncementPost },
+        { path: 'announcement/:id', component: CoursesAnnouncementPost },
         { path: 'homework', component: CoursesHomework },
         { path: 'contest', component: CoursesContest },
         { path: 'discussion', component: CoursesDiscussion },
-        // { path: 'discussion/:id', component: CoursesDiscussionPost },
+        { path: 'discussion/:id', component: CoursesDiscussionPost },
         { path: 'score', component: CoursesScore },
         { path: 'manage', component: CoursesManage},
       ],

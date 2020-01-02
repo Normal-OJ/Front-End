@@ -1,10 +1,13 @@
 <template>
-  <v-card tile outlined min-height="95vh">
+  <v-card tile outlined min-height="100vh">
     <v-list>
       <v-list-item>
+        <!-- <v-list-item-avatar>
+          <v-img :src="avatar"></v-img>
+        </v-list-item-avatar> -->
         <v-list-item-content>
-          <v-list-item-title class="text-wrap">{{ courseName }}</v-list-item-title>
-          <v-list-item-subtitle class="text-wrap">{{ teacherName }}</v-list-item-subtitle>
+          <v-list-item-title class="headline text-wrap">{{ courseName }}</v-list-item-title>
+          <v-list-item-subtitle class="title text-wrap">{{ teacherName }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -19,10 +22,10 @@
           dense
         >
           <v-list-item-icon>
-            <v-icon>{{ link.icon }}</v-icon>
+            <v-icon class="mt-2">{{ link.icon }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title class="text-wrap mr-3">{{link.title}}</v-list-item-title>
+            <v-list-item-title class="title text-wrap mr-3">{{link.title}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -40,6 +43,7 @@ export default {
     return {
       courseName: this.$route.params.name,
       teacherName: 'teacherName',
+      avatar: '',
       links: [
         { 'title': 'Announcement', 'path': `/course/${this.$route.params.name}/announcement`, 'icon': 'mdi-bulletin-board'},
         { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-open-variant'},
@@ -49,6 +53,27 @@ export default {
         { 'title': 'Manage', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
       ],
     }
+  },
+
+  beforeMount() {
+    this.getInfo();
+  },
+
+  methods: {
+    getInfo() {
+      this.$http.get(`/api/course/${this.$route.params.name}`)
+        .then((res) => {
+          var data = res.data.data;
+          this.teacherName = data.teacher.username;
+          this.setAvatar(data.teacher.md5);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    },
+    setAvatar(payload) {
+      this.avatar = `https://www.gravatar.com/avatar/${payload}?d=mp`;
+    },
   }
 }
 </script>

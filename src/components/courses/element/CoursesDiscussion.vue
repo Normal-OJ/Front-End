@@ -3,7 +3,7 @@
     <v-card
       class="my-6 flex-column d-flex"
       elevation="6"
-      width="50vw"
+      width="70vw"
       v-for="(item, i) in posts"
       :key="i"
     >
@@ -12,12 +12,8 @@
           <i>Last update on {{ item.updated }}.</i>
           <v-btn icon right bottom @click="deletemsg(i,-1,-1)"><v-icon>mdi-delete</v-icon></v-btn>
       </v-card-subtitle>
-      <v-card-title class="headline ma-1 py-0">
-        <vue-markdown>{{item.title}}</vue-markdown>
-      </v-card-title>
-      <v-card-title class="my-1 py-0 px-6">
-        <vue-markdown>{{item.content}}</vue-markdown>
-      </v-card-title>
+      <v-card-title class="display-2 font-weight-bold">{{item.title}}</v-card-title>
+      <v-card-text class="black--text"><vue-markdown :source="item.content"></vue-markdown></v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
@@ -39,10 +35,12 @@
           class="pt-1"
         >
           <template v-slot:activator> 
-            <v-col cols="1" class="pa-0">
-              <v-list-item-avatar class="ml-1">
-                <v-img :src="msg.avatar"></v-img>
-              </v-list-item-avatar>
+            <v-col cols="1" class="pa-1">
+              <v-row no-gutters justify="center">
+                <v-list-item-avatar class="mx-6">
+                  <v-img :src="msg.avatar"></v-img>
+                </v-list-item-avatar>
+              </v-row>
               <v-list-item-title class="font-weight-medium text-center">{{msg.author}}</v-list-item-title>
             </v-col>
             <!-- Edit Message -->
@@ -92,10 +90,12 @@
             v-for="(submsg, k) in msg.reply"
             :key="k"
           >
-            <v-col cols="1" class="pa-0">
-              <v-list-item-avatar class="ml-1">
-                <v-img :src="submsg.avatar"></v-img>
-              </v-list-item-avatar>
+            <v-col cols="1" class="pa-1">
+              <v-row no-gutters justify="center">
+                <v-list-item-avatar class="mx-6">
+                  <v-img :src="msg.avatar"></v-img>
+                </v-list-item-avatar>
+              </v-row>
               <v-list-item-title class="font-weight-medium text-center">{{submsg.author}}</v-list-item-title>
             </v-col>
             <!-- Edit Submessage -->
@@ -144,10 +144,12 @@
         </v-list-group>
         <!-- Comments Without Subcomment -->
         <v-list-item v-else class="pt-1">
-          <v-col cols="1" class="pa-0">
-            <v-list-item-avatar class="ml-1">
-              <v-img :src="msg.avatar"></v-img>
-            </v-list-item-avatar>
+          <v-col cols="1" class="pa-1">
+            <v-row no-gutters justify="center">
+              <v-list-item-avatar class="mx-6">
+                <v-img :src="msg.avatar"></v-img>
+              </v-list-item-avatar>
+            </v-row>
             <v-list-item-title class="font-weight-medium text-center">{{msg.author}}</v-list-item-title>
           </v-col>
           <!-- Edit Message -->
@@ -195,7 +197,7 @@
       </v-list>
     </v-card>
     <!-- New Post Form -->
-    <v-dialog v-model="postDialog" :width="this.$vuetify.breakpoint.mdAndUp ? '80%' : '100%'" persistent>
+    <v-dialog v-if="perm" v-model="postDialog" :width="this.$vuetify.breakpoint.mdAndUp ? '80%' : '100%'" persistent>
       <template v-slot:activator="{ on }">
         <v-btn right bottom fixed color="primary" fab v-on="on">
           <v-icon large>mdi-plus</v-icon>
@@ -269,6 +271,7 @@ export default {
         required: v => !!v || 'The message will be delete if the field is blank'
       },
       posts: [],
+      perm: false,
     }
   },
   beforeMount() {
@@ -298,11 +301,19 @@ export default {
             ele.thread.reply.forEach(rpl => {
               rpl.created = this.timeFormat(rpl.created);
               rpl.updated = this.timeFormat(rpl.updated);
+              rpl.avatar = this.getAvatar(rpl.author.md5);
+              rpl.author = rpl.author.username;
+              rpl.reply.forEach(nestRpl => {
+                nestRpl.created = this.timeFormat(rpl.created);
+                nestRpl.updated = this.timeFormat(rpl.updated);
+                nestRpl.avatar = this.getAvatar(nestRpl.author.md5);
+                nestRpl.author = nestRpl.author.username;
+              })
             })
             this.posts.push({
               'id': ele.thread.id,
               'title': ele.title,
-              'author': ele.thread.author,
+              'author': ele.thread.author.username,
               'content': ele.thread.content,
               'created': this.timeFormat(ele.thread.created),
               'updated': this.timeFormat(ele.thread.updated),
@@ -374,7 +385,7 @@ export default {
     },
     deletemsg(i,j,k) {
       this.setTarget(i,j,k);
-      this.$http.delete(`${API_BASE_URL}/post`, this.target)
+      this.$http.delete(`${API_BASE_URL}/post`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: this.target})
         .then((res) => {
           this.init()
           // console.log(res);
@@ -418,7 +429,10 @@ export default {
         if(idx === 1) this.posts[i].reply[j].reply[k].editing = true
         else this.deletemsg(i,j,k)
       }
-    }
+    },
+    getAvatar(payload) {
+      return `https://www.gravatar.com/avatar/${payload}?d=mp`;
+    },
   }
 }
 </script>
