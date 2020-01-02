@@ -1,5 +1,5 @@
 <template>
-  <v-card tile outlined elevation="0" height="100%" style="position: fixed;">
+  <v-card tile outlined elevation="0" height="100%" width="50%" style="position: fixed;">
     <v-row class="px-6" style="height: 10%;">
       <v-col v-for="(item, key, idx) in editorConfig" :key="idx" :cols="selectItem.width[idx]">
         <v-select
@@ -15,7 +15,7 @@
       v-if="show"
       ref="CM"
       :options="cmOption"
-      :style="{ height: '75%', fontSize: editorConfig.fontSize+'px' }"  
+      :style="{ height: '75%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
     <v-row class="pa-3" style="height: 15%;">
       <v-spacer></v-spacer>
@@ -189,7 +189,7 @@ export default {
 .CodeMirror {
   font-family: 'Monako';
   height: 100%;
-  width: 50vw;
+  width: 100%;
   direction: ltr;
 }
 </style>
