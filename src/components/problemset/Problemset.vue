@@ -18,6 +18,10 @@
       :items="filteredItems"
       :sort-by="['problemId']"
       :sort-desc="[false]"
+      :loading="loading"
+      :footer-props="{itemsPerPageOptions: rowsPerPageItems}"
+      :items-per-page.sync="itemsPerPage"
+      :page.sync="page"
     >
 
       <template v-slot:item.problemName="{item}">
@@ -59,6 +63,9 @@
 </template>
 
 <script>
+
+const API_BASE_URL = '/api';
+
 export default {
 
   name: 'Problemset',
@@ -107,7 +114,10 @@ export default {
         },
       ],
       items: [],
-      search: ''
+      search: '',
+      itemsPerPage: 10,
+      page: 1,
+      rowsPerPageItems: [5, 10, 20, 50, 100]
     }
   },
 
@@ -115,10 +125,16 @@ export default {
   },
 
   beforeMount () {
-    this.getProblems();
-    this.transformProblems(this.getFakeProblems()).forEach(problem => {
-      this.items.push(problem);
-    });
+    this.getProblems(0, 10);
+  },
+
+  watch: {
+    page() {
+      this.getProblems((this.page - 1) * this.itemsPerPage, this.itemsPerPage);
+    },
+    itemsPerPage() {
+      this.getProblems((this.page - 1) * this.itemsPerPage, this.itemsPerPage);
+    }
   },
 
   computed: {
@@ -157,18 +173,24 @@ export default {
   },
 
   methods: {
-    getProblems() {
-      this.$http.get('/api/problem', {offset: 0, count: 10, filter: {}})
+    getProblems(offset=0, count=10) {
+      this.loading = true;
+      this.$http.get(`${API_BASE_URL}/problem?offset=${offset | 0}&count=${count | 0}`)
         .then((res) => {
+          this.loading = false;
+          console.log(this);
+          console.log(this.loading);
           console.log(res.data);
-          console.log(res.data.length);
+          this.showProblems(res.data.data);
         })
         .catch((err) => {
+          this.loading = false;
           console.log(err);
         })
     },
 
-    transformProblems(problems) {
+    // transform problems: compute their type, link, AC rate, activity
+    showProblems(problems) {
       const items = [];
       problems.forEach(problem => {
         items.push({
@@ -179,7 +201,7 @@ export default {
           link: `/problem/${problem.problemId}`
         });
       });
-      return items;
+      this.items = items;
     },
 
     getFakeProblems() {
