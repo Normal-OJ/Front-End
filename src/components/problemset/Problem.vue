@@ -110,7 +110,7 @@ export default {
             if ( ele.status === -1 ) {
               this.submData.splice(0,0,{
                 'Timestamp' : null,
-                'Status' : STATUS[ele.status+1],
+                'Status' : ele.status+1,
                 'Score' : null,
                 'Run Time' : null,
                 'Memory' : null,
@@ -121,7 +121,7 @@ export default {
             } else {
               this.submData.push({
                 'Timestamp' : this.timeFormat(ele.timestamp),
-                'Status' : STATUS[ele.status+1],
+                'Status' : ele.status+1,
                 'Score' : ele.score,
                 'Run Time' : ele.runTime,
                 'Memory' : ele.memoryUsage,
