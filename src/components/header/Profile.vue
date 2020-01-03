@@ -1,22 +1,14 @@
 <template>
-  <div style="width: 50vw; margin: 0 auto;">
+  <div :style="{ width: this.$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw', margin: '0 auto', }">
     <v-card class="px-3 ma-3">
-      <div class="d-flex flex-no-wrap justify-space-between">
-        <div>
-          <v-card-title class="headline" v-text="'Avatar'"></v-card-title>
-        </div>
-        <div class="d-flex align-center">
-          <v-card-title>
-            <p>
-              Your avatar depends on&nbsp;
-              <a href="https://en.gravatar.com/">Gravatar</a>
-            </p>
-          </v-card-title>
-        </div>
-        <v-avatar :src="avatar" :aspect-ratio="1" size="125" contain class="ma-3" tile>
-          <v-img :src="avatar"></v-img>
-        </v-avatar>
-      </div>
+      <v-card-title class="headline" v-text="'Avatar'"></v-card-title>
+      <v-card-subtitle>
+        Your avatar depends on&nbsp;
+        <a href="https://en.gravatar.com/">Gravatar</a>
+      </v-card-subtitle>
+      <v-avatar :src="avatar" :aspect-ratio="1" size="125" contain class="ma-3" tile>
+        <v-img :src="avatar"></v-img>
+      </v-avatar>
     </v-card>
     <v-form v-model="profileForm" ref="profileForm">
       <v-card class="px-3 ma-3">
