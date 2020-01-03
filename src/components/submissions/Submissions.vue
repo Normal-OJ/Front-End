@@ -115,7 +115,7 @@ export default {
         .then((res) => {
           this.loading = false;
           console.log(res.data);
-          this.showSubmissions(res.data.submissions);
+          this.showSubmissions(res.data.data.submissions);
         })
         .catch((err) => {
           this.loading = false;
