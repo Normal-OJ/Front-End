@@ -12,58 +12,42 @@
       :page.sync="page"
     >
 
-      <template v-slot:item.submissionId="{item}">
-        <a :href="`/submission/${item.submissionId}`" title="Click to view the details.">
-          {{item.submissionId}}
-        </a>
+      <template v-slot:item="{item}">
+        <tr>
+          <td>
+            <a :href="`/submission/${item.submissionId}`" title="Click to view the details.">
+              {{item.submissionId}}
+            </a>
+          </td>
+          <td>
+            <a :href="`/problem/${item.problemId}`" title="Click to view the problem.">
+              {{item.problemId}}
+            </a>
+          </td>
+          <td>{{item.username}}</td>
+          <td>
+            <v-chip
+              :label="true"
+              :ripple="false"
+              small
+              v-text="STATUS[item.status + 1]"
+              :text-color="COLOR[item.status + 1]"
+            ></v-chip>
+          </td>
+          <td class="text-right">{{item.score}}</td>
+          <td class="text-right">{{item.runTime}}</td>
+          <td class="text-right">{{item.memoryUsage}}</td>
+          <td>
+            <v-chip
+              :label="true"
+              :ripple="false"
+              small
+              v-text="LANG[item.languageType]"
+            ></v-chip>
+          </td>
+          <td>{{timeFormat(item.timestamp)}}</td>
+        </tr>
       </template>
-
-      <template v-slot:item.problemId="{item}">
-        <a :href="`/problem/${item.problemId}`" title="Click to view the problem.">
-          {{item.problemId}}
-        </a>
-      </template>
-
-      <template v-slot:item.status="{item}">
-        <v-chip
-          :label="true"
-          :ripple="false"
-          small
-        >
-          {{ ['Pending', 'AC', 'WA', 'CE', 'TLE', 'MLE', 'RE', 'JE', 'OLE'][item.status + 1] }}
-        </v-chip>
-      </template>
-
-      <template v-slot:item.languageType="{item}">
-        <v-chip
-          :label="true"
-          :ripple="false"
-          small
-        >
-          {{ ['C', 'C++', 'Python 3'][item.languageType] }}
-        </v-chip>
-      </template>
-
-      <template v-slot:item.timestamp="{item}">
-        {{(() => {
-          const leadingZero = (num, pad) => {
-            let str = num.toString(10);
-            while (str.length < pad)
-              str = `0${str}`;
-            return str;
-          };
-
-          date = new Date(parseInt(item.timestamp, 10));
-          return
-              leadingZero(date.getFullYear(), 4) + '-' +
-              leadingZero(date.getMonth() + 1, 2) + '-' +
-              leadingZero(date.getDate(), 2) + ' ' +
-              leadingZero(date.getHours(), 2) + ':' +
-              leadingZero(date.getMinutes(), 2) + ':' +
-              leadingZero(date.getSeconds(), 2);
-        })()}}
-      </template>
-
     </v-data-table>
   </v-card>
 </template>
@@ -79,57 +63,25 @@ export default {
   data () {
     return {
       headers: [
-        {
-          text: '#',
-          value: 'submissionId',
-          align: 'left'
-        },
-        {
-          text: 'Problem ID',
-          value: 'problemId',
-          align: 'left'
-        },
-        {
-          text: 'User',
-          value: 'username',
-          align: 'left'
-        },
-        {
-          text: 'Result',
-          value: 'status',
-          align: 'left'
-        },
-        {
-          text: 'Score',
-          value: 'score',
-          align: 'right'
-        },
-        {
-          text: 'Run Time (ms)',
-          value: 'runTime',
-          align: 'right'
-        },
-        {
-          text: 'Memory Usage (KB)',
-          value: 'memoryUsage',
-          align: 'right'
-        },
-        {
-          text: 'Language',
-          value: 'languageType',
-          align: 'left'
-        },
-        {
-          text: 'Timestamp',
-          value: 'timestamp',
-          align: 'left'
-        },
+        {text: '#', value: 'submissionId'},
+        {text: 'Problem ID', value: 'problemId'},
+        {text: 'User', value: 'username'},
+        {text: 'Result', value: 'status'},
+        {text: 'Score', value: 'score'},
+        {text: 'Run Time (ms)', value: 'runTime'},
+        {text: 'Memory Usage (KB)', value: 'memoryUsage'},
+        {text: 'Language', value: 'languageType'},
+        {text: 'Timestamp', value: 'timestamp'},
       ],
       items: [],
       itemsPerPage: 10,
       loading: false,
       page: 1,
-      rowsPerPageItems: [5, 10, 20, 50, 100]
+      rowsPerPageItems: [5, 10, 20, 50, 100],
+
+      LANG: ['C (c11)', 'C++ (c++11)', 'Python (py3)'],
+      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error'],
+      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C']
     }
   },
 
@@ -180,6 +132,18 @@ export default {
       this.items = [...submissions, ...this.getFakeData()];
     },
 
+    timeFormat(time) {
+      const tmp = new Date(time * 1000);
+      const year = tmp.getFullYear();
+      const month = '0' + (tmp.getMonth()+1);
+      const date = '0' + tmp.getDate();
+      const hour = '0' + tmp.getHours();
+      const min = '0' + tmp.getMinutes();
+      const sec = '0' + tmp.getSeconds();
+      const timeString = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
+      return timeString;
+    },
+
     getFakeData() {
       return [
         {
@@ -187,7 +151,7 @@ export default {
           submissionId: '0171',
           username: 'aa5376537',
           languageType: 1,
-          timestamp: 1578037200000,
+          timestamp: 1578037200,
           status: 1,
           score: 40,
           runTime: 330,
@@ -198,7 +162,7 @@ export default {
           submissionId: '0172',
           username: 'aa5376537',
           languageType: 2,
-          timestamp: 1578037220000,
+          timestamp: 1578037220,
           status: 1,
           score: 80,
           runTime: 120,
@@ -209,7 +173,7 @@ export default {
           submissionId: '0173',
           username: 'shu_kong_kai',
           languageType: 1,
-          timestamp: 1578037240000,
+          timestamp: 1578037240,
           status: 2,
           score: 0,
           runTime: 2500,
