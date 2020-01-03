@@ -46,16 +46,17 @@
             <!-- Edit Message -->
             <v-col cols="10" class="pl-2" v-if="msg.editing == true">
               <v-list-item-content class="py-0">
+                  <!-- @blur="checkTrim(msg.content) ? edit(i,j,-1) : deletemsg(i,j,-1)" -->
                 <v-textarea
                   @keydown="inputHandler($event,i,j,-1)"
-                  @blur="checkTrim(msg.content) ? edit(i,j,-1) : deletemsg(i,j,-1)"
+                  @blur="checkTrim(msg.content) && deletemsg(i,j,-1)"
                   v-model="msg.content"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
                   :label="msg.content == '' ? 'Write some comment...' : ''"
-                  :rules="[v => !!v || 'The message will be delete if the field is blank']"
+                  :rules="commentRules"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
@@ -67,7 +68,7 @@
             </v-col>
             <!-- More Option Menu -->
             <v-col cols="1">
-              <v-menu offset-x>
+              <v-menu v-if="perm || msg.author === username" offset-x>
                 <template v-slot:activator="{ on }">
                   <v-btn icon v-on="on">
                     <v-icon>mdi-dots-vertical</v-icon>
@@ -93,7 +94,7 @@
             <v-col cols="1" class="pa-1">
               <v-row no-gutters justify="center">
                 <v-list-item-avatar class="mx-6">
-                  <v-img :src="msg.avatar"></v-img>
+                  <v-img :src="submsg.avatar"></v-img>
                 </v-list-item-avatar>
               </v-row>
               <v-list-item-title class="font-weight-medium text-center">{{submsg.author}}</v-list-item-title>
@@ -101,16 +102,17 @@
             <!-- Edit Submessage -->
             <v-col cols="10" class="pl-2" v-if="submsg.editing == true">
               <v-list-item-content class="py-0">
+                  <!-- @blur="checkTrim(submsg.content) ? edit(i,j,k) : deletemsg(i,j,k)" -->
                 <v-textarea
                   @keydown="inputHandler($event,i,j,k)"
-                  @blur="checkTrim(submsg.content) ? edit(i,j,k) : deletemsg(i,j,k)"
+                  @blur="checkTrim(msg.content) && deletemsg(i,j,k)"
                   v-model="submsg.content"
                   no-resize
                   auto-grow
                   rows="1"
                   autofocus
                   :label="submsg.content == '' ? 'Write some comment...' : ''"
-                  :rules="[v => !!v || 'The message will be delete if the field is blank']"
+                  :rules="commentRules"
                 ></v-textarea>
               </v-list-item-content>
             </v-col>
@@ -122,7 +124,7 @@
             </v-col>
             <!-- More Option Menu -->
             <v-col cols="1">
-              <v-menu offset-x>
+              <v-menu v-if="perm || msg.author === username" offset-x>
                 <template v-slot:activator="{ on }">
                   <v-btn icon v-on="on">
                     <v-icon>mdi-dots-vertical</v-icon>
@@ -155,16 +157,17 @@
           <!-- Edit Message -->
           <v-col cols="10" class="pl-2" v-if="msg.editing == true">
             <v-list-item-content class="py-0">
+                <!-- @blur="checkTrim(msg.content) ? edit(i,j,-1) : deletemsg(i,j,-1)" -->
               <v-textarea
                 @keydown="inputHandler($event,i,j,-1)"
-                @blur="checkTrim(msg.content) ? edit(i,j,-1) : deletemsg(i,j,-1)"
+                @blur="checkTrim(msg.content) && deletemsg(i,j,-1)"
                 v-model="msg.content"
                 no-resize
                 auto-grow
                 rows="1"
                 autofocus
                 :label="msg.content == '' ? 'Write some comment...' : ''"
-                :rules="[v => !!v || 'The message will be delete if the field is blank']"
+                :rules="commentRules"
               ></v-textarea>
             </v-list-item-content>
           </v-col>
@@ -176,7 +179,7 @@
           </v-col>
           <!-- More Option Menu -->
           <v-col cols="1">
-            <v-menu offset-x>
+            <v-menu v-if="perm || msg.author === username" offset-x>
               <template v-slot:activator="{ on }">
                 <v-btn icon v-on="on">
                   <v-icon>mdi-dots-vertical</v-icon>
@@ -219,12 +222,12 @@
             <v-text-field
               label="Title"
               counter="64" 
-              :rules="[v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters']" 
+              :rules="titleRules" 
               v-model="target.title">
             </v-text-field>
             <v-textarea 
               label="Post Content" 
-              :rules="[v => !!v || 'Sorry, the post content cannot be empty']"
+              :rules="contentRules"
               v-model="target.content"
               no-resize
               auto-grow
@@ -267,15 +270,25 @@ export default {
         'edit',
         'delete',
       ],
-      commentRules: {
-        required: v => !!v || 'The message will be delete if the field is blank'
-      },
+      commentRules: [
+        // v => !!v || 'The message will be delete if the field is blank'
+      ],
+      titleRules: [
+        v => !!v || 'Title is required.',
+        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters',
+      ],
+      contentRules: [
+        v => !!v || 'Content is required.',
+        v => !!v && v.length <= 100000 || 'Sorry, the length must be ≤ 100000 characters',
+      ],
       posts: [],
       perm: false,
+      username: '',
     }
   },
   beforeMount() {
     this.init();
+    this.checkUser(this.getUsername());
   },
   methods: {
     init() {
@@ -298,14 +311,15 @@ export default {
       this.$http.get(`${API_BASE_URL}/post/${this.$route.params.name}`)
         .then((res) => {
           res.data.data.forEach(ele => {
+            console.log(ele);
             ele.thread.reply.forEach(rpl => {
               rpl.created = this.timeFormat(rpl.created);
               rpl.updated = this.timeFormat(rpl.updated);
               rpl.avatar = this.getAvatar(rpl.author.md5);
               rpl.author = rpl.author.username;
               rpl.reply.forEach(nestRpl => {
-                nestRpl.created = this.timeFormat(rpl.created);
-                nestRpl.updated = this.timeFormat(rpl.updated);
+                nestRpl.created = this.timeFormat(nestRpl.created);
+                nestRpl.updated = this.timeFormat(nestRpl.updated);
                 nestRpl.avatar = this.getAvatar(nestRpl.author.md5);
                 nestRpl.author = nestRpl.author.username;
               })
@@ -321,6 +335,7 @@ export default {
               'editing': false
             });
           })
+          this.posts.reverse();
         })
         .catch((err) => {
           console.log(err);
@@ -385,7 +400,7 @@ export default {
     },
     deletemsg(i,j,k) {
       this.setTarget(i,j,k);
-      this.$http.delete(`${API_BASE_URL}/post`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: this.target})
+      this.$http.delete(`${API_BASE_URL}/post`, {headers: {'Content-Type': 'application/json'}, data: this.target})
         .then((res) => {
           this.init()
           // console.log(res);
@@ -432,6 +447,38 @@ export default {
     },
     getAvatar(payload) {
       return `https://www.gravatar.com/avatar/${payload}?d=mp`;
+    },
+    checkUser(username) {
+      this.$http.get(`/api/course/${this.$route.params.name}`)
+        .then((res) => {
+          var data = res.data.data;
+          if ( data.teacher.username === username ) {
+            this.perm = true;
+            return;
+          }
+          data.TAs.forEach(ele => {
+            if ( ele.username === username ) {
+              this.perm = true;
+              return;
+            }
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getUsername() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === true ) {
+          if ( payload.role === 0 ) this.perm = true;
+          this.username = payload.username;
+          return payload.username;
+        }
+      }
+    },
+    parseJwt(token) {
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
   }
 }
