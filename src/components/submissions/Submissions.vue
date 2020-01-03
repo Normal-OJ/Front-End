@@ -11,6 +11,59 @@
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
     >
+
+      <template v-slot:item.submissionId="{item}">
+        <a :href="`/submission/${item.submissionId}`" title="Click to view the details.">
+          {{item.submissionId}}
+        </a>
+      </template>
+
+      <template v-slot:item.problemId="{item}">
+        <a :href="`/problem/${item.problemId}`" title="Click to view the problem.">
+          {{item.problemId}}
+        </a>
+      </template>
+
+      <template v-slot:item.status="{item}">
+        <v-chip
+          :label="true"
+          :ripple="false"
+          small
+        >
+          {{ ['Pending', 'AC', 'WA', 'CE', 'TLE', 'MLE', 'RE', 'JE', 'OLE'][item.status + 1] }}
+        </v-chip>
+      </template>
+
+      <template v-slot:item.languageType="{item}">
+        <v-chip
+          :label="true"
+          :ripple="false"
+          small
+        >
+          {{ ['C', 'C++', 'Python 3'][item.languageType] }}
+        </v-chip>
+      </template>
+
+      <template v-slot:item.timestamp="{item}">
+        {{(() => {
+          const leadingZero = (num, pad) => {
+            let str = num.toString(10);
+            while (str.length < pad)
+              str = `0${str}`;
+            return str;
+          };
+
+          date = new Date(parseInt(item.timestamp, 10));
+          return
+              leadingZero(date.getFullYear(), 4) + '-' +
+              leadingZero(date.getMonth() + 1, 2) + '-' +
+              leadingZero(date.getDate(), 2) + ' ' +
+              leadingZero(date.getHours(), 2) + ':' +
+              leadingZero(date.getMinutes(), 2) + ':' +
+              leadingZero(date.getSeconds(), 2);
+        })()}}
+      </template>
+
     </v-data-table>
   </v-card>
 </template>
@@ -47,23 +100,23 @@ export default {
           align: 'left'
         },
         {
-          text: 'Run Time',
-          value: 'runTime',
-          align: 'left'
+          text: 'Score',
+          value: 'score',
+          align: 'right'
         },
         {
-          text: 'Memory Usage',
+          text: 'Run Time (ms)',
+          value: 'runTime',
+          align: 'right'
+        },
+        {
+          text: 'Memory Usage (KB)',
           value: 'memoryUsage',
-          align: 'left'
+          align: 'right'
         },
         {
           text: 'Language',
           value: 'languageType',
-          align: 'left'
-        },
-        {
-          text: 'Score',
-          value: 'score',
           align: 'left'
         },
         {
@@ -124,7 +177,45 @@ export default {
     },
 
     showSubmissions(submissions) {
-      this.items = submissions;
+      this.items = [...submissions, ...this.getFakeData()];
+    },
+
+    getFakeData() {
+      return [
+        {
+          problemId: '0070',
+          submissionId: '0171',
+          username: 'aa5376537',
+          languageType: 1,
+          timestamp: 1578037200000,
+          status: 1,
+          score: 40,
+          runTime: 330,
+          memoryUsage: 23
+        },
+        {
+          problemId: '0070',
+          submissionId: '0172',
+          username: 'aa5376537',
+          languageType: 2,
+          timestamp: 1578037220000,
+          status: 1,
+          score: 80,
+          runTime: 120,
+          memoryUsage: 17
+        },
+        {
+          problemId: '0071',
+          submissionId: '0173',
+          username: 'shu_kong_kai',
+          languageType: 1,
+          timestamp: 1578037240000,
+          status: 2,
+          score: 0,
+          runTime: 2500,
+          memoryUsage: 560
+        },
+      ];
     }
   }
 }
