@@ -31,7 +31,9 @@
               :ripple="false"
               small
               v-text="STATUS[item.status + 1]"
-              :text-color="COLOR[item.status + 1]"
+              text-color="white"
+              :color="STATUS_COLOR[item.status + 1]"
+              :title="STATUS_REASON[item.status + 1]"
             ></v-chip>
           </td>
           <td class="text-right">{{item.score}}</td>
@@ -43,9 +45,15 @@
               :ripple="false"
               small
               v-text="LANG[item.languageType]"
+              text-color="white"
+              :color="LANG_COLOR[item.languageType]"
             ></v-chip>
           </td>
-          <td>{{timeFormat(item.timestamp)}}</td>
+          <td>
+            <span style="color: grey">{{timeFormat(item.timestamp).split(' ')[0]}}</span>
+            &nbsp;
+            <span>{{timeFormat(item.timestamp).split(' ')[1]}}</span>
+          </td>
         </tr>
       </template>
     </v-data-table>
@@ -80,8 +88,20 @@ export default {
       rowsPerPageItems: [5, 10, 20, 50, 100],
 
       LANG: ['C (c11)', 'C++ (c++11)', 'Python (py3)'],
-      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C']
+      LANG_COLOR :['#1565C0', '#4527A0', '#2E7D32'],
+      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
+      STATUS_COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
+      STATUS_REASON: [
+        'Your code is pending by our judge, please wait.',
+        'You solved the problem! Congrats!',
+        'Output is not correct. keep going!',
+        'Your code cannot be compiled correctly.',
+        'Runtime of your program is over the limit.',
+        'Memory Usage of your program over the limit.',
+        'Errors occurred while your prgram was running or invalid system call.',
+        'Bang! you broke our judge, please contact us.',
+        'Output of your program is over the limit.',
+      ]
     }
   },
 
