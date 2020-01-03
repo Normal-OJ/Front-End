@@ -1,24 +1,40 @@
 <template>
-  <v-container class="ma-0 pa-0" style="width: 100%">
-    <div id="banner-container" class="ma-0 pa-0">
-      <v-row
-        class="ma-0 pa-0 left-top"
-        style="height: 100%"
-        align="center"
-      >
-        <v-col class="ma-0" cols="12">
-          <h1 class="display-2">Normal Online Judge</h1>
-          <h2 class="subtitle-1">An online judge that amazing you.</h2>
-        </v-col>
-      </v-row>
-    </div>
+  <v-container
+    class="ma-0 pa-0"
+    style="width: 100%;"
+  >
+    <v-row id="banner-row"
+      class="ma-0 pa-0 left-top"
+      align="center"
+    >
+      <v-col class="ma-0" cols="12">
+        <h1 class="display-2">Normal Online Judge</h1>
+        <h2 class="subtitle-1">An online judge that amazing you.</h2>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <Announcement></Announcement>
+      </v-col>
+      <v-col>
+        <Ranking></Ranking>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import Announcement from './Announcement'
+import Ranking from './Ranking'
+
 export default {
 
   name: 'Home',
+
+  components: {
+    Announcement,
+    Ranking
+  },
 
   data () {
     return {
@@ -35,7 +51,7 @@ export default {
   top: 0;
 }
 
-#banner-container {
+#banner-row {
   position: relative;
   width: 100vw;
   height: 300px;
@@ -43,12 +59,13 @@ export default {
   color: #eee;
 }
 
-#banner-container h1, h2 {
+#banner-row h1,
+#banner-row h2 {
   display: block;
   border: none;
 }
 
-h2 {
+#banner-row h2 {
   color: #fff59d;
 }
 </style>
