@@ -1,7 +1,6 @@
 <template>
   <v-container
     class="ma-0 pa-0"
-    style="width: 100%;"
   >
     <v-row id="banner-row"
       class="ma-0 pa-0 left-top"
@@ -12,11 +11,18 @@
         <h2 class="subtitle-1">An online judge that amazing you.</h2>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col>
+
+    <v-row
+      class="ma-0 pa-0 left-top"
+      style="width: 100vw"
+      align="center"
+    >
+      <!--
+      <v-col cols="6">
         <Announcement></Announcement>
       </v-col>
-      <v-col>
+      -->
+      <v-col cols="12">
         <Ranking></Ranking>
       </v-col>
     </v-row>
@@ -24,7 +30,7 @@
 </template>
 
 <script>
-import Announcement from './Announcement'
+//import Announcement from './Announcement'
 import Ranking from './Ranking'
 
 export default {
@@ -32,7 +38,7 @@ export default {
   name: 'Home',
 
   components: {
-    Announcement,
+    //Announcement,
     Ranking
   },
 
