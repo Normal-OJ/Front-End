@@ -46,7 +46,6 @@
                     v-if="toShow"
                     :items="userList"
                     :rules="[v => !!v || 'Sorry, you have to select at least one User']"
-                    item-text="username"
                     chips
                     multiple
                     clearable
@@ -68,16 +67,18 @@
                         close
                         @click:close="removeUser(item)"
                         v-on="on"
-                      ><span v-text="item.username"></span></v-chip>
+                      ><span v-text="item"></span></v-chip>
                     </template>
                     <template v-slot:item="{ item }">
+                      <!-- <v-list-item-avatar>
+                        <v-img :src="item."></v-img>
+                      </v-list-item-avatar> -->
                       <v-list-item-content>
-                        <v-list-item-title v-text="item.username"></v-list-item-title>
-                        <v-list-item-subtitle v-text="item.displayedName"></v-list-item-subtitle>
+                        <v-list-item-title v-text="item"></v-list-item-title>
+                        <!-- <v-list-item-subtitle v-text="item.displayedName"></v-list-item-subtitle> -->
                       </v-list-item-content>
                     </template>
                   </v-autocomplete>
-                  {{ newMail.receiver }}
                   <v-text-field 
                     label="Title" 
                     counter="32" 
@@ -90,12 +91,13 @@
                     v-model="newMail.message"
                   ></v-textarea>
                 </v-form>
+                {{newMail.receiver}}
               </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
-                  <v-btn dark color="primary" @click="send()">send</v-btn>
-                </v-card-actions>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn outlined color="secondary" @click="cancelCompose()">cancel</v-btn>
+                <v-btn dark color="primary" @click="send()">send</v-btn>
+              </v-card-actions>
             </v-card>
           </v-dialog>
           <div class="ml-4">Compose</div>
@@ -136,11 +138,15 @@
               <v-btn icon @click="showMail = false"><v-icon large>mdi-chevron-left</v-icon></v-btn>
               <v-spacer></v-spacer>
               <v-list-item two-line>
-                <v-list-item-avatar size="64px">
+                <v-list-item-avatar v-if="displayFolder==='inbox'" size="64px">
                   <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
                 </v-list-item-avatar>
+                <v-list-item-avatar v-else>
+                  <v-img :src="getAvatar()"></v-img>
+                </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title class="headline">{{mail[displayFolder][displayMail].sender}}</v-list-item-title>
+                  <v-list-item-title v-if="displayFolder==='inbox'" class="headline">Sender: {{mail[displayFolder][displayMail].sender.username}}</v-list-item-title>
+                  <v-list-item-title v-else class="headline">Receivers: {{mail[displayFolder][displayMail].receiver.username}}</v-list-item-title>
                   <v-list-item-subtitle>{{mail[displayFolder][displayMail].timestamp}}</v-list-item-subtitle>
                 </v-list-item-content>
                 <v-btn class="ma-1" icon outlined v-if="displayFolder === 'inbox'"><v-icon @click="reply(displayFolder,displayMail)">mdi-reply</v-icon></v-btn>
@@ -186,11 +192,11 @@
             </template>
             <template v-slot:item="{ item }">
               <v-list-item-avatar color="primary" class="headline font-weight-light white--text">
-                {{ item.title.charAt(0) }}
+                <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title v-text="item.title"></v-list-item-title>
-                <v-list-item-subtitle v-text="item.sender"></v-list-item-subtitle>
+                <v-list-item-subtitle v-text="item.sender.username"></v-list-item-subtitle>
               </v-list-item-content>
             </template>
           </v-autocomplete>
@@ -209,16 +215,19 @@
               v-for="(item, i) in mail[displayFolder]"
               :key="i"
             >
-              <v-list-item-avatar>
+              <v-list-item-avatar v-if="displayFolder === 'inbox'">
                 <v-img :src="item.avatar"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-avatar v-else>
+                <v-img :src="getAvatar()"></v-img>
               </v-list-item-avatar>
               <v-list-item-content v-if="displayFolder === 'inbox'" :class="item.status === 0 ? 'font-weight-bold': ''" @click="open('idx', i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
-                <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, From: {{item.sender}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, From: {{item.sender.username}}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-content v-else @click="open('idx', i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
-                <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, To: {{item.receiver}}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{item.timestamp.substring(0,10)}}, To: {{item.receiver.username}}</v-list-item-subtitle>
               </v-list-item-content>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
@@ -260,15 +269,18 @@
       <v-card tile elevation="0" outlined height="100%">
         <v-card-title class="pt-3 px-3">
           <v-list-item v-if="displayMail !== -1" two-line>
-            <v-list-item-avatar size="64px">
+            <v-list-item-avatar v-if="displayFolder==='inbox'" size="64px">
               <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
             </v-list-item-avatar>
+            <v-list-item-avatar v-else>
+                <v-img :src="getAvatar()"></v-img>
+              </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="headline" v-if="displayFolder === 'inbox'">
-                {{mail[displayFolder][displayMail].sender}}
+                Sender: {{mail[displayFolder][displayMail].sender.username}}
               </v-list-item-title>
               <v-list-item-title class="headline" v-else>
-                To: {{mail[displayFolder][displayMail].receiver}}
+                Receivers: {{mail[displayFolder][displayMail].receiver.username}}
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{mail[displayFolder][displayMail].timestamp}}
@@ -321,6 +333,7 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 const API_BASE_URL = '/api';
+var len=0;
 
 export default {
 
@@ -406,7 +419,7 @@ export default {
         .then((res) => {
           // console.log(res)
           res.data.data.forEach(ele => {
-            this.mail.inbox.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
+            this.mail.inbox.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp), 'avatar': this.getAvatar(ele.sender.md5)})
           })
         })
         .catch((err) => {
@@ -420,9 +433,10 @@ export default {
           res.data.data.forEach((ele) => {
             var receiversFormat = '';
             ele.receivers.forEach((rec) => {
-              receiversFormat += ' ' + rec
+              if ( receiversFormat !== '' ) receiversFormat += ', ';
+              receiversFormat += rec.username;
             })
-            this.mail.sent.push({'messageId': ele.messageId, 'receiver': receiversFormat, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
+            this.mail.sent.push({'messageId': ele.messageId, 'receiver': {'username': receiversFormat}, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
           })
         })
         .catch((err) => {
@@ -446,16 +460,22 @@ export default {
         .then((res) => {
           // console.log(res);
           var data = res.data.data;
-          this.userList.push({'username': 'Select All'});
-          this.userList.push({'username': data.teacher});
-          data.TAs.forEach((ele) => {this.userList.push({'username': ele})})
+          this.userList.push('Select All');
+          this.userList.push(data.teacher.username);
+          // this.userList.push({'username': data.teacher.username});
+          data.TAs.forEach((ele) => {this.userList.push(ele.username)})
+          // data.TAs.forEach((ele) => {this.userList.push({'username': ele.username})})
           for ( var key in data.studentNicknames ) {
-            this.userList.push({'username': data.studentNicknames[key]});
+            this.userList.push(data.studentNicknames[key]);
+            // this.userList.push({'username': data.studentNicknames[key]});
           }
         })
         .catch((err) => {
           // console.log(err);
         })
+    },
+    getAvatar(payload) {
+      return `https://www.gravatar.com/avatar/${payload}?d=mp`;
     },
     send() {
       // validate form
@@ -467,9 +487,9 @@ export default {
           return;
         }
         this.errMsg = ['User not found', ''];
-        console.log(this.newMail.receiver)
+        // console.log(this.newMail.receiver)
         this.newMail.receiver.forEach((usr) => {
-          this.$http.post(`${API_BASE_URL}/auth/check/username`, {username: usr})
+          this.$http.post(`${API_BASE_URL}/auth/check/username`, {'username': usr})
           .then((response) => {
             if ( response.data.data.valid === 1 ) {
               this.errMsg[1] += usr + ' ';
@@ -544,7 +564,8 @@ export default {
       this.composeDialog = false
     },
     reply(f,m) {
-      this.newMail.receiver = this.mail[f][m].sender
+      this.selectedCourse = 'Public';
+      this.newMail.receiver = [this.mail[f][m].sender.username];
       this.newMail.title = 'Re: ' + this.mail[f][m].title
       this.composeDialog = true
     },
@@ -561,18 +582,27 @@ export default {
     receiverChg() {
       this.userSearchValue = '';
       // console.log(this.newMail.receiver)
-      if ( this.newMail.receiver.indexOf('Select All') >= 0 ) {
-        this.newMail.receiver = this.userList.slice();
-        this.newMail.receiver.shift();
+      if ( len > this.newMail.receiver.length ) {
+        if ( this.newMail.receiver.indexOf('Select All') < 0 ) {
+          this.userList.splice(0,0,'Select All');
+        }
+        this.newMail.receiver.splice(this.newMail.receiver.indexOf(item),1);
       }
-      console.dir('recei:',this.newMail.receiver);
-      console.dir('userL:',this.userList);
+      len = this.newMail.receiver.length;
+      if ( this.newMail.receiver.indexOf('Select All') >= 0 ) {
+        this.newMail.receiver = [];
+        this.userList.forEach(ele => {
+          if ( ele !== 'Select All')
+            this.newMail.receiver.push(ele)
+        })
+        this.userList.shift();
+      }
+      // console.dir('recei:',this.newMail.receiver);
+      // console.dir('userL:',this.userList);
       // if ( this.newMail.receiver.length < this.userList-1 &&  )
     },
     removeUser(item) {
       this.newMail.receiver.splice(this.newMail.receiver.indexOf(item),1);
-      console.dir('recei:',this.newMail.receiver);
-      console.dir('userL:',this.userList);
     }
   },
 }
