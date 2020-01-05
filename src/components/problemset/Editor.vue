@@ -1,5 +1,5 @@
 <template>
-  <v-card tile outlined elevation="0" height="100%" style="position: fixed;">
+  <v-card tile outlined elevation="0" height="100%" width="50%" style="position: fixed;">
     <v-row class="px-6" style="height: 10%;">
       <v-col v-for="(item, key, idx) in editorConfig" :key="idx" :cols="selectItem.width[idx]">
         <v-select
@@ -15,7 +15,7 @@
       v-if="show"
       ref="CM"
       :options="cmOption"
-      :style="{ height: '75%', fontSize: editorConfig.fontSize+'px' }"  
+      :style="{ height: '75%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
     <v-row class="pa-3" style="height: 15%;">
       <v-spacer></v-spacer>
@@ -95,9 +95,7 @@ export default {
         indentWithTabs: true,
         extraKeys: {
           Tab: function(cm) {
-            console.log()
             if ( !cm.getOption("indentWithTabs") ) {
-              console.log(cm.getOption("indentUnit"));
               var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
               cm.replaceSelection(spaces);
             }
@@ -112,11 +110,10 @@ export default {
   methods: {
     async submit() {
       var zip = new JSZip();
-      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.src);
+      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
       var code = await zip.generateAsync({type:"blob"});
       var formData = new FormData();
-      formData.append( 'code', code, 'stupidPM' ); 
-      console.log(formData);
+      formData.append( 'code', code ); 
       this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
         .then((res) => {
           console.log(res);
@@ -129,7 +126,7 @@ export default {
             .then((res) => {
               console.log(res);
               console.log('submissionId:'+ submissionId);
-              this.$emit('getSubmission', submissionId);
+              this.$emit('getSubmission');
             })
             .catch((err) => {
               console.log(err);
@@ -192,7 +189,7 @@ export default {
 .CodeMirror {
   font-family: 'Monako';
   height: 100%;
-  width: 50vw;
+  width: 100%;
   direction: ltr;
 }
 </style>
