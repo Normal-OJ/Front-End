@@ -8,8 +8,9 @@
         class="title text-none"
         v-on="on"
         dark
+        block
         color="primary"
-      >View</v-btn>
+      >View Student Status</v-btn>
     </template>
     <v-card>
       <v-card-title

@@ -45,7 +45,7 @@
               <tr>
                 <th class="title text-left" v-text="'#'"></th>
                 <th class="title text-left" v-text="'Problem'"></th>
-                <th v-if="item.studentStatus" class="title text-left" v-text="'Score'"></th>
+                <!-- <th v-if="item.studentStatus" class="title text-left" v-text="'Score'"></th> -->
               </tr>
             </thead>
             <tbody>
@@ -57,15 +57,12 @@
                 <td class="title text-left">
                   <a target="_blank" rel="noopener noreferrer" :href="'problem/'+id" v-text="findProb(id)"></a>
                 </td>
-                <td v-if="item.studentStatus" class="title text-left" v-text="item.studentStatus ? item.studentStatus.id.score : ''"></td>
+                <!-- <td v-if="item.studentStatus" class="title text-left" v-text="item.studentStatus ? item.studentStatus.id : ''"></td> -->
               </tr>
             </tbody>
           </template>
         </v-simple-table>
         <div v-if="perm">
-          <v-card-title class="display-1 ma-1">
-            Status
-          </v-card-title>
           <v-card-text>
             <CoursesHomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds"></CoursesHomeworkScoreboard>
           </v-card-text>
