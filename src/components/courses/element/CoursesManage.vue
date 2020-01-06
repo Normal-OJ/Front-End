@@ -1,6 +1,6 @@
-<!-- <template>
+<template>
   <div>
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12" md="6">
         <h3 class="mt-6 px-6">Manage Students</h3>
       </v-col>
@@ -114,7 +114,7 @@
           >Yes</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </div>
 </template>
 
@@ -125,96 +125,96 @@ export default {
 
   data () {
     return {
-      headers: [
-        { 'title': 'username', 'key': 'username' },
-        { 'title': 'display name', 'key': 'displayedName' },
-        { 'title': 'role', 'key': 'role' }
-      ],
-      dialog: false,
-      remove: false,
-      users: [],
-      TAs: [],
-      oldUsers: [],
-      errAlert: false,
-      errMsg: [],
-      newUsers: [],
-      editing: -1,
+      // headers: [
+      //   { 'title': 'username', 'key': 'username' },
+      //   { 'title': 'display name', 'key': 'displayedName' },
+      //   { 'title': 'role', 'key': 'role' }
+      // ],
+      // dialog: false,
+      // remove: false,
+      // users: [],
+      // TAs: [],
+      // oldUsers: [],
+      // errAlert: false,
+      // errMsg: [],
+      // newUsers: [],
+      // editing: -1,
     }
   },
 
   beforeMount() {
-    this.getOldUsers();
-    this.getUsers();
+    // this.getOldUsers();
+    // this.getUsers();
   },  
 
   methods: {
-    check(idx) {
-      this.editing = idx;
-      if ( editing >= this.TAs.length ) {
+    // check(idx) {
+    //   this.editing = idx;
+    //   if ( editing >= this.TAs.length ) {
 
-      } else {
-        if ( this.oldUsers[editing-this.TAs.length].role === 'Remove from course' ) {
-          this.remove = true;
-        }
-      }
-    },
-    submit() {
+    //   } else {
+    //     if ( this.oldUsers[editing-this.TAs.length].role === 'Remove from course' ) {
+    //       this.remove = true;
+    //     }
+    //   }
+    // },
+    // submit() {
       
-    },
-    del() {
-      if ( editing >= this.TAs.length ) {
-        this.TAs.splice(editing,1);
-      } else {
-        this.oldUsers.splice(editing-this.TAs.length,1);
-      }
-      var studentNicknames = {};
-      this.oldUsers.forEach(ele => {
-        studentNicknames[ele.username] = ele.displayName;
-      })
-      this.$http.delete(`/api/course/${this.$route.params.name}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'TAs': TAs, 'studentNicknames': studentNicknames}})
-    },
-    getOldUsers() {
-      this.$http.get(`/api/course/${this.$route.params.name}`)
-        .then((res) => {
-          var data = res.data.data;
-          data.TAs.forEach(ele => {
-            this.TAs.push(ele);
-          })
-          for ( var key in data.studentNicknames ) {
-            this.oldUsers.push({'username': key, 'displayName': data.studentNicknames[key]});
-          }
-        })
-        .catch((err) => {
+    // },
+    // del() {
+    //   if ( editing >= this.TAs.length ) {
+    //     this.TAs.splice(editing,1);
+    //   } else {
+    //     this.oldUsers.splice(editing-this.TAs.length,1);
+    //   }
+    //   var studentNicknames = {};
+    //   this.oldUsers.forEach(ele => {
+    //     studentNicknames[ele.username] = ele.displayName;
+    //   })
+    //   this.$http.delete(`/api/course/${this.$route.params.name}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'TAs': TAs, 'studentNicknames': studentNicknames}})
+    // },
+    // getOldUsers() {
+    //   this.$http.get(`/api/course/${this.$route.params.name}`)
+    //     .then((res) => {
+    //       var data = res.data.data;
+    //       data.TAs.forEach(ele => {
+    //         this.TAs.push(ele);
+    //       })
+    //       for ( var key in data.studentNicknames ) {
+    //         this.oldUsers.push({'username': key, 'displayName': data.studentNicknames[key]});
+    //       }
+    //     })
+    //     .catch((err) => {
 
-        })
-    },
-    getUsers() {
-      this.$http.get('/api/course/Public')
-        .then((res) => {
-          // console.log(res);
-          var data = res.data.data;
-          for ( var key in data.studentNicknames ) {
-            if ( !find(key) ) {
-              this.users.push({'username': key, 'displayName': data.studentNicknames[key]});
-            }
-          }
-        })
-        .catch((err) => {
-          // console.log(err);
-        })
-    },
-    find(username) {
-      if ( this.oldUsers.indexOf(username) >= 0 ) return true;
-      for ( var i=0; i<this.TAs.length; i++ ) {
-        if ( this.TAs[i].usrname === username ) {
-          return true;
-        }
-      }
-      return false;
-    },
+    //     })
+    // },
+    // getUsers() {
+    //   this.$http.get('/api/course/Public')
+    //     .then((res) => {
+    //       // console.log(res);
+    //       var data = res.data.data;
+    //       for ( var key in data.studentNicknames ) {
+    //         if ( !find(key) ) {
+    //           this.users.push({'username': key, 'displayName': data.studentNicknames[key]});
+    //         }
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       // console.log(err);
+    //     })
+    // },
+    // find(username) {
+    //   if ( this.oldUsers.indexOf(username) >= 0 ) return true;
+    //   for ( var i=0; i<this.TAs.length; i++ ) {
+    //     if ( this.TAs[i].usrname === username ) {
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // },
   },
 }
 </script>
 
 <style lang="css" scoped>
-</style> -->
+</style>
