@@ -18,7 +18,7 @@
             v-if="viewedAnnIndex !== index"
             class="caption grey--text"
           >
-            {{item.lastUpdater}}
+            {{item.lastUpdater.username}}
             at
             <span class="indigo--text">{{item.lastUpdatedTime.split(' ')[0]}}</span>
             {{item.lastUpdatedTime.split(' ')[1]}}
@@ -30,12 +30,12 @@
           class="black--text mask"
         >
           <span class="caption grey--text">
-            Created: {{item.author}} at 
+            Created: {{item.author.username}} at 
             <span class="indigo--text">{{item.createdTime.split(' ')[0]}}</span>
             {{item.createdTime.split(' ')[1]}}
             <span v-if="item.createdTime !== item.lastUpdatedTime">
               <br>
-              Modified: {{item.lastUpdater}} at
+              Modified: {{item.lastUpdater.username}} at
               <span class="indigo--text">{{item.lastUpdatedTime.split(' ')[0]}}</span>
               {{item.lastUpdatedTime.split(' ')[1]}}
             </span>

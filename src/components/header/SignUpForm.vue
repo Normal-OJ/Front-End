@@ -133,6 +133,12 @@ export default {
     }
   },
 
+  beforeMount() {
+    this.authData.username = '';
+    this.authData.password = '';
+    this.authData.email = '';
+  },
+
   mounted () {
     this.$nextTick(() => {
       this.$refs.email.focus();

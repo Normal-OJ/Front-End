@@ -1,5 +1,5 @@
 <template>
-  <v-card tile outlined elevation="0" height="100%" style="position: fixed;">
+  <v-card tile outlined elevation="0" height="100%" width="50%" style="position: fixed;">
     <v-row class="px-6" style="height: 10%;">
       <v-col v-for="(item, key, idx) in editorConfig" :key="idx" :cols="selectItem.width[idx]">
         <v-select
@@ -15,7 +15,7 @@
       v-if="show"
       ref="CM"
       :options="cmOption"
-      :style="{ height: '75%', fontSize: editorConfig.fontSize+'px' }"  
+      :style="{ height: '75%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
     <v-row class="pa-3" style="height: 15%;">
       <v-spacer></v-spacer>
@@ -95,28 +95,31 @@ export default {
         indentWithTabs: true,
         extraKeys: {
           Tab: function(cm) {
-            console.log()
             if ( !cm.getOption("indentWithTabs") ) {
-              console.log(cm.getOption("indentUnit"));
               var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
               cm.replaceSelection(spaces);
+            } else {
+              cm.replaceSelection('\t');
             }
           }
         },
       },
     }
   },
+  created() {
+    document.addEventListener('beforeunload', this.setCode);
+  },
   beforeMount () {
     this.setConfig();
   },
   methods: {
     async submit() {
+      this.setCode(this.editorConfig.language);
       var zip = new JSZip();
-      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.src);
+      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
       var code = await zip.generateAsync({type:"blob"});
       var formData = new FormData();
-      formData.append( 'code', code, 'stupidPM' ); 
-      console.log(formData);
+      formData.append( 'code', code ); 
       this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
         .then((res) => {
           console.log(res);
@@ -129,7 +132,7 @@ export default {
             .then((res) => {
               console.log(res);
               console.log('submissionId:'+ submissionId);
-              this.$emit('getSubmission', submissionId);
+              this.$emit('getSubmission');
             })
             .catch((err) => {
               console.log(err);
@@ -154,7 +157,7 @@ export default {
               'language': 0, // 0: c, 1: cpp, 2: py
             }
           }
-          this.code = DEFAULT_CODE[this.editorConfig.language];
+          this.code = this.getCode(this.editorConfig.language);
           this.updateOption();
         }
       }
@@ -174,8 +177,20 @@ export default {
       this.cmOption.tabSize = this.editorConfig.tabSize;
       this.cmOption.indentUnit = this.editorConfig.tabSize;
       this.cmOption.theme = this.editorConfig.theme;
+      this.code = this.setCode(LANG.indexOf(this.cmOption.mode));
       this.cmOption.mode = LANG[this.editorConfig.language];
-      this.code = DEFAULT_CODE[this.editorConfig.language];
+      this.code = this.getCode(this.editorConfig.language);
+    },
+    setCode(lang) {
+      this.$cookies.set(`code-${this.$route.param}-${lang}`, this.code);
+    },
+    getCode(lang) {
+      if ( this.$cookies.isKey(`code-${this.$route.params.id}-${lang}`) ) {
+        return this.$cookies.get(`code-${this.$route.params.id}-${lang}`);
+      } else {
+        this.$cookies.set(`code-${this.$route.params.id}-${lang}`, DEFAULT_CODE[lang]);
+        return DEFAULT_CODE[lang];
+      }
     },
     parseJwt(token) {
       return JSON.parse(atob(token.split('.')[1])).data;
@@ -192,7 +207,7 @@ export default {
 .CodeMirror {
   font-family: 'Monako';
   height: 100%;
-  width: 50vw;
+  width: 100%;
   direction: ltr;
 }
 </style>
