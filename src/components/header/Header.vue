@@ -167,7 +167,7 @@ export default {
       progress: 0,
       showProgress: true,
       payload: null,
-      avatar: null,
+      avatar: this.setAvatar(''),
       username: '',
       displayedName: '',
     }
@@ -208,7 +208,7 @@ export default {
           })
           this.username = this.payload.username;
           this.displayedName = this.payload.profile.displayedName;
-          this.setAvatar(this.payload.email);
+          this.avatar = this.setAvatar(this.payload.md5);
         }
       }
     },

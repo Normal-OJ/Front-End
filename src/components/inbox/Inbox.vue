@@ -142,7 +142,7 @@
                   <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-avatar v-else>
-                  <v-img :src="getAvatar()"></v-img>
+                  <v-img :src="getAvatar(-1)"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title v-if="displayFolder==='inbox'" class="headline">Sender: {{mail[displayFolder][displayMail].sender.username}}</v-list-item-title>
@@ -219,7 +219,7 @@
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
               <v-list-item-avatar v-else>
-                <v-img :src="getAvatar()"></v-img>
+                <v-img :src="getAvatar(-1)"></v-img>
               </v-list-item-avatar>
               <v-list-item-content v-if="displayFolder === 'inbox'" :class="item.status === 0 ? 'font-weight-bold': ''" @click="open('idx', i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
@@ -273,7 +273,7 @@
               <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
             </v-list-item-avatar>
             <v-list-item-avatar v-else>
-                <v-img :src="getAvatar()"></v-img>
+                <v-img :src="getAvatar(-1)"></v-img>
               </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="headline" v-if="displayFolder === 'inbox'">
@@ -378,6 +378,7 @@ export default {
       userSearchValue: '',
       selectedCourse: 'Select Course',
       toShow: false,
+      payload: '',
     }
   },
   watch: {
@@ -408,13 +409,17 @@ export default {
       if ( this.$cookies.isKey('jwt') ) {
         var payload = this.parseJwt(this.$cookies.get('jwt'));
         if ( payload.active === false ) {
-          return this.parseJwt(this.$cookies.get('jwt'));
-        } else {
           this.$router.push('/');
+        } else {
+          this.payload = payload;
         }
       } else {
         this.$router.push('/');
       }
+    },
+    parseJwt(token) {
+      console.log(atob(token.split('.')[1]));
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);
@@ -488,6 +493,7 @@ export default {
         })
     },
     getAvatar(payload) {
+      if ( payload === -1 ) payload = this.payload.md5;
       var d = encodeURI("noj.tw/defaultAvatar.png");
       return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },

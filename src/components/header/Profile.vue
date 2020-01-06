@@ -6,8 +6,8 @@
         Your avatar depends on&nbsp;
         <a href="https://en.gravatar.com/">Gravatar</a>
       </v-card-subtitle>
-      <v-avatar :src="avatar" :aspect-ratio="1" size="125" contain class="ma-3" tile>
-        <v-img :src="avatar"></v-img>
+      <v-avatar size="125" class="ma-3" style="border-radius: 0px;">
+        <v-img contain :src="avatar"></v-img>
       </v-avatar>
     </v-card>
     <v-form v-model="profileForm" ref="profileForm">
@@ -142,7 +142,7 @@ export default {
         'displayedName': '',
         'bio': '',
       },
-      avatar: null,
+      avatar: this.setAvatar(''),
       errAlert: '',
       errMsg: [],
       profileForm: false
@@ -170,7 +170,7 @@ export default {
           this.info.email = this.payload.email;
           this.info.displayedName = this.payload.profile.displayedName;
           this.info.bio = this.payload.profile.bio;
-          this.setAvatar(this.payload.email);
+          this.avatar = this.setAvatar(this.payload.md5);
         }
       } else {
         this.$router.push('/');

@@ -134,7 +134,9 @@ export default {
   },
 
   beforeMount() {
-    this.$refs.form.reset();
+    this.authData.username = '';
+    this.authData.password = '';
+    this.authData.email = '';
   },
 
   mounted () {
