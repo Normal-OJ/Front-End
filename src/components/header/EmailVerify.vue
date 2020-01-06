@@ -9,17 +9,12 @@
 
     <v-card>
       <v-card-title class="display-1">Profile</v-card-title>
-      <div class="text-center"><v-avatar
+      <div class="text-center">
+      <v-avatar
         size="100"
-        color="grey"
       >
-        <v-img 
-          v-if="image" 
-          :src="image"
-        ></v-img>
-        <v-img 
-          v-else
-          :src="require('@/assets/defaultAvatar.png')"
+        <v-img
+          :src="avatar"
         ></v-img>
       </v-avatar></div>
 
@@ -99,7 +94,7 @@ export default {
         'displayedName': '',
         'bio': '',
       },
-      image: null,
+      avatar: this.getAvatar(''),
       agree: false,
       errAlert: false,
       errMsg: '',
@@ -111,10 +106,10 @@ export default {
   },
 
   beforeMount () {
-
     this.payload = this.getPayload();
     this.username = this.payload.username;
     this.profile.displayedName = this.username;
+    this.avatar = this.getAvatar(this.payload.md5);
     // console.log('creating');
     // this.getAvatar();
   },
@@ -150,19 +145,14 @@ export default {
           });
       }
     },
-    // getAvatar() {
-    //   this.$http.get(`https://www.gravatar.com/${md5(toLowerCase(this.payload.email))}.json`)
-    //     .then((response) => {
-    //       console.log(response);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
-    uploadImage(event) {
-      console.log(event)
-      this.image = URL.createObjectURL(event)
+    getAvatar(payload) {
+      var d = encodeURI("noj.tw/defaultAvatar.png");
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },
+    // uploadImage(event) {
+    //   console.log(event)
+    //   this.image = URL.createObjectURL(event)
+    // },
   },
 }
 </script>
