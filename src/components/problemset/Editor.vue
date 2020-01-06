@@ -98,17 +98,23 @@ export default {
             if ( !cm.getOption("indentWithTabs") ) {
               var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
               cm.replaceSelection(spaces);
+            } else {
+              cm.replaceSelection('\t');
             }
           }
         },
       },
     }
   },
+  created() {
+    document.addEventListener('beforeunload', this.setCode);
+  },
   beforeMount () {
     this.setConfig();
   },
   methods: {
     async submit() {
+      this.setCode(this.editorConfig.language);
       var zip = new JSZip();
       zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
       var code = await zip.generateAsync({type:"blob"});
@@ -151,7 +157,7 @@ export default {
               'language': 0, // 0: c, 1: cpp, 2: py
             }
           }
-          this.code = DEFAULT_CODE[this.editorConfig.language];
+          this.code = this.getCode(this.editorConfig.language);
           this.updateOption();
         }
       }
@@ -171,8 +177,20 @@ export default {
       this.cmOption.tabSize = this.editorConfig.tabSize;
       this.cmOption.indentUnit = this.editorConfig.tabSize;
       this.cmOption.theme = this.editorConfig.theme;
+      this.code = this.setCode(LANG.indexOf(this.cmOption.mode));
       this.cmOption.mode = LANG[this.editorConfig.language];
-      this.code = DEFAULT_CODE[this.editorConfig.language];
+      this.code = this.getCode(this.editorConfig.language);
+    },
+    setCode(lang) {
+      this.$cookies.set(`code-${this.$route.param}-${lang}`, this.code);
+    },
+    getCode(lang) {
+      if ( this.$cookies.isKey(`code-${this.$route.params.id}-${lang}`) ) {
+        return this.$cookies.get(`code-${this.$route.params.id}-${lang}`);
+      } else {
+        this.$cookies.set(`code-${this.$route.params.id}-${lang}`, DEFAULT_CODE[lang]);
+        return DEFAULT_CODE[lang];
+      }
     },
     parseJwt(token) {
       return JSON.parse(atob(token.split('.')[1])).data;
