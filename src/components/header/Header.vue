@@ -97,6 +97,7 @@
       <v-list dense>
         <v-list-item
           v-for="link in links"
+          v-if="link.show"
           :key="link.title"
           :to="link.path"
           link

@@ -43,11 +43,19 @@
     >Sign in</v-btn>
 
     <v-btn
-      class="text-none caption mx-2"
+      class="text-none subtitle-1 mx-2"
       color="primary"
       text
       x-small
-    >haven't verify your mail?</v-btn>
+      @click="emailResend"
+    ><u>Haven't Verify Email?</u></v-btn>
+    <v-btn
+      class="text-none subtitle-1 mx-2"
+      color="primary"
+      text
+      x-small
+      @click="emailResend"
+    ><u>Forget Password?</u></v-btn>
 
   </v-form>
 </template>
@@ -73,6 +81,10 @@ export default {
       errAlert: false,
       errMsg: [],
     }
+  },
+
+  beforeMount() {
+    this.$refs.form.reset();
   },
 
   mounted () {
@@ -137,6 +149,10 @@ export default {
 
       }
       this.btnLoading = false;
+    },
+    emailResend() {
+      let routeData = this.$router.resolve({name: 'EmailResend'});
+      window.open(routeData.href, '_blank');
     }
   }
 }

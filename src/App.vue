@@ -18,20 +18,26 @@ export default {
   },
 
   data: () => ({
-    //
-    aa: false
-  }),
-
-  created () {
-    () => {
-      this.aa = true;
-    }
-  }
+  })
 };
 </script>
 
 <style>
+@import "./styles/markdownstyle.css";
+
 #app {
   font-family: 'Lato';
+  font-size: 20px;
+}
+
+code::before, code::after {
+  content: none !important;
+}
+
+.v-application code {
+  background-color: #f8f8f8 !important;
+  color: #bd4147;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
 }
 </style>
