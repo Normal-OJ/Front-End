@@ -4,7 +4,7 @@
       app
       id="navbar"
       color="#003865"
-      height="70%"
+      height="55%"
       dark
       dense
     >

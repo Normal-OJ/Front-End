@@ -32,20 +32,20 @@
         </thead>
         <tbody>
           <tr
-            v-for="(prob, idx) in probs"
+            v-for="(pro, idx) in probs"
             :key="idx"
           >
             <td
               v-for="(header, idx) in headers"
               :key="idx"
             >
-              <p v-if="header.key==='problemName'"><a target="_blank" rel="noopener noreferrer" :href="'/problem/'+prob['id']" v-text="prob[header.key]"></a></p>
+              <p v-if="header.key==='problemName'"><a target="_blank" rel="noopener noreferrer" :href="'/problem/'+pro['id']" v-text="pro[header.key]"></a></p>
               <v-chip-group
                 v-else-if="header.key==='tags'"
                 :column="true"
               >
                 <v-chip
-                  v-for="(tag, idx) in prob[header.key]"
+                  v-for="(tag, idx) in pro[header.key]"
                   :key="idx"
                   label
                   color="secondary"
@@ -53,27 +53,27 @@
                   :ripple="false"
                 >{{ tag }}</v-chip>
               </v-chip-group>
-              <p v-else-if="header.key!=='action'" v-text="prob[header.key]"></p>
-              <v-layout v-else-if="prob['owner']!==username">
-                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(1,prob['problemId'])" color="secondary">
+              <p v-else-if="header.key!=='action'" v-text="pro[header.key]"></p>
+              <v-layout v-else-if="pro['owner']===username">
+                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(1,pro['problemId'])" color="secondary">
                   <v-icon color="white">mdi-delete</v-icon>
                   Delete
                 </v-btn>
-                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(2,prob['problemId'])">
+                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(2,pro['problemId'])">
                   <v-icon>mdi-content-copy</v-icon>
                   Clone
                 </v-btn>
-                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(3,prob['problemId'])">
+                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(3,pro['problemId'])">
                   <v-icon>mdi-share-all</v-icon>
                   Publish
                 </v-btn>
-                <v-btn class="text-none subtitle-2 mr-1" @click="openEdit(prob['problemId'])">
+                <v-btn class="text-none subtitle-2 mr-1" @click="openEdit(pro['problemId'])">
                   <v-icon>mdi-pencil</v-icon>
                   Edit
                 </v-btn>
               </v-layout>
               <v-layout v-else>
-                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(2,prob['problemId'])">
+                <v-btn class="text-none subtitle-2 mr-1" @click="openInfo(2,pro['problemId'])">
                   <v-icon>mdi-content-copy</v-icon>
                   Clone
                 </v-btn>
@@ -134,7 +134,7 @@
             v-model="validForm"
           >
             <v-alert
-              v-model="errAlert"
+              v-model="errAlert2"
               dismissible
               colored-border
               border="left"
@@ -142,12 +142,12 @@
               elevation="2"
               type="error"
               transition="scroll-y-transition"
-            ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
+            ><v-row v-for="(msg, idx) in errMsg2" :key="idx">{{ msg }}</v-row></v-alert>
             <v-text-field
               label="Problem Name(Required)"
               counter="64" 
               :rules="nameRules" 
-              v-model="prob.probName">
+              v-model="prob.problemName">
             </v-text-field>
             <v-textarea 
               label="Problem Description(Required)" 
@@ -186,51 +186,74 @@
                 ></v-select>
               </v-col>
             </v-row>
-            <v-row>
+            <!-- <v-row>
               <v-col cols="12" sm="6">
                 <v-btn
                   color="primary"
                   @click="openInfo(4)"
                   class="text-none title"
                   v-text="'TestCase Format'"
-                ></v-btn>
-              </v-col>
-              <v-col cols="12" sm="6">
+                ></v-btn> -->
+              <!-- </v-col> -->
+              <!-- <v-col cols="12" sm="6">
                 <v-btn
                   color="primary"
                   @click="openInfo(5)"
                   class="text-none title"
                   v-text="'View TestCase'"
                 ></v-btn>
-              </v-col>
-            </v-row>
+              </v-col> -->
+            <!-- </v-row> -->
             <v-row>
-              <v-col cols="12" md="4">
+              <!-- <v-col cols="12" md="4">
                 <v-text-field
                   label="Case Score"
                   v-model="prob.caseScore">
                 </v-text-field>
-              </v-col>
-              <v-col cols="12" md="4">
+              </v-col> -->
+              <v-col cols="12" md="6">
                 <v-text-field
                   label="Time Limit(ms)" 
                   v-model="prob.timeLimit">
                 </v-text-field>
               </v-col>
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="6">
                 <v-text-field
                   label="Memory Limit(KB)" 
                   v-model="prob.memoryLimit">
                 </v-text-field>
               </v-col>
             </v-row>
-            <v-file-input 
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-textarea 
+                  label="Input" 
+                  v-model="prob.input"
+                  auto-grow
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-textarea 
+                  label="Output" 
+                  v-model="prob.output"
+                  auto-grow
+                ></v-textarea>
+              </v-col>
+            </v-row>
+            <!-- <v-file-input 
               label="Test Case"
               v-model="prob.zip"
-            ></v-file-input>
+              @change="getTestCase"
+            ></v-file-input> -->
           </v-form>
         </v-card-text>
         <v-card-actions>
+          <v-btn
+            color="primary"
+            @click="openInfo(4)"
+            class="text-none title"
+            v-text="'TestCase Format'"
+          ></v-btn>
           <v-spacer></v-spacer>
           <v-btn
             color="primary"
@@ -252,6 +275,9 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
+import JSZip from 'jszip';
+import JSZipUtils from '@/dist/jszip-utils.js'
+
 export default {
 
   name: 'ProblemsManage',
@@ -264,8 +290,6 @@ export default {
     return {
       username: '',
       probs: [],
-      ownerBtn: true,
-      publicBtn: true,
       headers: [
         { 'title': 'Id', 'key': 'id' }, 
         { 'title': 'Name', 'key': 'problemName' }, 
@@ -284,8 +308,8 @@ export default {
           '**This problem will be deleted permanently**.\n  If you just wanna hide this problem, you can change problem `status` from Online to Offline.',
           'Cloning a problem, will **duplicate** a same problem whose `owner` is you.\n  Every problem can be cloned.',
           'Publish will make your problem **Public**.\n  Note that after publishing, `owner` will be replaced with **Admin**, and you will unable to modify it.(you can clone it again, of course)',
-          'For a Problem, you can set one or several subtask.\n  For each subtask, exactly one input file & one output file is in need.\n  Please name in `1.in`, `1.out`, `2.in`, `2.out`, ...\n  And pack all of them in a **ZIP file** to upload it.\n\n  Case Score: [score_of_subtask1, score_of_subtask2, ...], the total need be 100. [30, 30, 40], for example.',
-          this.getTestCase(),
+          'For a Problem, you can set one or several subtask.\n  For each subtask, exactly one input file & one output file is in need.\n  Please name in `1.in`, `1.out`, `2.in`, `2.out`, ...\n  And pack all of them in `testcase.zip` to upload it.\n\n  Case Score: [score_of_subtask1, score_of_subtask2, ...], the total need be 100. [30, 30, 40], for example.',
+          '',
         ],
         'action': ['Ok', 'Delete Problem', 'Clone Problem', 'Publish Problem', 'Return', 'Return'],
       },
@@ -293,6 +317,8 @@ export default {
       editDialog: false,
       STATUS: ['Online', 'Offline'],
       TYPE: ['Default', 'Fill-in-the-blank'],
+      tags: [],
+      courses: [],
       prob: {
         'problemName': '',
         'description': '',
@@ -300,11 +326,14 @@ export default {
         'courses': [],
         'status': 0,
         'type': 0,
-
+        'testCase': {
+          'cases': [],
+        },
+        'input': '',
+        'output': '',
         'caseScore': '[100]',
         'timeLimit': '2000',
         'memoryLimit': '32768',
-        'zip': null,
       },
       nameRules: [
         v => !!v || 'Problem Name is required!', 
@@ -314,10 +343,10 @@ export default {
         v => !!v || 'Description is required!',
         v => !!v && v.length <= 100000 || 'Sorry, the length must be ≤ 100000 characters.',
       ],
-      tags: [],
-      courses: [],
       errAlert: false,
+      errAlert2: false,
       errMsg: [],
+      errMsg2: [],
       validForm: true,
     }
   },
@@ -330,14 +359,70 @@ export default {
 
   methods: {
     getTestCase() {
-
+      // var file = new File(["testcase"], this.prob.zip);
+      this.info.content[5] = '';
+      JSZip.loadAsync(this.prob.zip)  // 1) read the Blob
+        .then(function(zip) {
+          zip.forEach(function (relativePath, zipEntry) { // 2) print entries
+            this.info.content[5] += zipEntry.name;
+            this.info.content[5] += '\n';
+          });
+        });
     },
     openEdit(id) {
       this.postId = id;
+      this.setEdit();
       this.editDialog = true;
     },
+    setEdit() {
+      this.probs.forEach(ele => {
+        if ( ele.problemId === this.postId ) {
+          console.log(ele);
+          this.prob.problemName = ele.problemName;
+          this.prob.description = ele.description;
+          this.prob.tags = ele.tags;
+          this.prob.courses = ele.courses;
+          this.prob.type = ele.type;
+          this.prob.status = ele.status;
+          // console.log(ele.testCase);
+          // this.prob.input = ele.testCase.cases[0].input;
+          // this.prob.output = ele.testCase.cases[0].output;
+          // this.prob.timeLimit = ele.testCase.cases[0].timeLimit;
+          // this.prob.memoryLimit = ele.testCase.cases[0].memoryLimit;
+        }
+      })
+    },
     post() {
-
+      if ( this.$refs.form.validate() ) {
+        this.prob.testCase.cases.push({
+          'input': this.prob.input,
+          'output': this.prob.output,
+          'caseScore': ['100'],
+          'timeLimit': this.prob.timeLimit,
+          'memoryLimit': this.prob.memoryLimit,
+        })
+        this.prob.type = 0;
+        this.prob.status = this.prob.status==='Online' ? 0 : 1;
+        if ( this.postId === -1 ) {
+          this.$http.post('/api/problem/manage', this.prob)
+            .then((res) => {
+              this.editDialog = false;
+            })
+            .catch((err) => {
+              this.errMsg2 = [err.response.data.message];
+              this.errAlert2 = true;
+            })
+        } else {
+          this.$http.put(`/api/problem/manage/${this.postId}`, this.prob)
+            .then((res) => {
+              this.editDialog = false;
+            })
+            .catch((err) => {
+              this.errMsg2 = [err.response.data.message];
+              this.errAlert2 = true;
+            })
+        }
+      }
     },
     openInfo(id, pid=0) {
       this.info.id = id;

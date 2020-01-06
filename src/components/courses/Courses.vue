@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if="perm">
       <v-col cols="12">
         <v-hover v-slot:default="{ hover }">
           <v-card
@@ -113,11 +113,13 @@ export default {
       courseName: '',
       errAlert: false,
       errMsg: [],
+      perm: false,
     }
   },
 
   beforeMount () {
     this.getCourses();
+    this.getProfile();
   },
 
   methods: {
@@ -134,6 +136,24 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    getProfile() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === true ) {
+          if ( payload.role <= 1 ) {
+            this.perm = true;
+          }
+        } else {
+          this.$router.push('/');
+        }
+      } else {
+        this.$router.push('/');
+      }
+    },
+    parseJwt(token) {
+      console.log(atob(token.split('.')[1]));
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
     post() {
       if ( this.$refs.form.validate() ) {

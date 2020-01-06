@@ -20,6 +20,7 @@
           :to="link.path"
           link
           dense
+          v-if="link.title!=='Manage'||perm"
         >
           <v-list-item-icon>
             <v-icon class="mt-2">{{ link.icon }}</v-icon>
@@ -49,14 +50,16 @@ export default {
         { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-open-variant'},
         // { 'title': 'Contest', 'path': `/course/${this.$route.params.name}/contest`, 'icon': 'mdi-flag'},
         { 'title': 'Discussion', 'path': `/course/${this.$route.params.name}/discussion`, 'icon': 'mdi-message-text'},
-        { 'title': 'Score', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
+        // { 'title': 'Score', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
         { 'title': 'Manage', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
       ],
+      perm: false,
     }
   },
 
   beforeMount() {
     this.getInfo();
+    this.checkUser(this.getUsername());
   },
 
   methods: {
@@ -70,6 +73,33 @@ export default {
         .catch((err) => {
           console.log(err);
         })
+    },
+    getUsername() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === true ) {
+          if ( payload.role <= 1 ) this.perm = true;
+          return payload.username;
+        }
+      }
+    },
+    checkUser(username) {
+      this.$http.get(`/api/course/${this.$route.params.name}`)
+        .then((res) => {
+          var data = res.data.data;
+          data.TAs.forEach(ele => {
+            if ( ele.username === username ) {
+              this.perm = true;
+              return;
+            }
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    parseJwt(token) {
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
     setAvatar(payload) {
       var d = encodeURI("noj.tw/defaultAvatar.png");
