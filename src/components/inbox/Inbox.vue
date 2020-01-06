@@ -475,7 +475,8 @@ export default {
         })
     },
     getAvatar(payload) {
-      return `https://www.gravatar.com/avatar/${payload}?d=mp`;
+      var d = encodeURI("noj.tw/defaultAvatar.png");
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },
     send() {
       // validate form
