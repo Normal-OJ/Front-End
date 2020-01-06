@@ -55,7 +55,7 @@ export default {
       this.$http.get(`${API_BASE_URL}/ranking`)
         .then((res) => {
           console.log(res.data);
-          this.showRanking(res.data.data);
+          this.showRanking(res.data.data.reverse());
         })
         .catch((err) => {
           console.log(err);

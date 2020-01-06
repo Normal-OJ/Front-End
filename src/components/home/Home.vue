@@ -15,7 +15,7 @@
     <v-row
       class="ma-0 pa-0 left-top"
       style="width: 100vw"
-      align="center"
+      align="start"
     >
       
       <v-col cols="6">

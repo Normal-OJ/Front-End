@@ -34,28 +34,35 @@
       @keyup.enter="submit"
     ></v-text-field>
 
-    <v-icon color="white">mdi-lock</v-icon>
-    <v-btn
-      class="text-none subtitle-1 mt-1 mx-2"
-      color="primary"
-      :loading="btnLoading"
-      @click="submit"
-    >Sign in</v-btn>
-
-    <v-btn
-      class="text-none subtitle-1 mx-2"
-      color="primary"
-      text
-      x-small
-      @click="emailResend"
-    ><u>Haven't Verify Email?</u></v-btn>
-    <v-btn
-      class="text-none subtitle-1 mx-2"
-      color="primary"
-      text
-      x-small
-      @click="emailResend"
-    ><u>Forget Password?</u></v-btn>
+    <v-row>
+      <v-col cols="12" md="4">
+        <v-icon color="white">mdi-lock</v-icon>
+        <v-btn
+          class="text-none subtitle-1 mt-1 mx-2"
+          color="primary"
+          :loading="btnLoading"
+          @click="submit"
+        >Sign in</v-btn>
+      </v-col>
+      <v-col cols="12" sm="6" md="4">
+        <v-btn
+          class="text-none subtitle-1 mx-2"
+          color="primary"
+          text
+          x-small
+          @click="emailResend"
+        ><u>Haven't Verify Email?</u></v-btn>
+      </v-col>
+      <v-col cols="12" sm="6" md="4">
+        <v-btn
+          class="text-none subtitle-1 mx-2"
+          color="primary"
+          text
+          x-small
+          @click="emailResend"
+        ><u>Forget Password?</u></v-btn>
+      </v-col>
+    </v-row>
 
   </v-form>
 </template>
