@@ -43,11 +43,19 @@
     >Sign in</v-btn>
 
     <v-btn
-      class="text-none caption mx-2"
+      class="text-none subtitle-1 mx-2"
       color="primary"
       text
       x-small
-    >haven't verify your mail?</v-btn>
+      @click="emailResend"
+    ><u>Haven't Verify Email?</u></v-btn>
+    <v-btn
+      class="text-none subtitle-1 mx-2"
+      color="primary"
+      text
+      x-small
+      @click="emailResend"
+    ><u>Forget Password?</u></v-btn>
 
   </v-form>
 </template>
@@ -73,6 +81,11 @@ export default {
       errAlert: false,
       errMsg: [],
     }
+  },
+
+  beforeMount() {
+    this.authData.username = '';
+    this.authData.password = '';
   },
 
   mounted () {
@@ -106,13 +119,13 @@ export default {
             // console.log(response.data);
             if ( response.data.data.valid === 1 ) {
               // this user is not exist
-              type = (type==='email') ? 'E-mail' : 'Username';
+              type = (type==='email') ? 'username' : 'email';
 
               this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData.username})
                 .then((response) => {
                   // console.log(response.data);
                   if ( response.data.data.valid === 1 ) {
-                    this.errMsg = ['Sorry, we couldn\'t find an account with that ' + type + '.'];
+                    this.errMsg = ['Sorry, we couldn\'t find an account with that E-mail/Username.'];
                     this.errAlert = true;
                   } else if ( response.data.data.valid === 0 ) {
                     this.signin();
@@ -137,6 +150,10 @@ export default {
 
       }
       this.btnLoading = false;
+    },
+    emailResend() {
+      let routeData = this.$router.resolve({name: 'EmailResend'});
+      window.open(routeData.href, '_blank');
     }
   }
 }

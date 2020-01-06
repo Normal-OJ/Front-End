@@ -1,11 +1,31 @@
 <template>
-  <div style="width: 70vw; margin: 0 auto;">
-    <v-form>
+  <div :style="{ width: this.$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw', margin: '0 auto', }">
+    <v-card class="px-3 ma-3">
+      <v-card-title class="headline" v-text="'Avatar'"></v-card-title>
+      <v-card-subtitle>
+        Your avatar depends on&nbsp;
+        <a href="https://en.gravatar.com/">Gravatar</a>
+      </v-card-subtitle>
+      <v-avatar size="125" class="ma-3" style="border-radius: 0px;">
+        <v-img contain :src="avatar"></v-img>
+      </v-avatar>
+    </v-card>
+    <v-form v-model="profileForm" ref="profileForm">
       <v-card class="px-3 ma-3">
-        <v-card-title>
-          User Information
-        </v-card-title>
+        <v-card-title>User Information</v-card-title>
         <v-divider></v-divider>
+        <v-alert
+          v-if="errAlert === 'profile'"
+          dismissible
+          colored-border
+          border="left"
+          dense
+          elevation="2"
+          type="error"
+          transition="scroll-y-transition"
+        >
+          <v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row>
+        </v-alert>
         <v-card-text>
           <v-row>
             <v-text-field
@@ -13,19 +33,22 @@
               label="Display Name"
               class="mx-1"
               outlined
+              :rules="[v => v.length <= 16 || 'Display name\'s length must <= 16!']"
             ></v-text-field>
             <v-text-field
               v-model="info.username"
               label="Username"
               class="mx-1"
-              outlined
+              color="secondary"
+              filled
               readonly
             ></v-text-field>
             <v-text-field
               v-model="info.email"
               label="Email"
               class="mx-1"
-              outlined
+              color="secondary"
+              filled
               readonly
             ></v-text-field>
           </v-row>
@@ -35,31 +58,24 @@
               label="Bio"
               class="mx-1"
               outlined
+              :rules="[v => v.length <= 64 || 'Bio must shorter than 64!']"
             ></v-textarea>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            block
-            color="primary"
-            class="mb-2"
-            @click="update"
-          ><v-icon class="mr-2">mdi-send</v-icon>Update</v-btn>
+          <v-btn block color="primary" class="mb-2" @click="update">
+            <v-icon class="mr-2">mdi-send</v-icon>Update
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
-    <v-form
-      v-model="passwdForm"
-      ref="passwdForm"
-    >
+    <v-form v-model="passwdForm" ref="passwdForm">
       <v-card class="px-3 ma-3">
-        <v-card-title>
-          Change Password
-        </v-card-title>
+        <v-card-title>Change Password</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
           <v-alert
-            v-model="errAlert"
+            v-if="errAlert === 'passwd'"
             dismissible
             colored-border
             border="left"
@@ -67,7 +83,9 @@
             elevation="2"
             type="error"
             transition="scroll-y-transition"
-          ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
+          >
+            <v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row>
+          </v-alert>
           <v-row>
             <v-text-field
               v-model="passwd.newPassword"
@@ -95,12 +113,9 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn
-            block
-            color="primary"
-            class="mb-2"
-            @click="submit"
-          ><v-icon class="mr-2">mdi-send</v-icon>Submit</v-btn>
+          <v-btn block color="primary" class="mb-2" @click="submit">
+            <v-icon class="mr-2">mdi-send</v-icon>Submit
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
@@ -114,7 +129,7 @@ export default {
 
   name: 'Profile',
 
-  data () {
+  data() {
     return {
       passwdForm: false,
       passwd: {
@@ -127,50 +142,73 @@ export default {
         'displayedName': '',
         'bio': '',
       },
-      errAlert: false,
+      avatar: this.setAvatar(''),
+      errAlert: '',
       errMsg: [],
+      profileForm: false
     }
   },
 
-  beforeMount () {
-    if ( !this.$cookies.isKey('jwt') )
-      this.$router.push('/');
+  beforeMount() {
     this.getProfile();
   },
 
   methods: {
     getProfile() {
-      this.$http.get(`${API_BASE_URL}/profile`)
-        .then((res) => {
-          // console.log(res.data.data);
-          this.info = res.data.data;
-        })
-        .catch((err) => {
-          // console.log(err);
-        })
+      // this.$http.get(`${API_BASE_URL}/profile`)
+      //   .then((res) => {
+      //     // console.log(res.data.data);
+      //     this.info = res.data.data;
+      //   })
+      //   .catch((err) => {
+      //     // console.log(err);
+      //   })
+      if (this.$cookies.isKey('jwt')) {
+        this.payload = this.parseJwt(this.$cookies.get('jwt'));
+        if (this.payload.active === true) {
+          this.info.username = this.payload.username;
+          this.info.email = this.payload.email;
+          this.info.displayedName = this.payload.profile.displayedName;
+          this.info.bio = this.payload.profile.bio;
+          this.avatar = this.setAvatar(this.payload.md5);
+        }
+      } else {
+        this.$router.push('/');
+      }
+    },
+    setAvatar(payload) {
+      var d = encodeURI("noj.tw/defaultAvatar.png");
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
+    },
+    parseJwt(token) {
+      console.log(atob(token.split('.')[1]));
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
     update() {
-      this.$http.post(`${API_BASE_URL}/profile`, this.info)
-        .then((res) => {
-          this.$router.go(0);
-          // console.log(res);
-        })
-        .catch((err) => {
-          // console.log(err);
-        })
+      if (this.$refs.profileForm.validate()) {
+        this.$http.post(`${API_BASE_URL}/profile`, this.info)
+          .then((res) => {
+            this.$router.go(0);
+            // console.log(res);
+          })
+          .catch((err) => {
+            this.errMsg = ['Invalid data!'];
+            this.errAlert = 'profile';
+          })
+      }
     },
     submit() {
-      if ( this.$refs.passwdForm.validate() ) {
+      if (this.$refs.passwdForm.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/change-password`, this.passwd)
-        .then((res) => {
-          this.$router.go(0);
-          // console.log(res);
-        })
-        .catch((err) => {
-          this.errMsg = ['Sorry, your password do not match.'];
-          this.errAlert = true;
-          // console.log(err);
-        })
+          .then((res) => {
+            this.$router.go(0);
+            // console.log(res);
+          })
+          .catch((err) => {
+            this.errMsg = ['Sorry, your password do not match.'];
+            this.errAlert = 'passwd';
+            // console.log(err);
+          })
       }
     },
   }
