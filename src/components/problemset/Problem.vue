@@ -16,7 +16,7 @@
                   v-for="tag in tags"
                   :key="tag" 
                   label
-                ><a :href="`/problems?tag=${tag}`" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
+                ><a :href="`/problems?offset=0&count=-1&tags=${tag}`" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
               </v-col>
               <v-col cols="2">
                 Type: {{ type===0 ? 'default' : 'fill-in' }}
@@ -102,6 +102,7 @@ export default {
         })
     },
     getSubm() {
+      this.submData = [];
       this.$http.get(`${API_BASE_URL}/submission?offset=0&count=-1&problemId=${this.$route.params.id}`)
         .then((res) => {
           console.log('subm:', res);
@@ -136,8 +137,9 @@ export default {
         })
     },
     setSubmission() {
-      this.tab = 1;
+      this.submData = [];
       this.getSubm();
+      this.tab = 1;
     },
     updateSubm(sid) {
       this.$http.get(`${API_BASE_URL}/submission/${sid}`)
@@ -150,7 +152,6 @@ export default {
             await this.delay(4000);
             this.updateSubm(sid);
           } else {
-            this.submData = [];
             this.getSubm();
             this.show = true;
           }
