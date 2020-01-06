@@ -139,7 +139,6 @@
 
 <script>
 import Auth from './Auth';
-import MD5 from './utils.js';
 
 const API_BASE_URL = '/api';
 const MSG = ['Welcome! Signed in successfully!', 'Bye! Signed out successfully'];
@@ -179,25 +178,26 @@ export default {
   },
 
   methods: {
-    async showAlert(type) {
-      this.$forceUpdate();
-      this.setProfile();
+    async showAlert() {
       this.drawer = false;
-      this.alertBar = true;
-      this.alertText = MSG[type];
-      this.progress = 100;
-      for ( let i=0; i<40; ++i ) {
-        this.progress -= 2.5;
-        await this.delay(100);
-      }
+      this.$router.go(0);
+      // this.$forceUpdate();
+      // this.setProfile();
+      // this.alertBar = true;
+      // this.alertText = MSG[type];
+      // this.progress = 100;
+      // for ( let i=0; i<40; ++i ) {
+      //   this.progress -= 2.5;
+      //   await this.delay(100);
+      // }
     },
-    delay(delayInms) {
-      return new Promise(resolve  => {
-        setTimeout(() => {
-          resolve(2);
-        }, delayInms);
-      });
-    },
+    // delay(delayInms) {
+    //   return new Promise(resolve  => {
+    //     setTimeout(() => {
+    //       resolve(2);
+    //     }, delayInms);
+    //   });
+    // },
     setProfile() {
       if ( this.$cookies.isKey('jwt') ) {
         this.payload = this.parseJwt(this.$cookies.get('jwt'));
@@ -224,13 +224,14 @@ export default {
       this.$http.get(`${API_BASE_URL}/auth/session`)
         .then((res) => {
           console.log(res);
-          this.showAlert(1);
           this.isLogin = false;
-          this.links.forEach((obj) => {
-            if ( obj.title != 'Home' && obj.title != 'Problems' )
-              obj.show = false;
-          })
-          this.$forceUpdate();
+          // this.links.forEach((obj) => {
+          //   if ( obj.title != 'Home' && obj.title != 'Problems' )
+          //     obj.show = false;
+          // })
+          this.$router.push('/');
+          this.showAlert();
+          // this.$forceUpdate();
         })
         .catch((err) => {
           console.log(err);

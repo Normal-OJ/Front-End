@@ -123,8 +123,6 @@
 </template>
 
 <script>
-import MD5 from './utils.js';
-
 const API_BASE_URL = '/api';
 
 export default {

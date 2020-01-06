@@ -391,6 +391,7 @@ export default {
     },
   },
   beforeMount() {
+    this.getPayload();
     this.init();
   },
   methods: {
@@ -402,6 +403,18 @@ export default {
       this.getInbox();
       this.getSent();
       this.getCourse();
+    },
+    getPayload() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === false ) {
+          return this.parseJwt(this.$cookies.get('jwt'));
+        } else {
+          this.$router.push('/');
+        }
+      } else {
+        this.$router.push('/');
+      }
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);
