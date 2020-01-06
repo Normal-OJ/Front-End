@@ -17,12 +17,12 @@
       style="width: 100vw"
       align="center"
     >
-      <!--
+      
       <v-col cols="6">
         <Announcement></Announcement>
       </v-col>
-      -->
-      <v-col cols="12">
+      
+      <v-col cols="6">
         <Ranking></Ranking>
       </v-col>
     </v-row>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-//import Announcement from './Announcement'
+import Announcement from './Announcement'
 import Ranking from './Ranking'
 
 export default {
@@ -38,7 +38,7 @@ export default {
   name: 'Home',
 
   components: {
-    //Announcement,
+    Announcement,
     Ranking
   },
 
