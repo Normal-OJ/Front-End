@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/home/Home'
 import Problemset from '@/components/problemset/Problemset'
 import Problem from '@/components/problemset/Problem'
+import ProblemsManage from '@/components/problemset/ProblemsManage/'
 import Submissions from '@/components/submissions/Submissions'
 import Submission from '@/components/submissions/Submission'
 import Courses from '@/components/courses/Courses'
@@ -34,6 +35,11 @@ export default new Router({
       path: '/problems',
       name: 'Problemset',
       component: Problemset
+    },
+    {
+      path: '/problems/manage',
+      name: 'ProblemsManage',
+      component: ProblemsManage
     },
     {
       path: '/problem/:id',

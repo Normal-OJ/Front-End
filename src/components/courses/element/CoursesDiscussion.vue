@@ -15,7 +15,6 @@
       <v-card-title class="display-2 font-weight-bold">{{item.title}}</v-card-title>
       <v-card-text class="black--text"><vue-markdown :source="item.content"></vue-markdown></v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
         <v-btn
           color="primary"
           class="text-none subtitle-1"
@@ -23,6 +22,7 @@
           outlined
           @click="pushNewReply(i,-1)"
         >Comment</v-btn>
+        <v-spacer></v-spacer>
       </v-card-actions>
       <v-divider></v-divider>
       <v-list two-line expand class="pa-0" dense>
@@ -241,6 +241,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar v-model="snackbar" left>
+      This Comment or Post you replied has deleted.
+      <v-btn
+        color="pink"
+        text
+        @click="snackbar = false"
+      >Close</v-btn>
+    </v-snackbar>
   </v-row>
 </template>
 
@@ -284,6 +292,7 @@ export default {
       posts: [],
       perm: false,
       username: '',
+      snackbar: false,
     }
   },
   beforeMount() {
@@ -376,14 +385,15 @@ export default {
       else this.target.targetThreadId = this.posts[i].id
       this.$http.post(`${API_BASE_URL}/post`, this.target)
         .then((res) => {
-          this.init()
+          this.init();
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
+          this.snackbar = true;
         });
     },
     pushNewReply(i,j) {
-      if(j === -1) this.posts[i].reply.push({'reply': [], 'content': '', 'editing': true})
+      if(j === -1) this.posts[i].reply. push({'reply': [], 'content': '', 'editing': true})
       else this.posts[i].reply[j].reply.push({'content': '', 'editing': true})
     },
     edit(i,j,k) {
@@ -446,16 +456,13 @@ export default {
       }
     },
     getAvatar(payload) {
-      return `https://www.gravatar.com/avatar/${payload}?d=mp`;
+      var d = encodeURI("noj.tw/defaultAvatar.png");
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },
     checkUser(username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
           var data = res.data.data;
-          if ( data.teacher.username === username ) {
-            this.perm = true;
-            return;
-          }
           data.TAs.forEach(ele => {
             if ( ele.username === username ) {
               this.perm = true;
@@ -471,7 +478,7 @@ export default {
       if ( this.$cookies.isKey('jwt') ) {
         var payload = this.parseJwt(this.$cookies.get('jwt'));
         if ( payload.active === true ) {
-          if ( payload.role === 0 ) this.perm = true;
+          if ( payload.role <= 1 ) this.perm = true;
           this.username = payload.username;
           return payload.username;
         }

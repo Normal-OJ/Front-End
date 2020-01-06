@@ -181,10 +181,6 @@ export default {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
           var data = res.data.data;
-          if ( data.teacher.username === username ) {
-            this.perm = true;
-            return;
-          }
           data.TAs.forEach(ele => {
             if ( ele.username === username ) {
               this.perm = true;
@@ -200,7 +196,7 @@ export default {
       if ( this.$cookies.isKey('jwt') ) {
         var payload = this.parseJwt(this.$cookies.get('jwt'));
         if ( payload.active === true ) {
-          if ( payload.role === 0 ) this.perm = true;
+          if ( payload.role <= 1 ) this.perm = true;
           return payload.username;
         }
       }

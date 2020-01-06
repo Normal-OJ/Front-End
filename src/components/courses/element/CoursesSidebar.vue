@@ -2,9 +2,9 @@
   <v-card tile outlined min-height="100vh">
     <v-list>
       <v-list-item>
-        <!-- <v-list-item-avatar>
+        <v-list-item-avatar>
           <v-img :src="avatar"></v-img>
-        </v-list-item-avatar> -->
+        </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title class="headline text-wrap">{{ courseName }}</v-list-item-title>
           <v-list-item-subtitle class="title text-wrap">{{ teacherName }}</v-list-item-subtitle>
@@ -43,7 +43,7 @@ export default {
     return {
       courseName: this.$route.params.name,
       teacherName: 'teacherName',
-      avatar: '',
+      avatar: this.setAvatar(''),
       links: [
         { 'title': 'Announcement', 'path': `/course/${this.$route.params.name}/announcement`, 'icon': 'mdi-bulletin-board'},
         { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-open-variant'},
@@ -65,14 +65,15 @@ export default {
         .then((res) => {
           var data = res.data.data;
           this.teacherName = data.teacher.username;
-          this.setAvatar(data.teacher.md5);
+          this.avatar = this.setAvatar(data.teacher.md5);
         })
         .catch((err) => {
           console.log(err);
         })
     },
     setAvatar(payload) {
-      this.avatar = `https://www.gravatar.com/avatar/${payload}?d=mp`;
+      var d = encodeURI("noj.tw/defaultAvatar.png");
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },
   }
 }
