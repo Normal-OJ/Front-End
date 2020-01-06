@@ -141,7 +141,7 @@ export default {
           console.log(data);
           if ( data.status === -1 ) {
             this.show = false;
-            await this.delay(4000);
+            await this.delay(400);
             this.updateSubm(sid);
           } else {
             this.getSubm();

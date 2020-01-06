@@ -55,34 +55,40 @@
             </a>
           </td>
           <td>
-            <a :href="`/problem/${item.problemId}`" title="Click to view the problem.">
+            <p><a :href="`/problem/${item.problemId}`" title="Click to view the problem.">
               {{item.problemId}}
-            </a>
+            </a></p>
           </td>
-          <td>{{item.username}}</td>
+          <td><p>{{item.user.username}}</p></td>
           <td>
-            <v-chip
-              :label="true"
-              :ripple="false"
-              small
+            <!-- <v-chip -->
+              <!-- :label="true" -->
+              <!-- :ripple="false" -->
+              <!-- small -->
+            <p
               v-text="STATUS[item.status + 1]"
-              text-color="white"
-              :color="STATUS_COLOR[item.status + 1]"
-              :title="STATUS_REASON[item.status + 1]"
-            ></v-chip>
+              :style="{color: STATUS_COLOR[item.status + 1]}"
+            >
+              <!-- text-color="white" -->
+              <!-- :title="STATUS_REASON[item.status + 1]" -->
+            </p>
+            <!-- ></v-chip> -->
           </td>
           <td class="text-right">{{item.score}}</td>
           <td class="text-right">{{item.runTime}}</td>
           <td class="text-right">{{item.memoryUsage}}</td>
           <td>
-            <v-chip
-              :label="true"
-              :ripple="false"
-              small
+            <!-- <v-chip -->
+              <!-- :label="true" -->
+              <!-- :ripple="false" -->
+              <!-- small -->
+            <p
               v-text="LANG[item.languageType]"
-              text-color="white"
-              :color="LANG_COLOR[item.languageType]"
-            ></v-chip>
+            >
+              <!-- text-color="white" -->
+              <!-- :color="LANG_COLOR[item.languageType]" -->
+            <!-- ></v-chip> -->
+            </p>
           </td>
           <td>
             <span style="color: grey">{{timeFormat(item.timestamp).split(' ')[0]}}</span>
