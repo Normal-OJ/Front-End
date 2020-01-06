@@ -1,7 +1,42 @@
 <template>
   <v-card>
     <v-card-title>
-      Submissions
+      <v-row no-gutters>
+        <v-col cols="12" md="2" class="pt-3">
+          Submissions
+        </v-col>
+        <v-col cols="12" md="2">
+          <v-text-field
+            v-model="filter.submissionId"
+            label="Submission Id"
+            class="pr-6"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="2">
+          <v-text-field
+            v-model="filter.problemId"
+            label="Problem Id"
+            class="pr-6"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="2">
+          <v-text-field
+            v-model="filter.username"
+            label="User"
+            class="pr-6"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" md="2" class="pt-3">
+          <v-btn
+            class="text-none subtitle-2"
+            dark
+            small
+            color="primary"
+            @click="topFilter"
+          >Filter</v-btn>
+        </v-col>
+        <v-spacer></v-spacer>
+      </v-row>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -86,6 +121,15 @@ export default {
       loading: false,
       page: 1,
       rowsPerPageItems: [5, 10, 20, 50, 100],
+      filter: {
+        offset: '',
+        count: '',
+        problemId: '',
+        submissionId: '',
+        username: '',
+        status: '',
+        languageType: '',
+      },
 
       LANG: ['C (c11)', 'C++ (c++11)', 'Python (py3)'],
       LANG_COLOR :['#1565C0', '#4527A0', '#2E7D32'],
@@ -122,21 +166,28 @@ export default {
   },
 
   watch: {
-    page() {
-      this.getSubmissions();
-    },
-    itemsPerPage() {
-      this.getSubmissions();
-    }
+    // page() {
+    //   this.getSubmissions();
+    // },
+    // itemsPerPage() {
+    //   this.getSubmissions();
+    // }
   },
 
   methods: {
     getSubmissions() {
-      const offset = (this.page - 1) * this.itemsPerPage;
-      const count = this.itemsPerPage;
+      if ( !this.filter.offset )  this.filter.offset = 0;
+      if ( !this.filter.count ) this.filter.count = -1;
+      let query = '?offset=' + this.filter.offset + '&count=' + this.filter.count;
+      if ( !!this.filter.problemId )  query += '&problemId=' + this.filter.problemId;
+      if ( !!this.filter.submissionId )  query += '&submissionId=' + this.filter.submissionId;
+      if ( !!this.filter.username )  query += '&username=' + this.filter.username;
+      if ( !!this.filter.status )  query += '&status=' + this.filter.status;
+      if ( !!this.filter.languageType )  query += '&languageType=' + this.filter.languageType;
+
       this.loading = true;
 
-      this.$http.get(`${API_BASE_URL}/submission?offset=${offset}&count=${count}`)
+      this.$http.get(`${API_BASE_URL}/submission${query}`)
         .then((res) => {
           this.loading = false;
           console.log(res.data);
@@ -146,6 +197,10 @@ export default {
           this.loading = false;
           console.log(err);
         });
+    },
+
+    topFilter() {
+      this.getSubmissions();
     },
 
     showSubmissions(submissions) {
