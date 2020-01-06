@@ -204,7 +204,8 @@ export default {
     },
 
     showSubmissions(submissions) {
-      this.items = [...submissions, ...this.getFakeData()];
+      this.items = submissions;
+      // this.items = [...submissions, ...this.getFakeData()];
     },
 
     timeFormat(time) {
@@ -219,43 +220,43 @@ export default {
       return timeString;
     },
 
-    getFakeData() {
-      return [
-        {
-          problemId: '0070',
-          submissionId: '0171',
-          username: 'aa5376537',
-          languageType: 1,
-          timestamp: 1578037200,
-          status: 1,
-          score: 40,
-          runTime: 330,
-          memoryUsage: 23
-        },
-        {
-          problemId: '0070',
-          submissionId: '0172',
-          username: 'aa5376537',
-          languageType: 2,
-          timestamp: 1578037220,
-          status: 1,
-          score: 80,
-          runTime: 120,
-          memoryUsage: 17
-        },
-        {
-          problemId: '0071',
-          submissionId: '0173',
-          username: 'shu_kong_kai',
-          languageType: 1,
-          timestamp: 1578037240,
-          status: 2,
-          score: 0,
-          runTime: 2500,
-          memoryUsage: 560
-        },
-      ];
-    }
+    // getFakeData() {
+    //   return [
+    //     {
+    //       problemId: '0070',
+    //       submissionId: '0171',
+    //       username: 'aa5376537',
+    //       languageType: 1,
+    //       timestamp: 1578037200,
+    //       status: 1,
+    //       score: 40,
+    //       runTime: 330,
+    //       memoryUsage: 23
+    //     },
+    //     {
+    //       problemId: '0070',
+    //       submissionId: '0172',
+    //       username: 'aa5376537',
+    //       languageType: 2,
+    //       timestamp: 1578037220,
+    //       status: 1,
+    //       score: 80,
+    //       runTime: 120,
+    //       memoryUsage: 17
+    //     },
+    //     {
+    //       problemId: '0071',
+    //       submissionId: '0173',
+    //       username: 'shu_kong_kai',
+    //       languageType: 1,
+    //       timestamp: 1578037240,
+    //       status: 2,
+    //       score: 0,
+    //       runTime: 2500,
+    //       memoryUsage: 560
+    //     },
+    //   ];
+    // }
   }
 }
 </script>
