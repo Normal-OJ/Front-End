@@ -55,7 +55,7 @@ export default {
       this.$http.get(`${API_BASE_URL}/ranking`)
         .then((res) => {
           console.log(res.data);
-          this.showRanking(res.data.data.reverse());
+          this.showRanking(res.data.data);
         })
         .catch((err) => {
           console.log(err);
@@ -63,7 +63,7 @@ export default {
     },
 
     showRanking(ranking) {
-      this.items = ranking.sort((a, b) => (a.ACProblem - b.ACProblem));
+      this.items = ranking.sort((a, b) => (b.ACProblem - a.ACProblem));
     }
   }
 }
