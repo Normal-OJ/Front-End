@@ -2,19 +2,21 @@
   <v-app>
     <Header/>
     <v-content>
+      <ui-dialog/>
+      <ui-button/>
       <router-view/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Header from './components/header/Header';
+import Header from './pages/header/Header';
 
 export default {
   name: 'App',
 
   components: {
-    Header,
+    Header
   },
 
   data: () => ({

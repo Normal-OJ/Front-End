@@ -1,0 +1,45 @@
+<template>
+  <v-btn
+    class="text-none"
+    style="font-size: 1rem"
+    :block="block"
+    :color="color"
+    :text="text"
+  >
+    <slot name="content">
+      <v-icon>mdi-lock</v-icon>
+      content
+    </slot>
+  </v-btn>
+</template>
+
+<script>
+export default {
+
+  name: 'UiButton',
+
+  props: {
+    color: {
+      type: String,
+      default: 'primary',
+    },
+    block: {
+      type: Boolean,
+      default: false,
+    },
+    text: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  data () {
+    return {
+
+    }
+  }
+}
+</script>
+
+<style lang="css" scoped>
+</style>
