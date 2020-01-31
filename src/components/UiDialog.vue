@@ -1,19 +1,19 @@
 <template>
 	<v-dialog v-model="dialog" :width="width" :persistent="persistent">
-    <template v-slot:activator="{ on }">
-      <slot name="activator">
-        <ui-button color="primary" v-on="on">
-          <template v-slot:content>
+    <template v-slot:activator="{ on: { click } }">
+      <ui-button @click.native="click">
+        <template v-slot:content>
+          <slot name="activator">
             <v-icon large>mdi-plus</v-icon>
-            activator
-          </template>
-        </ui-button>
-      </slot>
+            Activator
+          </slot>
+        </template>
+      </ui-button>
     </template>
     <v-card>
       <v-toolbar color="primary" dark dense>
         <slot name="title">
-          title
+          Title
         </slot>
         <v-spacer></v-spacer>
         <v-btn tile icon @click="dialog = false">
@@ -23,16 +23,18 @@
       <v-card-text>
         <slot name="content">
           <p class="subtitle-1 text--primary">
-            content
+            Content
           </p>
         </slot>
       </v-card-text>
       <v-card-actions>
-        <slot name="action">
-          <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <slot name="action-cancel">
           <v-btn class="text-none subtitle-1" outlined color="secondary" @click="dialog = false">
             Cancel
           </v-btn>
+        </slot>
+        <slot name="action-ok">
           <v-btn class="text-none subtitle-1" dark color="primary" @click="ok()">
             Ok
           </v-btn>
@@ -48,6 +50,10 @@ export default {
   name: 'UiDialog',
 
   props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
     width: {
       type: String,
       default: '75vw',
@@ -58,9 +64,18 @@ export default {
     },
   },
 
+  watch: {
+    value() {
+      this.dialog = this.value;
+    },
+    dialog() {
+      this.$emit('input', this.dialog);
+    },
+  },
+
   data () {
     return {
-      dialog: false,
+      dialog: this.value,
     }
   },
 

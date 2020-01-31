@@ -12,8 +12,10 @@ Vue.config.productionTip = false;
 
 import UiDialog from './components/UiDialog'
 import UiButton from './components/UiButton'
+import UiAlert from './components/UiAlert'
 Vue.component('ui-dialog', UiDialog);
 Vue.component('ui-button', UiButton);
+Vue.component('ui-alert', UiAlert);
 
 new Vue({
   vuetify,

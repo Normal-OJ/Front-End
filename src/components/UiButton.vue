@@ -41,5 +41,9 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
+.v-btn {
+  letter-spacing: 0;
+  text-indent: 0;
+}
 </style>

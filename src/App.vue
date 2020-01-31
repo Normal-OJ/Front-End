@@ -2,8 +2,6 @@
   <v-app>
     <Header/>
     <v-content>
-      <ui-dialog/>
-      <ui-button/>
       <router-view/>
     </v-content>
   </v-app>
@@ -20,7 +18,7 @@ export default {
   },
 
   data: () => ({
-  })
+  }),
 };
 </script>
 

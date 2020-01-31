@@ -20,6 +20,7 @@ import Inbox from '@/pages/inbox/Inbox'
 import EmailVerify from '@/pages/header/EmailVerify'
 import EmailResend from '@/pages/header/EmailResend'
 import Profile from '@/pages/header/Profile'
+import Demo from '@/components/Demo'
 
 Vue.use(Router)
 
@@ -96,6 +97,11 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: Profile
+    },
+    {
+      path: '/ui/demo',
+      name: 'Demo',
+      component: Demo
     }
   ]
 })
