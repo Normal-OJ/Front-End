@@ -13,15 +13,11 @@
         class="hidden-md-and-up"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
+      
       <!-- LOGO -->
-      <v-img
-        :src="require('@/assets/NOJ-LOGO.png')"
-        :aspect-ratio="593/100"
-        height="85%"
-        :max-width="$vuetify.breakpoint.mdAndUp ? '20%' : '80%'"
-        :position="$vuetify.breakpoint.mdAndUp ? 'center center' : 'left center'"
-        contain
-      ></v-img>
+      <a style="height: 85%; cursor: default;">
+        <img :src="require('@/assets/NOJ-LOGO.png')" height="100%">
+      </a>
 
       <!-- Nav Bar -->
       <v-toolbar-items>
@@ -97,7 +93,7 @@
           :to="link.path"
           link
         ><v-list-item-title v-text="link.title"></v-list-item-title></v-list-item>
-        <v-divider></v-divider>
+        <v-divider v-if="isLogin"></v-divider>
         <v-list-item v-if="isLogin" link :to="{path: '/profile'}">
           <v-list-item-title v-text="'Profile'"></v-list-item-title>
         </v-list-item>
