@@ -2,12 +2,12 @@
   <v-alert
     v-model="alert"
     dismissible
-    dense
     colored-border
     border="left"
     elevation="2"
     style="white-space: pre-line;"
     transition="scroll-y-transition"
+    :dense="dense"
     :type="type"
     :icon="icon"
     :color="color"
@@ -44,6 +44,10 @@ export default {
     width: {
       type: String,
       default: '100%',
+    },
+    dense: {
+      type: Boolean,
+      default: false,
     },
   },
 

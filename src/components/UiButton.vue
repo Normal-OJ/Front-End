@@ -5,6 +5,7 @@
     :block="block"
     :color="color"
     :text="text"
+    :outlined="outlined"
   >
     <slot name="content">
       <v-icon>mdi-lock</v-icon>
@@ -28,6 +29,10 @@ export default {
       default: false,
     },
     text: {
+      type: Boolean,
+      default: false,
+    },
+    outlined: {
       type: Boolean,
       default: false,
     },

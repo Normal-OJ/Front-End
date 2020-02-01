@@ -1,14 +1,14 @@
 <template>
 	<v-dialog v-model="dialog" :width="width" :persistent="persistent">
     <template v-slot:activator="{ on: { click } }">
-      <ui-button @click.native="click">
-        <template v-slot:content>
-          <slot name="activator">
-            <v-icon large>mdi-plus</v-icon>
+      <slot name="activator">
+        <ui-button @click.native="click">
+          <template v-slot:content>
+            <v-icon>mdi-plus</v-icon>
             Activator
-          </slot>
-        </template>
-      </ui-button>
+          </template>
+        </ui-button>
+      </slot>
     </template>
     <v-card>
       <v-toolbar color="primary" dark dense>
@@ -21,23 +21,25 @@
         </v-btn>
       </v-toolbar>
       <v-card-text>
-        <slot name="content">
+        <slot name="body">
           <p class="subtitle-1 text--primary">
-            Content
+            <slot name="content">
+              Content
+            </slot>
           </p>
         </slot>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <slot name="action-cancel">
-          <v-btn class="text-none subtitle-1" outlined color="secondary" @click="dialog = false">
-            Cancel
-          </v-btn>
+          <ui-button outlined color="primary" @click.native="dialog = false">
+            <template slot="content">Cancel</template>
+          </ui-button>
         </slot>
         <slot name="action-ok">
-          <v-btn class="text-none subtitle-1" dark color="primary" @click="ok()">
-            Ok
-          </v-btn>
+          <ui-button color="primary" @click.native="ok()">
+            <template slot="content">Ok</template>
+          </ui-button>
         </slot>
       </v-card-actions>
     </v-card>

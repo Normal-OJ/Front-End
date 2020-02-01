@@ -25,11 +25,6 @@ export default {
 <style>
 @import "./styles/markdownstyle.css";
 
-#app {
-  font-family: 'Lato';
-  font-size: 20px;
-}
-
 code::before, code::after {
   content: none !important;
 }
