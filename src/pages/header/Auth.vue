@@ -3,20 +3,16 @@
     v-model="authDialog"
     :width="smDown ? '95vw' : '50vw'"
   >
-    <template v-slot:activator="{ on }">
-      <v-btn
+    <template v-slot:activator="{ on: { click } }">
+      <ui-button
         v-for="sign in smDown ? signs : signs.slice().reverse()"
         :key="sign.title"
-        min-width="8vw"
-        v-on="on"
         v-show="$vuetify.breakpoint.mdAndUp || smDown"
-        :class="smDown ? 'subtitle-2' : 'headline'"
         :color="smDown ? 'primary' : 'white'"
-        :small="smDown ? true : false"
         :outlined="sign.outline"
         :text="sign.text"
-        @click="tabEntry=sign.entry"
-      >{{ sign.title }}</v-btn>
+        @click.native="click(); tabEntry = sign.entry;"
+      ><template slot="content">{{ sign.title }}</template></ui-button>
     </template>
     <v-card>
       <v-card-title

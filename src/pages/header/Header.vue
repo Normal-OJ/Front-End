@@ -2,65 +2,56 @@
   <div class="ma-0 pa-0">
     <v-app-bar
       app
-      id="navbar"
       color="#003865"
-      height="55%"
       dark
       dense
     >
-    
+      
+      <!-- Small Down Menu -->
       <v-app-bar-nav-icon
         app
         class="hidden-md-and-up"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
-
+      <!-- LOGO -->
       <v-img
         :src="require('@/assets/NOJ-LOGO.png')"
-        :aspect-ratio="1080/182"
-        height="100%"
-        min-width="20vw"
+        :aspect-ratio="593/100"
+        height="85%"
+        :max-width="$vuetify.breakpoint.mdAndUp ? '20%' : '80%'"
+        :position="$vuetify.breakpoint.mdAndUp ? 'center center' : 'left center'"
         contain
-        class="mr-3"
       ></v-img>
 
+      <!-- Nav Bar -->
       <v-toolbar-items>
-        <v-btn
+        <ui-button
           v-for="link in links"
+          v-if="link.show && $vuetify.breakpoint.mdAndUp"
           :key="link.title"
           :to="link.path"
-          v-if="link.show"
-          class="text-none title hidden-sm-and-down"
-          min-width="8vw"
-          max-width="13vw"
+          color="white"
           text
-          v-text="link.title"
-        ></v-btn>
+        ><template slot="content">{{ link.title }}</template></ui-button>
       </v-toolbar-items>
 
       <v-spacer></v-spacer>
 
-      <v-menu v-if="isLogin" class="hidden-sm-and-down" offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            class="text-none title"
-            v-on="on"
-            min-width="5vw"
-            max-width="15vw"
+      <!-- Sign in, up, User -->
+      <v-menu v-if="isLogin && $vuetify.breakpoint.mdAndUp" offset-y>
+        <template v-slot:activator="{ on: { click } }">
+          <ui-button
             text
-            v-text="displayedName+'('+username+')'"
-          ></v-btn>
+            color="white"
+            @click.native="click"
+          ><template slot="content">{{ displayedName+'('+username+')' }}</template></ui-button>
         </template>
         <v-list>
-          <v-list-item
-            link
-            :to="{path: '/profile'}"
-          ><v-list-item-title class="body-1" v-text="'Profile'"></v-list-item-title></v-list-item>
-          <v-list-item
-            link
-            @click="signout"
-          >
-            <v-list-item-title class="body-1" v-text="'Sign Out'"></v-list-item-title>
+          <v-list-item link :to="{path: '/profile'}">
+            <v-list-item-title v-text="'Profile'"></v-list-item-title>
+          </v-list-item>
+          <v-list-item link @click="signout">
+            <v-list-item-title v-text="'Sign Out'"></v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -82,14 +73,18 @@
             contain
           ></v-img>
         </v-list-item-avatar>
-        <v-list-item-title v-if="isLogin" v-text="displayedName+'('+username+')'"></v-list-item-title>
+        <v-list-item-title v-if="isLogin">
+          {{ displayedName }}
+          <br>
+          {{ '('+username+')'}}
+        </v-list-item-title>
         <v-list-item-title v-else>
           <Auth :smDown="true" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
         </v-list-item-title>
-        <v-btn
+        <ui-button
           icon
-          @click.stop="drawer = !drawer"
-        ><v-icon>mdi-chevron-left</v-icon></v-btn>
+          @click.native="drawer = !drawer"
+        ><template slot="content"><v-icon>mdi-chevron-left</v-icon></template></ui-button>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -102,16 +97,13 @@
           :to="link.path"
           link
         ><v-list-item-title v-text="link.title"></v-list-item-title></v-list-item>
-        <v-list-item
-          link
-          v-if="isLogin"
-          :to="{path: '/profile'}"
-        ><v-list-item-title v-text="'Profile'"></v-list-item-title></v-list-item>
-        <v-list-item
-          link
-          v-if="isLogin"
-          @click="signout"
-        ><v-list-item-title v-text="'Sign Out'"></v-list-item-title></v-list-item>
+        <v-divider></v-divider>
+        <v-list-item v-if="isLogin" link :to="{path: '/profile'}">
+          <v-list-item-title v-text="'Profile'"></v-list-item-title>
+        </v-list-item>
+        <v-list-item v-if="isLogin" link @click="signout">
+          <v-list-item-title v-text="'Sign Out'"></v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -242,23 +234,4 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
-@media screen and (max-width: 600px) {
-  #navbar {
-    padding: 0 1vw;
-  }
-}
-
-@media screen and (min-width: 600px) and (max-width: 1904px) {
-  #navbar {
-    padding: 0 5vw;
-  }
-}
-
-@media screen and (min-width: 1904px) {
-  #navbar {
-    padding: 0 10vw;
-  }
-}
-
 </style>

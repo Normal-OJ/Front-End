@@ -3,9 +3,11 @@
     class="text-none"
     style="font-size: 1rem"
     :block="block"
+    :icon="icon"
     :color="color"
     :text="text"
     :outlined="outlined"
+    :to="to"
   >
     <slot name="content">
       <v-icon>mdi-lock</v-icon>
@@ -28,6 +30,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    icon: {
+      type: Boolean,
+      default: false,
+    },
     text: {
       type: Boolean,
       default: false,
@@ -36,6 +42,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    to: {
+      type: String,
+      default: undefined,
+    }
   },
 
   data () {
