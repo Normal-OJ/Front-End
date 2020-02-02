@@ -1,26 +1,22 @@
 <template>
   <v-form
     v-model="validForm"
-    v-if="signup"
     ref="form"
   >
-    <v-alert
+    <!-- v-if="signup" -->
+    <ui-alert
       v-model="errAlert"
-      dismissible
-      colored-border
-      border="left"
       dense
-      elevation="2"
       type="error"
       transition="scroll-y-transition"
-    ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
+      :alertMsg="errMsg"
+    ></ui-alert>
     
     <v-text-field
       v-model="authData.email"
       label="E-mail*"
       prepend-icon="mdi-email"
       hint="We will send mail to this address."
-      autofocus
       ref="email"
       :rules="mailRule"
       @keyup.enter="submit"
@@ -48,31 +44,35 @@
       @keyup.enter="submit"
     ></v-text-field>
 
-    <v-icon color="white">mdi-lock</v-icon>
-    <v-btn
-      ref="btn"
-      class="text-none subtitle-1 mt-1 ml-2 mr-3"
-      color="primary"
-      :loading="btnLoading"
-      @click="submit"
-    >Sign up</v-btn>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="12" md="auto">
+        <ui-button
+          color="primary"
+          :loading="btnLoading"
+          @click.native="submit"
+        ><template slot="content">Sign up</template></ui-button>
+      </v-col>
+    </v-row>
 
-    <v-btn
-      class="text-none subtitle-1 mt-1"
-      color="secondary"
-      outlined
-      @click="reset"
-    >Reset</v-btn>
-
+    <ui-dialog
+      v-model="dialog"
+      :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"
+    >
+      <template slot="activator"><span></span></template>
+      <template slot="title">Email Verification</template>
+      <template slot="body">
+        <v-container class="text-center text--primary">
+          <h2>Verify your email address</h2>
+          <p>Please check your inbox for a verification email, and click the link in the email to <strong>active your account</strong>.</p>
+          <v-icon size="10rem">mdi-email-newsletter</v-icon>
+          <p>Didn't receive the email? <a href="/email_resend"><u>Send it again.</u></a></p>
+        </v-container>
+      </template>
+      <template slot="action-cancel"><span></span></template>
+    </ui-dialog>
   </v-form>
 
-  <v-slide-x-transition v-else>
-    <v-container class="text-center" style="color: #2a2f35;">
-        <p class="headline font-weight-bold">Please Check Your E-mail</p>
-        <p class="subtitle-1">You will need to verify your email address.</p>
-        <v-icon size="10em">mdi-email-newsletter</v-icon>
-    </v-container>
-  </v-slide-x-transition>
 </template>
 
 <script>
@@ -110,8 +110,9 @@ export default {
       showPassword: false,
       btnLoading: false,
       errAlert: false,
-      errMsg: [],
+      errMsg: '',
       signup: true,
+      dialog: false,
     }
   },
 
@@ -158,18 +159,20 @@ export default {
         this.$http.post(`${API_BASE_URL}/auth/signup`, this.authData)
           .then((response) => {
             this.signup = false;
+            this.dialog = true;
+            this.$emit('signupSuccess');
             // console.log(response.data);
           })
           .catch((error) => {
-            this.errMsg = [error.response.data.data.email, error.response.data.data.username, error.response.data.data.password];
+            this.errMsg = 'Invalid Email';
             this.errAlert = true;
           });
       }
       this.btnLoading = false;
     },
-    reset() {
-      this.authData = Object.fromEntries(new Map(Object.keys(this.authData).map(item => [item, ''])));
-    },
+    // reset() {
+      // this.authData = Object.fromEntries(new Map(Object.keys(this.authData).map(item => [item, ''])));
+    // },
     check(type, cnt) {
       if ( cnt == globKey[type] && ((type=='email' && this.isMailFormat(this.authData[type])) || (type=='username' && this.isNameFormat(this.authData[type]))) ) {
         this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
@@ -182,7 +185,7 @@ export default {
             }
           })
           .catch((error) => {
-            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
             this.errAlert = true;
           })
       }

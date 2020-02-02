@@ -1,14 +1,14 @@
 <template>
   <ui-dialog
     v-model="authDialog"
-    :width="smDown ? '95vw' : '50vw'"
+    :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"
   >
     <template slot="activator">
       <ui-button
-        v-for="sign in smDown ? signs : signs.slice().reverse()"
+        v-for="sign in $vuetify.breakpoint.smAndDown ? signs : signs.slice().reverse()"
         :key="sign.title"
-        v-show="$vuetify.breakpoint.mdAndUp || smDown"
-        :color="smDown ? 'primary' : 'white'"
+        v-show="$vuetify.breakpoint.mdAndUp || $vuetify.breakpoint.smAndDown"
+        :color="$vuetify.breakpoint.smAndDown ? 'primary' : 'white'"
         :outlined="sign.outline"
         :text="sign.text"
         @click.native="authDialog = !authDialog; tabEntry = sign.entry;"
@@ -24,11 +24,8 @@
         grow
         color="secondary"
       >
-        <v-tab 
-          v-for="tab in tabs"
-          :key="tab.id"
-          class="text-none subtitle-1"
-        >{{ tab.title }}</v-tab>
+        <v-tab class="text-none subtitle-1">Sign in</v-tab>
+        <v-tab class="text-none subtitle-1">Sign up</v-tab>
       </v-tabs>
       <v-tabs-items v-model="tabEntry">
         <v-tab-item>
@@ -38,7 +35,7 @@
         </v-tab-item>
         <v-tab-item>
           <v-container>
-            <SignUpForm></SignUpForm>
+            <SignUpForm v-on:signupSuccess="signupSuccessHideDialog"></SignUpForm>
           </v-container>
         </v-tab-item>
       </v-tabs-items>
@@ -68,19 +65,16 @@ export default {
       ],
       authDialog: false,
       tabEntry: 0,
-      tabs: [
-        {'id': 0, 'title': 'Sign in'},
-        {'id': 1, 'title': 'Sign up'},
-      ]
     }
   },
-
-  props: ['smDown'],
 
   methods: {
     signinSuccessHideDialog() {
       this.authDialog = false;
       this.$emit('signinSuccessToHeader');
+    },
+    signupSuccessHideDialog() {
+      this.authDialog = false;
     }
   }
 }

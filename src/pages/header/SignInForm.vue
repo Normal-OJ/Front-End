@@ -32,27 +32,27 @@
     ></v-text-field>
 
     <v-row>
+      <v-col cols="12" sm="auto" md="auto">
+        <ui-button
+          color="secondary"
+          outlined
+          @click.native="emailResend"
+        ><template slot="content">Forget Password?</template></ui-button>
+      </v-col>
+      <v-col cols="12" sm="auto" md="auto">
+        <ui-button
+          color="secondary"
+          outlined
+          @click.native="emailResend"
+        ><template slot="content">Haven't Verify Email?</template></ui-button>
+      </v-col>
+      <v-spacer></v-spacer>
       <v-col cols="12" md="auto">
-        <v-icon color="white">mdi-lock</v-icon>
         <ui-button
           color="primary"
           :loading="btnLoading"
           @click.native="submit"
         ><template slot="content">Sign in</template></ui-button>
-      </v-col>
-      <v-col cols="12" sm="auto" md="auto">
-        <ui-button
-          color="primary"
-          text
-          @click.native="emailResend"
-        ><template slot="content"><u>Haven't Verify Email?</u></template></ui-button>
-      </v-col>
-      <v-col cols="12" sm="auto" md="auto">
-        <ui-button
-          color="primary"
-          text
-          @click.native="emailResend"
-        ><template slot="content"><u>Forget Password?</u></template></ui-button>
       </v-col>
     </v-row>
 

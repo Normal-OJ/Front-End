@@ -51,7 +51,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <Auth v-else :smDown="false" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
+      <Auth v-else v-on:signinSuccessToHeader="showAlert(0)"></Auth>
 
     </v-app-bar>
 
@@ -75,7 +75,7 @@
           {{ '('+username+')'}}
         </v-list-item-title>
         <v-list-item-title v-else>
-          <Auth :smDown="true" v-on:signinSuccessToHeader="showAlert(0)"></Auth>
+          <Auth v-on:signinSuccessToHeader="showAlert(0)"></Auth>
         </v-list-item-title>
         <ui-button
           icon
