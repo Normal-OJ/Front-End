@@ -1,9 +1,9 @@
 <template>
-  <v-dialog
+  <ui-dialog
     v-model="authDialog"
     :width="smDown ? '95vw' : '50vw'"
   >
-    <template v-slot:activator="{ on: { click } }">
+    <template slot="activator">
       <ui-button
         v-for="sign in smDown ? signs : signs.slice().reverse()"
         :key="sign.title"
@@ -11,49 +11,40 @@
         :color="smDown ? 'primary' : 'white'"
         :outlined="sign.outline"
         :text="sign.text"
-        @click.native="click(); tabEntry = sign.entry;"
+        @click.native="authDialog = !authDialog; tabEntry = sign.entry;"
       ><template slot="content">{{ sign.title }}</template></ui-button>
     </template>
-    <v-card>
-      <v-card-title
-        class="headline primary white--text"
-      >
-        Welcome
-        <v-spacer></v-spacer>
-        <v-btn
-          icon
-          @click="authDialog = false"
-        ><v-icon class="white--text">mdi-close</v-icon></v-btn>
-      </v-card-title>
 
-      <v-card-text>
-        <v-tabs
-          v-model="tabEntry"
-          grow
-          color="secondary"
-        >
-          <v-tab 
-            v-for="tab in tabs"
-            :key="tab.id"
-            class="text-none subtitle-1"
-          >{{ tab.title }}</v-tab>
-        </v-tabs>
-        
-        <v-tabs-items v-model="tabEntry">
-          <v-tab-item>
-            <v-container>
-              <SignInForm v-on:signinSuccess="signinSuccessHideDialog"></SignInForm>
-            </v-container>
-          </v-tab-item>
-          <v-tab-item>
-            <v-container>
-              <SignUpForm></SignUpForm>
-            </v-container>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+    <template slot="title">Welcome to Normal OJ</template>
+
+    <template slot="body">
+      <v-tabs
+        class="mt-3"
+        v-model="tabEntry"
+        grow
+        color="secondary"
+      >
+        <v-tab 
+          v-for="tab in tabs"
+          :key="tab.id"
+          class="text-none subtitle-1"
+        >{{ tab.title }}</v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tabEntry">
+        <v-tab-item>
+          <v-container>
+            <SignInForm v-on:signinSuccess="signinSuccessHideDialog"></SignInForm>
+          </v-container>
+        </v-tab-item>
+        <v-tab-item>
+          <v-container>
+            <SignUpForm></SignUpForm>
+          </v-container>
+        </v-tab-item>
+      </v-tabs-items>
+    </template>
+    <template slot="actions"><br></template>
+  </ui-dialog>
 </template>
 
 <script>

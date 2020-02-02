@@ -8,6 +8,7 @@
     :text="text"
     :outlined="outlined"
     :to="to"
+    :loading="loading"
   >
     <slot name="content">
       <v-icon>mdi-lock</v-icon>
@@ -45,7 +46,11 @@ export default {
     to: {
       type: String,
       default: undefined,
-    }
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data () {

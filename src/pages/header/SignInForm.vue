@@ -3,16 +3,13 @@
     v-model="validForm"
     ref="form"
   >
-    <v-alert
+    <ui-alert
       v-model="errAlert"
-      dismissible
-      colored-border
-      border="left"
       dense
-      elevation="2"
       type="error"
       transition="scroll-y-transition"
-    ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
+      :alertMsg="errMsg"
+    ></ui-alert>
 
     <v-text-field
       v-model="authData.username"
@@ -35,32 +32,27 @@
     ></v-text-field>
 
     <v-row>
-      <v-col cols="12" md="4">
+      <v-col cols="12" md="auto">
         <v-icon color="white">mdi-lock</v-icon>
-        <v-btn
-          class="text-none subtitle-1 mt-1 mx-2"
+        <ui-button
           color="primary"
           :loading="btnLoading"
-          @click="submit"
-        >Sign in</v-btn>
+          @click.native="submit"
+        ><template slot="content">Sign in</template></ui-button>
       </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <v-btn
-          class="text-none subtitle-1 mx-2"
+      <v-col cols="12" sm="auto" md="auto">
+        <ui-button
           color="primary"
           text
-          x-small
-          @click="emailResend"
-        ><u>Haven't Verify Email?</u></v-btn>
+          @click.native="emailResend"
+        ><template slot="content"><u>Haven't Verify Email?</u></template></ui-button>
       </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <v-btn
-          class="text-none subtitle-1 mx-2"
+      <v-col cols="12" sm="auto" md="auto">
+        <ui-button
           color="primary"
           text
-          x-small
-          @click="emailResend"
-        ><u>Forget Password?</u></v-btn>
+          @click.native="emailResend"
+        ><template slot="content"><u>Forget Password?</u></template></ui-button>
       </v-col>
     </v-row>
 
@@ -86,7 +78,7 @@ export default {
       showPassword: false,
       btnLoading: false,
       errAlert: false,
-      errMsg: [],
+      errMsg: '',
     }
   },
 
@@ -112,7 +104,7 @@ export default {
         .catch((error) => {
           // wrong password or not active
           // console.log(error);
-          this.errMsg = ['Sorry, your password do not match.', 'Or, you haven\'t verify your email yet. (you can verify email by link at bottom.)'];
+          this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)';
           this.errAlert = true;
         });
     },
@@ -132,14 +124,14 @@ export default {
                 .then((response) => {
                   // console.log(response.data);
                   if ( response.data.data.valid === 1 ) {
-                    this.errMsg = ['Sorry, we couldn\'t find an account with that E-mail/Username.'];
+                    this.errMsg = 'Sorry, we couldn\'t find an account with that E-mail/Username.';
                     this.errAlert = true;
                   } else if ( response.data.data.valid === 0 ) {
                     this.signin();
                   }
                 })
                 .catch((error) => {
-                  this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+                  this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
                   this.errAlert = true;
                   // console.log(error);      
                 })
@@ -150,7 +142,7 @@ export default {
             }
           })
           .catch((error) => {
-            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
             this.errAlert = true;
             // console.log(error);
           });

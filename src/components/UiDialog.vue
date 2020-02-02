@@ -30,16 +30,18 @@
         </slot>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <slot name="action-cancel">
-          <ui-button outlined color="primary" @click.native="dialog = false">
-            <template slot="content">Cancel</template>
-          </ui-button>
-        </slot>
-        <slot name="action-ok">
-          <ui-button color="primary" @click.native="ok()">
-            <template slot="content">Ok</template>
-          </ui-button>
+        <slot name="actions">
+          <v-spacer></v-spacer>
+          <slot name="action-cancel">
+            <ui-button outlined color="primary" @click.native="dialog = false">
+              <template slot="content">Cancel</template>
+            </ui-button>
+          </slot>
+          <slot name="action-ok">
+            <ui-button color="primary" @click.native="ok()">
+              <template slot="content">Ok</template>
+            </ui-button>
+          </slot>
         </slot>
       </v-card-actions>
     </v-card>
