@@ -17,9 +17,9 @@ import CoursesDiscussionPost from '@/pages/courses/element/CoursesDiscussionPost
 import CoursesScore from '@/pages/courses/element/CoursesScore'
 import CoursesManage from '@/pages/courses/element/CoursesManage'
 import Inbox from '@/pages/inbox/Inbox'
-import EmailVerify from '@/pages/header/EmailVerify'
-import EmailResend from '@/pages/header/EmailResend'
-import Profile from '@/pages/header/Profile'
+import EmailVerify from '@/pages/help/EmailVerify'
+import EmailResend from '@/pages/help/EmailResend'
+import Profile from '@/pages/profile/Profile'
 import Demo from '@/components/Demo'
 
 Vue.use(Router)
