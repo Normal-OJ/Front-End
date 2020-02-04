@@ -1,31 +1,27 @@
 <template>
-  <div :style="{ width: this.$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw', margin: '0 auto', }">
-    <v-card class="px-3 ma-3">
-      <v-card-title class="headline" v-text="'Avatar'"></v-card-title>
+  <v-container
+    :style="{ width: this.$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw' }"
+  >
+    <v-card class="px-3 pb-3 ma-3">
+      <v-card-title>Avatar</v-card-title>
+      <v-divider class="py-0 my-0"></v-divider>
       <v-card-subtitle>
-        Your avatar depends on&nbsp;
-        <a href="https://en.gravatar.com/">Gravatar</a>
+        You can change your avatar via<a target="_blank" rel="noopener noreferrer" href="https://zh-tw.gravatar.com/" style="white-space: pre;"> Gravatar</a>
       </v-card-subtitle>
-      <v-avatar size="125" class="ma-3" style="border-radius: 0px;">
-        <v-img contain :src="avatar"></v-img>
-      </v-avatar>
+      <v-row justify="center">
+        <v-avatar size="100"><v-img :src="avatar"></v-img></v-avatar>
+      </v-row>
     </v-card>
     <v-form v-model="profileForm" ref="profileForm">
-      <v-card class="px-3 ma-3">
+      <v-card class="px-3 pb-3 ma-3">
         <v-card-title>User Information</v-card-title>
-        <v-divider></v-divider>
-        <v-alert
-          v-if="errAlert === 'profile'"
-          dismissible
-          colored-border
-          border="left"
+        <v-divider class="py-0 my-0"></v-divider>
+        <ui-alert
+          v-show="errAlert === 'profile'"
           dense
-          elevation="2"
-          type="error"
-          transition="scroll-y-transition"
-        >
-          <v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row>
-        </v-alert>
+          :type="errType"
+          :alertMsg="errMsg"
+        ></ui-alert>
         <v-card-text>
           <v-row>
             <v-text-field
@@ -63,29 +59,23 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn block color="primary" class="mb-2" @click="update">
-            <v-icon class="mr-2">mdi-send</v-icon>Update
-          </v-btn>
+          <ui-button block color="primary" @click.native="update">
+            <template slot="content"><v-icon class="mr-2">mdi-send</v-icon>Update</template>
+          </ui-button>
         </v-card-actions>
       </v-card>
     </v-form>
     <v-form v-model="passwdForm" ref="passwdForm">
-      <v-card class="px-3 ma-3">
+      <v-card class="px-3 pb-3 ma-3">
         <v-card-title>Change Password</v-card-title>
-        <v-divider></v-divider>
+        <v-divider class="py-0 my-0"></v-divider>
         <v-card-text>
-          <v-alert
-            v-if="errAlert === 'passwd'"
-            dismissible
-            colored-border
-            border="left"
+          <ui-alert
+            v-show="errAlert === 'passwd'"
             dense
-            elevation="2"
-            type="error"
-            transition="scroll-y-transition"
-          >
-            <v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row>
-          </v-alert>
+            :type="errType"
+            :alertMsg="errMsg"
+          ></ui-alert>
           <v-row>
             <v-text-field
               v-model="passwd.newPassword"
@@ -113,13 +103,13 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn block color="primary" class="mb-2" @click="submit">
-            <v-icon class="mr-2">mdi-send</v-icon>Submit
-          </v-btn>
+          <ui-button block color="primary" @click.native="submit">
+            <template slot="content"><v-icon class="mr-2">mdi-send</v-icon>Submit</template>
+          </ui-button>
         </v-card-actions>
       </v-card>
     </v-form>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -144,7 +134,8 @@ export default {
       },
       avatar: this.setAvatar(''),
       errAlert: '',
-      errMsg: [],
+      errType: 'error',
+      errMsg: '',
       profileForm: false
     }
   },
@@ -188,11 +179,14 @@ export default {
       if (this.$refs.profileForm.validate()) {
         this.$http.post(`${API_BASE_URL}/profile`, this.info)
           .then((res) => {
-            this.$router.go(0);
+            this.errMsg = 'Information updated successfully!';
+            this.errType = 'success';
+            this.errAlert = 'profile';
             // console.log(res);
           })
           .catch((err) => {
-            this.errMsg = ['Invalid data!'];
+            this.errMsg = 'Invalid profile!';
+            this.errType = 'error';
             this.errAlert = 'profile';
           })
       }
@@ -201,11 +195,14 @@ export default {
       if (this.$refs.passwdForm.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/change-password`, this.passwd)
           .then((res) => {
-            this.$router.go(0);
+            this.errMsg = 'Password changed successfully!';
+            this.errType = 'success';
+            this.errAlert = 'passwd';
             // console.log(res);
           })
           .catch((err) => {
-            this.errMsg = ['Sorry, your password do not match.'];
+            this.errMsg = 'Sorry, your password do not match.';
+            this.errType = 'error';
             this.errAlert = 'passwd';
             // console.log(err);
           })

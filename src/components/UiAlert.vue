@@ -6,7 +6,7 @@
     border="left"
     elevation="2"
     style="white-space: pre-line;"
-    transition="scroll-y-transition"
+    :transition="transition"
     :dense="dense"
     :type="type"
     :icon="icon"
@@ -48,6 +48,10 @@ export default {
     dense: {
       type: Boolean,
       default: false,
+    },
+    transition: {
+      type: String,
+      default: 'scroll-y-transition',
     },
   },
 

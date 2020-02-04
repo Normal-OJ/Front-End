@@ -7,7 +7,6 @@
       v-model="errAlert"
       dense
       type="error"
-      transition="scroll-y-transition"
       :alertMsg="errMsg"
     ></ui-alert>
     

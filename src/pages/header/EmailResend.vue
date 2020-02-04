@@ -11,64 +11,74 @@
             :key="idx"
           >
             <v-hover v-slot:default="{ hover }">
-              <v-card :elevation="hover ? 12 : 2" class="ma-auto" height="40vh" :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '70vw'" @click="open(idx)" style="cursor: pointer;" ripple>
-                <v-col align="center">
-                  <v-card-subtitle class="display-1" style="text-align: center; color: black;">{{ item.title }}</v-card-subtitle>
-                  <v-card-subtitle class="title" style="text-align: center;">{{ item.text[0] }}<br>{{ item.text[1] }}</v-card-subtitle>
-                </v-col>
-              </v-card>
+              <ui-card
+                :elevation="hover ? 6 : 2"
+                height="auto"
+                :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '95vw'"
+                @click.native="open(idx)"
+                style="cursor: pointer;"
+              >
+                <template slot="subtitle"><span></span></template>
+                <template slot="title">{{ item.title }}</template>
+                <template slot="content">
+                  <p class="subtitle-1 text--primary">
+                    {{ item.text[0] }}<br>{{ item.text[1] }}
+                  </p>
+                </template>
+                <template slot="action"><span></span></template>
+              </ui-card>
             </v-hover>
           </v-col>
         </v-row>
-        <v-dialog v-model="dialog" persistent :height="$vuetify.breakpoint.mdAndUp ? '50vh' : '75vh'" :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'">
-          <v-card height="100%" width="100%">
-            <v-card-title class="headline primary white--text">
-              {{ diaTitle }}
-              <v-spacer></v-spacer>
-              <v-btn icon @click="dialog = false"><v-icon class="white--text">mdi-close</v-icon></v-btn>
-            </v-card-title>
-            <div v-if="show">
-              <v-card-text>
-                <v-alert
-                  v-model="errAlert"
-                  class="mt-6"
-                  dismissible
-                  colored-border
-                  border="left"
-                  elevation="2"
-                  type="error"
-                  transition="scroll-y-transition"
-                ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
-                <p class="my-3">{{ diaText }}</p>
-                <v-row class="mt-6" justify="center">
-                  <v-form v-model="form" ref="form" lazy-validation>
-                    <v-text-field
-                      class="title"
-                      label="Email address"
-                      outlined
-                      v-model="email"
-                      :rules="rule"
-                    ></v-text-field>
-                  </v-form>
-                </v-row>
-                <v-row class="mb-3" justify="center">
-                  <v-btn
-                    class="title text-none"
-                    color="primary"
-                    dark
-                    @click="submit"
-                  >Submit</v-btn>
-                </v-row>
-              </v-card-text>
-            </div>
+        <ui-dialog
+          v-model="dialog"
+          :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
+        >
+          <template slot="activator"><span></span></template>
+          <template slot="title">{{ diaTitle }}</template>
+          <template slot="body">
+            <v-card-text v-if="show">
+              <ui-alert
+                v-model="errAlert"
+                dense
+                type="error"
+                :alertMsg="errMsg"
+              ></ui-alert>
+              <p class="subtitle-1 text--primary">{{ diaText }}</p>
+              <v-row justify="center">
+                <v-form 
+                  v-model="form"
+                  lazy-validation
+                  ref="form"
+                  @submit="submit"
+                  onSubmit="return false"
+                >
+                  <v-text-field
+                    label="Email address"
+                    outlined
+                    v-model="email"
+                    :rules="rule"
+                  ></v-text-field>
+                </v-form>
+              </v-row>
+              <v-row>
+                <v-spacer></v-spacer>
+                <ui-button color="primary" @click.native="submit">
+                  <template slot="content">Submit</template>
+                </ui-button>
+                <v-spacer></v-spacer>
+              </v-row>
+            </v-card-text>
             <v-slide-x-transition v-else>
               <v-container class="text-center" style="color: #2a2f35;">
-                  <p class="headline font-weight-bold">Please Check Your E-mail</p>
-                  <v-icon size="10em">mdi-email-newsletter</v-icon>
+                  <p class="headline font-weight-bold">Please Check Your Inbox</p>
+                  <v-icon size="10rem">mdi-email-newsletter</v-icon>
               </v-container>
             </v-slide-x-transition>
-          </v-card>
-        </v-dialog>
+          </template>
+          <template slot="actions" v-if="show"><span></span></template>
+          <template slot="action-cancel" v-else><span></span></template>
+        </ui-dialog>
       </v-col>
     </v-row>
   </v-container>
@@ -90,15 +100,15 @@ export default {
       email: null,
       text: ['verify that account by sending email.', 'send email to recovery your password.'],
       items: [
-        { 'title': 'Active Account', 'text': ['Did not receive verification email?','Click here to resend.'] },
-        { 'title': 'Forget Password', 'text': ['Forget your password?','Click here to reset.'] },
+        { 'title': 'Verify Email Address', 'text': ['Did not receive verification email?','Click here to resend.'] },
+        { 'title': 'Reset Password', 'text': ['Forget your password?','Click here to reset.'] },
       ],
       rule: [ 
         v => !!v || 'Please enter Email address!',
         v => /.+@.+/.test(v) || 'Not a valid Email address!',
       ],
       errAlert: false,
-      errMsg: null,
+      errMsg: '',
     }
   },
 
@@ -111,17 +121,18 @@ export default {
   methods: {
     open(idx) {
       this.diaTitle = this.items[idx].title;
-      this.diaText = `Please enter Email address which you registered with, we\'ll ${this.text[idx]}`;
+      this.diaText = `Please enter email address which you registered with, we\'ll ${this.text[idx]}`;
       this.dialog = true;
       this.diaIdx = idx;
-      this.$refs.form.reset();
+      this.email = '';
+      this.errAlert = false;
     },
     submit() {
       if ( this.$refs.form.validate() ) {
         this.$http.post('/api/auth/check/email', {'email': this.email})
           .then((res) => {
             if ( res.data.data.valid === 1 ) {
-              this.errMsg = ['Sorry, we couldn\'t find any account with this E-mail.'];
+              this.errMsg = 'Sorry, we couldn\'t find any account with this E-mail.';
               this.errAlert = true;
             } else {
               this.$http.post(`/api/auth/${this.diaIdx ? 'password-recovery' : 'resend-email'}`, {'email': this.email})
@@ -137,7 +148,7 @@ export default {
             }
           })
           .catch((err) => {
-            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
             this.errAlert = true;
           })
       }

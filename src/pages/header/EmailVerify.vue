@@ -1,47 +1,28 @@
 <template>
   <v-container 
-    fuild 
-    style="width: 80vw"
+    :style="{width: $vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'}"
+    class="pt-0"
   >
+    <h2>Hello, {{ username }}</h2>
+    <h3>Please fill out the form to complete your registeration.</h3>
+    <ui-card :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'">
+      <template slot="subtitle">
+        Profile avatar is powered by<a target="_blank" rel="noopener noreferrer" href="https://zh-tw.gravatar.com/" style="white-space: pre;"> Gravatar</a>
+      </template>
+      <template slot="title">
+        <v-row justify="center">
+          <v-avatar size="100"><v-img :src="avatar"></v-img></v-avatar>
+        </v-row>
+      </template>
+      <template slot="content">
+        <v-form ref="form">
 
-    <p class="display-3 mt-3">Hello, {{ username }}</p>
-    <p class="display-1 mt-3">Please fill out the form to complete your registeration.</p>
-
-    <v-card>
-      <v-card-title class="display-1">Profile</v-card-title>
-      <div class="text-center">
-      <v-avatar
-        size="100"
-      >
-        <v-img
-          :src="avatar"
-        ></v-img>
-      </v-avatar></div>
-
-      <v-card-text>
-        <v-form
-          ref="form"
-        >
-          <!-- <v-file-input 
-            v-model="profile.avatar"
-            @change="uploadImage($event)"
-            show-size
-            :rules="avatarRules"
-            accept="image/png, image/jpeg, image/bmp"
-            label="Avatar (Optional) (Limit: 1MB)"
-            prepend-icon="mdi-camera"
-          ></v-file-input> -->
-
-          <v-alert
+          <ui-alert
             v-model="errAlert"
-            dismissible
-            colored-border
-            border="left"
             dense
-            elevation="2"
             type="error"
-            transition="scroll-y-transition"
-          >{{ errMsg }}</v-alert>
+            :alertMsg="errMsg"
+          ></ui-alert>
 
           <v-text-field
             v-model="profile.displayedName"
@@ -65,15 +46,15 @@
           >
           </v-checkbox>
 
-          <v-btn
+          <ui-button
             block
-            class="mt-3"
             color="primary"
-            @click="submit"
-          >submit</v-btn>
+            @click.native="submit"
+          ><template slot="content">Submit</template></ui-button>
         </v-form>
-      </v-card-text>
-    </v-card>
+      </template>
+      <template slot="action"><span></span></template>
+    </ui-card>
 
   </v-container>
 </template>

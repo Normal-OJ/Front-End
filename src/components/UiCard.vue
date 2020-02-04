@@ -1,12 +1,13 @@
 <template>
   <v-card
-    class="my-6 flex-column d-flex"
-    elevation="6"
-    width="70vw"
+    class="my-6 mx-auto flex-column d-flex"
+    :elevation="elevation"
+    :width="width"
+    :height="height"
   >
     <!-- subtitle -->
     <v-card-subtitle class="subtitle-1">
-      <v-row no-gutters class="px-auto">
+      <v-row no-gutters>
         <slot name="subtitle">subtitle</slot> 
         <v-spacer></v-spacer>
         <!-- Menu -->
@@ -74,6 +75,18 @@ export default {
     mdContent: {
       type: String,
       default: '',
+    },
+    elevation: {
+      type: Number,
+      default: 6,
+    },
+    width: {
+      type: String,
+      default: 'auto',
+    },
+    height: {
+      type: String,
+      default: 'auto',
     },
   },
 

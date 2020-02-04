@@ -51,7 +51,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <Auth v-else @signin="showAlert"></Auth>
+      <Auth v-else-if="$vuetify.breakpoint.mdAndUp" @signin="showAlert"></Auth>
 
     </v-app-bar>
 
