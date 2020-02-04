@@ -3,7 +3,6 @@
     v-model="validForm"
     ref="form"
   >
-    <!-- v-if="signup" -->
     <ui-alert
       v-model="errAlert"
       dense
@@ -96,12 +95,12 @@ export default {
       },
       mailRule: [
         val => !!val || 'Please enter your E-mail.',
-        val => this.isMailFormat(val) || 'Please enter in format: \'example@example.com\'.',
+        val => /.+@.+/.test(val) || 'Please enter in format: \'example@example.com\'.',
         () => this.used['email'] || 'Sorry, this E-mail has been used.'
       ],
       usernameRule: [
         val => !!val || 'Please enter your Username.',
-        val => this.isNameFormat(val) || 'Sorry, the length must be ≤ 16 characters',
+        val => (val && val.length <= 16) || 'Sorry, the length must be ≤ 16 characters',
         () => this.used['username'] || 'Sorry, this Username has been used.'
       ],
       passwordRule: [
@@ -141,18 +140,12 @@ export default {
   },
 
   mounted () {
-    this.$nextTick(() => {
-      this.$refs.email.focus();
-    });
+    // this.$nextTick(() => {
+    //   this.$refs.email.focus();
+    // });
   },
 
   methods: {
-    isMailFormat(val) {
-      return /.+@.+/.test(val);
-    },
-    isNameFormat(val) {
-      return (val && val.length <= 16);
-    },
     submit() {
       this.btnLoading = true;
       if ( this.$refs.form.validate() ) {
@@ -160,7 +153,7 @@ export default {
           .then((response) => {
             this.signup = false;
             this.dialog = true;
-            this.$emit('signupSuccess');
+            this.$emit('signup');
             // console.log(response.data);
           })
           .catch((error) => {
@@ -174,7 +167,14 @@ export default {
       // this.authData = Object.fromEntries(new Map(Object.keys(this.authData).map(item => [item, ''])));
     // },
     check(type, cnt) {
-      if ( cnt == globKey[type] && ((type=='email' && this.isMailFormat(this.authData[type])) || (type=='username' && this.isNameFormat(this.authData[type]))) ) {
+      let checker = {
+        email: val => /.+@.+/.test(val),
+        username: val => (val && val.length <= 16),
+      }
+      // if ( cnt == globKey[type] && 
+      //   ((type=='email' && this.isMailFormat(this.authData[type])) || 
+      //    (type=='username' && this.isNameFormat(this.authData[type]))) ) {
+      if(cnt == globKey[type] && checker[type] && checker[type](this.authData[type])) {
         this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
           .then((response) => {
             if ( response.data.data.valid === 0 ) {

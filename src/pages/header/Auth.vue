@@ -30,12 +30,12 @@
       <v-tabs-items v-model="tabEntry">
         <v-tab-item>
           <v-container>
-            <SignInForm v-on:signinSuccess="signinSuccessHideDialog"></SignInForm>
+            <SignInForm @signin="signin"></SignInForm>
           </v-container>
         </v-tab-item>
         <v-tab-item>
           <v-container>
-            <SignUpForm v-on:signupSuccess="signupSuccessHideDialog"></SignUpForm>
+            <SignUpForm @signup="signup"></SignUpForm>
           </v-container>
         </v-tab-item>
       </v-tabs-items>
@@ -69,11 +69,11 @@ export default {
   },
 
   methods: {
-    signinSuccessHideDialog() {
+    signin() {
       this.authDialog = false;
-      this.$emit('signinSuccessToHeader');
+      this.$emit('signin');
     },
-    signupSuccessHideDialog() {
+    signup() {
       this.authDialog = false;
     }
   }

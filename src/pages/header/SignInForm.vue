@@ -37,17 +37,17 @@
           color="secondary"
           outlined
           @click.native="emailResend"
-        ><template slot="content">Forget Password?</template></ui-button>
+        ><template slot="content">Reset Password</template></ui-button>
       </v-col>
       <v-col cols="12" sm="auto" md="auto">
         <ui-button
           color="secondary"
           outlined
           @click.native="emailResend"
-        ><template slot="content">Haven't Verify Email?</template></ui-button>
+        ><template slot="content">Verify Email Address</template></ui-button>
       </v-col>
       <v-spacer></v-spacer>
-      <v-col cols="12" md="auto">
+      <v-col cols="12" sm="auto" md="auto">
         <ui-button
           color="primary"
           :loading="btnLoading"
@@ -88,9 +88,9 @@ export default {
   },
 
   mounted () {
-    this.$nextTick(() => {
-      this.$refs.username.focus();
-    });
+    // this.$nextTick(() => {
+    //   this.$refs.username.focus();
+    // });
   },
 
   methods: {
@@ -99,7 +99,7 @@ export default {
         .then((response) => {
           // successful sign in
           // console.log(response);
-          this.$emit('signinSuccess');
+          this.$emit('signin');
         })
         .catch((error) => {
           // wrong password or not active
