@@ -49,28 +49,30 @@
       <template slot="activator"><span></span></template>
       <template slot="title">New Course</template>
       <template slot="body">
-        <v-form
-          ref="form"
-          v-model="form"
-        >
-          <ui-alert
-            v-model="errAlert"
-            dense
-            type="error"
-            :alertMsg="errMsg"
-          ></ui-alert>
-          <v-text-field
-            v-model="courseName"
-            label="Course Name"
-            :rules="courseNameRules"
-            counter="64"
-          ></v-text-field>
-          <v-text-field
-            v-if="perm===0"
-            v-model="teacher"
-            label="Teacher"
-          ></v-text-field>
-        </v-form>
+        <v-card-text>
+          <v-form
+            ref="form"
+            v-model="form"
+          >
+            <ui-alert
+              v-model="errAlert"
+              dense
+              type="error"
+              :alertMsg="errMsg"
+            ></ui-alert>
+            <v-text-field
+              v-model="courseName"
+              label="Course Name"
+              :rules="courseNameRules"
+              counter="64"
+            ></v-text-field>
+            <v-text-field
+              v-if="perm===0"
+              v-model="teacher"
+              label="Teacher"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
       </template>
       <template slot="action-ok">
         <ui-button color=primary @click.native="create">
@@ -100,7 +102,7 @@ export default {
         v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters.',
       ],
       errAlert: false,
-      errMsg: [],
+      errMsg: '',
       perm: false,
     }
   },
@@ -114,13 +116,13 @@ export default {
     getCourses() {
       this.$http.get('/api/course')
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           res.data.data.forEach(ele => {
             this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}`, 'ta': ele.TAs})
           })
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         });
     },
     getProfile() {
@@ -136,7 +138,6 @@ export default {
       }
     },
     parseJwt(token) {
-      console.log(atob(token.split('.')[1]));
       return JSON.parse(atob(token.split('.')[1])).data;
     },
     create() {
@@ -147,7 +148,7 @@ export default {
             this.$router.go(0);
           })
           .catch((err) => {
-            this.errMsg = [err.response.data.message];
+            this.errMsg = `${err.response.data.message}`;
             this.errAlert = true;
           })
       }
