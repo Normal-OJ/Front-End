@@ -128,9 +128,7 @@ export default {
         .then((res) => {
           console.log(res);
           res.data.data.forEach(ele => {
-            if ( ele.course !== 'Public' ) {
-              this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}`, 'ta': ele.TAs})
-            }
+            this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}`, 'ta': ele.TAs})
           })
         })
         .catch((err) => {

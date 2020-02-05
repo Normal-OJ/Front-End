@@ -10,14 +10,16 @@ Vue.use(VueAxios, axios);
 Vue.use(VueCookies);
 Vue.config.productionTip = false;
 
-import UiDialog from './components/UiDialog'
-import UiButton from './components/UiButton'
-import UiAlert from './components/UiAlert'
-import UiCard from './components/UiCard'
+import UiDialog from './components/ui/UiDialog'
+import UiButton from './components/ui/UiButton'
+import UiAlert from './components/ui/UiAlert'
+import UiCard from './components/ui/UiCard'
+import ShowAnn from './components/ShowAnn'
 Vue.component('ui-dialog', UiDialog);
 Vue.component('ui-button', UiButton);
 Vue.component('ui-alert', UiAlert);
 Vue.component('ui-card', UiCard);
+Vue.component('ShowAnn', ShowAnn);
 
 new Vue({
   vuetify,

@@ -1,12 +1,14 @@
 <template>
-  <v-container>
+  <v-container
+    :style="{ width: this.$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw' }"
+  >
     <!-- UiDialog -->
     <h1>UiDialog</h1>
     <p>props: width(String), persistent(Boolean)</p>
     <p>slots: activator, title, body, content, action-cancel, action-ok</p>
     <v-row justify="space-around">
-      <ui-dialog v-model="dialog"></ui-dialog>
-      <ui-dialog v-model="secret">
+      <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"></ui-dialog>
+      <ui-dialog v-model="secret" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'">
         <template slot="activator">
           <ui-button color="warning" @click.native="secret = !secret">
             <template slot="content">
@@ -68,16 +70,7 @@
     <p>props: alertMsg(String), color(String), type(String), icon(String), width(String)</p>
     <v-row>
       <v-spacer></v-spacer>
-      <ui-button @click.native="alert = !alert">
-        <template slot="content">
-          activator
-        </template>
-      </ui-button>
-      <v-spacer></v-spacer>
-    </v-row>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-col cols="1">
+      <v-col cols="2">
         <h5>Types</h5>
         <v-row class="my-3" v-for="type in alertTypes">
           <ui-button @click.native="alertType = type">
@@ -94,6 +87,16 @@
         <h5>Dense</h5>
         <ui-alert v-model="alert" :alertMsg="msg" :type="alertType" dense></ui-alert>
       </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+    <v-row>
+      <v-spacer></v-spacer>
+      <ui-button @click.native="alert = !alert">
+        <template slot="content">
+          activator
+        </template>
+      </ui-button>
+      <v-spacer></v-spacer>
     </v-row>
     <!-- UiAlert -->
     <!-- UiCard -->
