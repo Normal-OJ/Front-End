@@ -143,10 +143,11 @@ export default {
     return {
       links: [
         {'title': 'Home', 'path': '/', 'show': true},
-        {'title': 'Problems', 'path': '/problems', 'show': true},
-        {'title': 'Submissions', 'path': '/submissions', 'show': false},
-        {'title': 'Courses', 'path': '/courses', 'show': false},
+        // {'title': 'Problems', 'path': '/problems', 'show': true},
+        // {'title': 'Submissions', 'path': '/submissions', 'show': false},
+        {'title': 'Courses', 'path': '/courses', 'show': true},
         {'title': 'Inbox', 'path': '/inbox', 'show': false},
+        {'title': 'About', 'path': '/about', 'show': true},
       ],
       drawer: false,
       isLogin: false,
