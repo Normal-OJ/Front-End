@@ -1,12 +1,12 @@
 <template>
   <v-container
-    :style="{ width: $vuetify.breakpoint.mdAndUp ? '50vw' : '95vw', height: '100%' }"
+    :style="{ width: $vuetify.breakpoint.mdAndUp ? '60vw' : '95vw', height: '100%' }"
   >
     <!-- Pinned -->
     <v-card height="100%" elevation="12">
       <v-card elevation="0">
         <v-card-title><v-icon style="transform: rotate(45deg);">mdi-pin</v-icon>Pinned</v-card-title>
-        <v-card-text>
+        <v-card-text class="pl-10">
           <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>How to create account?</a><br>
           <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>Get started with Normal OJ</a><br>
           <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>Normal OJ Problem Format</a>
@@ -18,7 +18,7 @@
       <!-- Ann -->
       <v-card-title>System Announcement</v-card-title>
       <v-card-text>
-        <ShowAnn course="Public"></ShowAnn>
+        <ShowAnn course="Public" :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
       </v-card-text>
     </v-card>
   </v-container>

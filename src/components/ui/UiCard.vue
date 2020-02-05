@@ -112,7 +112,7 @@ export default {
 
 <style lang="css" scoped>
 .mask {
-  max-height: 10vh;
+  max-height: 20vh;
   overflow: hidden;
   mask-image: linear-gradient(180deg, #000 60%, transparent);
 }
