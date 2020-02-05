@@ -22,7 +22,7 @@
       <v-card-title class="headline">System Announcement</v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-card-text>
-        <ShowAnn course="Public" :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
+        <ShowAnn :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
       </v-card-text>
     </v-card>
   </v-container>
@@ -41,7 +41,6 @@ export default {
 
   data () {
     return {
-      data: 100,
     }
   },
 

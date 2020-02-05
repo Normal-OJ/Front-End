@@ -30,7 +30,7 @@ export default {
   props: {
     course: {
       type: String,
-      Required: true,
+      default: '',
     },
     width: {
       type: String,
@@ -45,7 +45,7 @@ export default {
   },
 
   created() {
-    if ( this.course ) this.getAnn();
+    this.getAnn();
   },
 
   methods: {
