@@ -169,7 +169,7 @@ export default {
     },
     setAvatar(payload) {
       var d = encodeURI("noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}&s=100`;
     },
     parseJwt(token) {
       console.log(atob(token.split('.')[1]));

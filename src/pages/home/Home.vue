@@ -4,19 +4,23 @@
   >
     <!-- Pinned -->
     <v-card height="100%" elevation="12">
-      <v-card elevation="0">
-        <v-card-title><v-icon style="transform: rotate(45deg);">mdi-pin</v-icon>Pinned</v-card-title>
+      <v-card elevation="0" tile>
+        <v-card-title class="headline">
+          <v-icon class="mr-1" style="transform: rotate(45deg);">mdi-pin</v-icon>Pinned
+        </v-card-title>
+        <v-divider class="mt-0"></v-divider>
         <v-card-text class="pl-10">
           <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>How to create account?</a><br>
           <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>Get started with Normal OJ</a><br>
           <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>Normal OJ Problem Format</a>
         </v-card-text>
-      </v-card>
+      </v-card tile>
 
-      <v-divider></v-divider>
+      <!-- <v-divider></v-divider> -->
 
       <!-- Ann -->
-      <v-card-title>System Announcement</v-card-title>
+      <v-card-title class="headline">System Announcement</v-card-title>
+      <v-divider class="mt-0"></v-divider>
       <v-card-text>
         <ShowAnn course="Public" :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
       </v-card-text>
@@ -37,7 +41,7 @@ export default {
 
   data () {
     return {
-
+      data: 100,
     }
   },
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row no-gutters v-for="(item, idx) in items" :key="idx" justify="center">
+    <v-row v-for="(item, idx) in items" :key="idx" justify="center">
       <ui-card
         :width="width"
         elevation="2"
@@ -15,6 +15,9 @@
         </template>
         <template slot="title">{{ item.title }}</template>
       </ui-card>
+    </v-row>
+    <v-row v-if="items.length===0" justify="center">
+      <h3>🦄 There's no announcement yet.</h3>
     </v-row>
   </div>
 </template>

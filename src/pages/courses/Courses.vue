@@ -1,99 +1,83 @@
 <template>
-  <v-container>
-    <v-row v-if="perm">
-      <v-col cols="12">
-        <v-hover v-slot:default="{ hover }">
-          <v-card
-            :elevation="hover ? 12 : 2"
-            style="cursor: pointer;"
-            @click="newCourse = true"
-          >
-            <v-card-title class="display-1"><v-icon color="black" size="48">mdi-plus</v-icon>Create Course</v-card-title>
-          </v-card>
-        </v-hover>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-        v-for="(item, idx) in items"
-        class="ma-0"
-        :key="idx"
-        cols="12"
-        md="6"
-      >
-        <v-hover v-slot:default="{ hover }">
-          <v-card
-            :elevation="hover ? 12 : 2"
-            :to="{'path': '/course'+item.path}"
-            style="cursor: pointer;"
-          >
-            <v-card-title class="headline" v-text="item.title"></v-card-title>
-            <v-card-subtitle class="title">
-              Teacher: {{ item.teacher.username }}
-            </v-card-subtitle>
-            <v-card-text class="title">
-              TA: 
-              <a
-                v-for="ta in item.ta"
-                class="mx-1"
-                v-text="ta.username"
-              ></a>
-            </v-card-text>
-          </v-card>
-        </v-hover>
-      </v-col>
-    </v-row>
-    <v-dialog v-model="newCourse" width="70vw">
-      <v-card>
-        <v-toolbar color="primary" dark dense>
-          <div class="headline">New Course</div>
-          <v-spacer></v-spacer>
-          <v-btn tile icon @click="newCourse = false"><v-icon>mdi-close</v-icon></v-btn>
-        </v-toolbar>
-        <v-card-text class="title pt-3 black--text">
-          <v-form
-            ref="form"
-            v-model="validForm"
-          >
-            <v-alert
-              v-model="errAlert"
-              dismissible
-              colored-border
-              border="left"
-              dense
-              elevation="2"
-              type="error"
-              transition="scroll-y-transition"
-            ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
-            <v-text-field
-              label="Course Name"
-              counter="64" 
-              :rules="[v => !!v || 'Course Name is Required!', v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters.']" 
-              v-model="courseName">
-            </v-text-field>
-            <v-text-field
-              label="Teacher(Admin Only)"
-              v-model="teacher">
-            </v-text-field>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="secondary"
-            outlined
-            @click="newCourse = false"
-            class="text-none title"
-          >Cancel</v-btn>
-          <v-btn
-            color="primary"
-            dark
-            @click="post"
-            class="text-none title"
-          >Submit</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-container
+    :style="{ width: $vuetify.breakpoint.mdAndUp ? '60vw' : '95vw', height: '100%' }"
+  >
+    <v-card height="100%" elevation="12">
+      <v-card-title class="headline">All Courses</v-card-title>
+      <v-divider class="mt-0"></v-divider>
+      <v-simple-table class="px-4">
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="font-weight-bold subtitle-1 text--primary" style="width: 50%;">Course</th>
+              <th class="font-weight-bold subtitle-1 text--primary" style="width: 20%;">Teacher</th>
+              <th class="font-weight-bold subtitle-1 text--primary" style="width: 30%;">TA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="perm <= 1">
+              <td colspan="3" class="px-0">
+                <v-hover v-slot:default="{ hover }">
+                  <v-card
+                    tile
+                    elevation="0"
+                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
+                    @click="dialog = true"
+                  >
+                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>New Course</v-card-title>
+                  </v-card>
+                </v-hover>
+              </td>
+            </tr>
+            <tr v-for="item in items" :key="item.title">
+              <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
+              <td class="subtitle-1">{{ item.teacher.username }}</td>
+              <td class="subtitle-1">
+                <span class="pr-1" v-for="ta in item.ta">{{ ta }}</span>
+              </td>
+            </tr>
+            <tr v-if="items.length===0">
+              <td>You have not enrolled in any course.</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </v-card>
+    <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'">
+      <template slot="activator"><span></span></template>
+      <template slot="title">New Course</template>
+      <template slot="body">
+        <v-form
+          ref="form"
+          v-model="form"
+        >
+          <ui-alert
+            v-model="errAlert"
+            dense
+            type="error"
+            :alertMsg="errMsg"
+          ></ui-alert>
+          <v-text-field
+            v-model="courseName"
+            label="Course Name"
+            :rules="courseNameRules"
+            counter="64"
+          ></v-text-field>
+          <v-text-field
+            v-if="perm===0"
+            v-model="teacher"
+            label="Teacher"
+          ></v-text-field>
+        </v-form>
+      </template>
+      <template slot="action-ok">
+        <ui-button color=primary @click.native="create">
+          <template slot="content">Submit</template>
+        </ui-button>
+      </template>
+    </ui-dialog>
   </v-container>
 </template>
 
@@ -107,10 +91,14 @@ export default {
   data () {
     return {
       items: [],
-      newCourse: false,
-      validForm: false,
+      dialog: false,
+      form: false,
       teacher: '',
       courseName: '',
+      courseNameRules: [
+        v => !!v || 'Please enter the course name you wanna create.', 
+        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters.',
+      ],
       errAlert: false,
       errMsg: [],
       perm: false,
@@ -139,9 +127,7 @@ export default {
       if ( this.$cookies.isKey('jwt') ) {
         var payload = this.parseJwt(this.$cookies.get('jwt'));
         if ( payload.active === true ) {
-          if ( payload.role <= 1 ) {
-            this.perm = true;
-          }
+          this.perm = payload.role;
         } else {
           this.$router.push('/');
         }
@@ -153,11 +139,11 @@ export default {
       console.log(atob(token.split('.')[1]));
       return JSON.parse(atob(token.split('.')[1])).data;
     },
-    post() {
+    create() {
       if ( this.$refs.form.validate() ) {
         this.$http.post('/api/course', {'course': this.courseName, 'teacher': this.teacher})
           .then((res) => {
-            this.newCourse = false;
+            this.dialog = false;
             this.$router.go(0);
           })
           .catch((err) => {
@@ -171,4 +157,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+table {
+
+}
 </style>

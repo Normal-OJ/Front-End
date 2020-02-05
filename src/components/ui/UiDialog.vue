@@ -33,7 +33,7 @@
         <slot name="actions">
           <v-spacer></v-spacer>
           <slot name="action-cancel">
-            <ui-button outlined color="primary" @click.native="dialog = false">
+            <ui-button outlined color="secondary" @click.native="dialog = false">
               <template slot="content">Cancel</template>
             </ui-button>
           </slot>

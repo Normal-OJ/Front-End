@@ -12,7 +12,7 @@
           >
             <v-hover v-slot:default="{ hover }">
               <ui-card
-                :elevation="hover ? 6 : 2"
+                :elevation="hover ? '6' : '2'"
                 height="auto"
                 :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '95vw'"
                 @click.native="open(idx)"

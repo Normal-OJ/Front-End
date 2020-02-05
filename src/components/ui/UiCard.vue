@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="my-6 mx-auto flex-column d-flex"
+    class="my-3 mx-auto flex-column d-flex"
     :elevation="elevation"
     :width="width"
     :height="height"
