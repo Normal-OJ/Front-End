@@ -2,8 +2,8 @@
   <v-container
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '60vw' : '95vw', height: '100%' }"
   >
-    <!-- Pinned -->
     <v-card height="100%" elevation="12">
+      <!-- Pinned -->
       <v-card elevation="0" tile>
         <v-card-title class="headline">
           <v-icon class="mr-1" style="transform: rotate(45deg);">mdi-pin</v-icon>Pinned
