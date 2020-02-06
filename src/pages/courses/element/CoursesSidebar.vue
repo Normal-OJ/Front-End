@@ -1,13 +1,13 @@
 <template>
-  <v-card tile outlined min-height="100vh">
+  <v-card tile outlined height="100vh">
     <v-list>
       <v-list-item>
         <v-list-item-avatar>
           <v-img :src="avatar"></v-img>
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title class="headline text-wrap">{{ courseName }}</v-list-item-title>
-          <v-list-item-subtitle class="title text-wrap">{{ teacherName }}</v-list-item-subtitle>
+          <v-list-item-title class="headline">{{ courseName }}</v-list-item-title>
+          <v-list-item-subtitle class="title">{{ teacherName }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -16,17 +16,15 @@
       <v-list-item-group color="primary">
         <v-list-item 
           v-for="link in links"
+          v-if="link.title!=='Manage'||perm"
           :key="link.title"
           :to="link.path"
           link
           dense
-          v-if="link.title!=='Manage'||perm"
         >
-          <v-list-item-icon>
-            <v-icon class="mt-2">{{ link.icon }}</v-icon>
-          </v-list-item-icon>
+          <v-list-item-icon><v-icon class="mt-1">{{ link.icon }}</v-icon></v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title class="title text-wrap mr-3">{{link.title}}</v-list-item-title>
+            <v-list-item-title class="subtitle-1">{{ link.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -47,10 +45,11 @@ export default {
       avatar: this.setAvatar(''),
       links: [
         { 'title': 'Announcement', 'path': `/course/${this.$route.params.name}/announcement`, 'icon': 'mdi-bulletin-board'},
-        { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-open-variant'},
-        // { 'title': 'Contest', 'path': `/course/${this.$route.params.name}/contest`, 'icon': 'mdi-flag'},
-        { 'title': 'Discussion', 'path': `/course/${this.$route.params.name}/discussion`, 'icon': 'mdi-message-text'},
-        // { 'title': 'Score', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
+        { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-multiple'},
+        { 'title': 'Submissions', 'path': `/course/${this.$route.params.name}/submissions`, 'icon': 'mdi-history'},
+        { 'title': 'Problems', 'path': `/course/${this.$route.params.name}/problems`, 'icon': 'mdi-view-list'},
+        { 'title': 'Discussion', 'path': `/course/${this.$route.params.name}/discussion`, 'icon': 'mdi-comment-text'},
+        { 'title': 'Score', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
         { 'title': 'Manage', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
       ],
       perm: false,

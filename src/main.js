@@ -15,11 +15,14 @@ import UiButton from './components/ui/UiButton'
 import UiAlert from './components/ui/UiAlert'
 import UiCard from './components/ui/UiCard'
 import ShowAnn from './components/ShowAnn'
+import Creator from './components/Creator'
 Vue.component('ui-dialog', UiDialog);
 Vue.component('ui-button', UiButton);
 Vue.component('ui-alert', UiAlert);
 Vue.component('ui-card', UiCard);
 Vue.component('ShowAnn', ShowAnn);
+Vue.component('Creator', Creator);
+
 
 new Vue({
   vuetify,

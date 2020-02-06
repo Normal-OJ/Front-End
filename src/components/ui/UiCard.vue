@@ -35,8 +35,10 @@
     </v-card-title>
 
     <!-- markdown content -->
-    <v-card-text v-if="markdown" class="text--primary mask pt-4 pb-0">
-      <vue-markdown :source="mdContent"></vue-markdown>
+    <v-card-text v-if="markdown" class="text--primary pt-4 pb-0">
+      <div v-if="mask" class="mask">
+        <vue-markdown :source="mdContent"></vue-markdown>
+      </div>
     </v-card-text>
     <!-- plain content -->
     <v-card-text v-else>
@@ -99,7 +101,11 @@ export default {
     readmore: {
       type: String,
       default: null,
-    }
+    },
+    mask: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data () {

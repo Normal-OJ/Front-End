@@ -75,7 +75,7 @@
         </v-card-text>
       </template>
       <template slot="action-ok">
-        <ui-button color=primary @click.native="create">
+        <ui-button color="primary" @click.native="create">
           <template slot="content">Submit</template>
         </ui-button>
       </template>

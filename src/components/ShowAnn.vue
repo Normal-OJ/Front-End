@@ -7,6 +7,7 @@
         markdown
         :mdContent="item.content"
         :readmore="`/course/${course}/announcement/${item.annId}`"
+        mask
       >
         <template slot="subtitle">
           Written by <a style="white-space: pre"> {{ item.author.username }}</a>, {{ item.createdTime }}.
@@ -58,7 +59,7 @@ export default {
             this.items.push({
               'annId': ele.annId,
               'title': ele.title,
-              'author': ele.creater,
+              'author': ele.creator,
               'content': ele.markdown,
               'createdTime': this.timeFormat(ele.createTime),
               'lastUpdatedTime': this.timeFormat(ele.updateTime),

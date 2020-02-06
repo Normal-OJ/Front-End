@@ -1,7 +1,8 @@
 <template>
   <v-row no-gutters>
-    <v-col cols="2"></v-col>
-    <CoursesSidebar style="position: fixed; max-width: 16.66vw"></CoursesSidebar>
+    <v-col cols="2">
+      <CoursesSidebar style="position: fixed;"></CoursesSidebar>
+    </v-col>
     <v-col cols="10">
         <router-view/>
     </v-col>
