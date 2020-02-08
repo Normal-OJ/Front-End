@@ -1,7 +1,7 @@
 <template>
 	<v-dialog v-model="dialog" :width="width" :persistent="persistent">
     <template v-slot:activator="{ on: { click } }">
-      <slot name="activator">
+      <slot name="activator" :click="click">
         <ui-button @click.native="click">
           <template v-slot:content>
             <v-icon>mdi-plus</v-icon>
@@ -20,7 +20,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text>
+      <v-card-text class="mt-2">
         <slot name="body">
           <p class="subtitle-1 text--primary">
             <slot name="content">
