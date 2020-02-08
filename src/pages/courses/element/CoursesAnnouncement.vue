@@ -19,7 +19,7 @@
         </v-form>
       </template>
     </Creator>
-    <ShowAnn :course="$route.params.name"></ShowAnn>
+    <ShowAnn v-if="items" :items="items" :course="$route.params.name"></ShowAnn>
   </div>
 </template>
 
@@ -32,6 +32,7 @@ export default {
 
   data () {
     return {
+      items: null,
       dialog: false,
       validForm: true,
       ann: {
@@ -41,12 +42,33 @@ export default {
       perm: false,
     }
   },
-  beforeMount() {
+  created() {
     this.init();
   },
   methods: {
     init() {
       this.checkUser(this.getUsername());
+      this.getAnn();
+    },
+    getAnn() {
+      this.$http.get(`/api/ann/${this.$route.params.name}`)
+        .then((res) => {
+          // console.log(res);
+          this.items = [];
+          res.data.data.forEach(ele => {
+            this.items.push({
+              'annId': ele.annId,
+              'title': ele.title,
+              'author': ele.creator,
+              'content': ele.markdown,
+              'createdTime': this.timeFormat(ele.createTime),
+              'lastUpdatedTime': this.timeFormat(ele.updateTime),
+              'lastUpdater': ele.updater});
+          })
+        })
+        .catch((err) => {
+          // console.log(err);
+        });
     },
     cancel() {
       this.ann.title = '';

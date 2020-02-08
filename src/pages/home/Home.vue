@@ -22,7 +22,7 @@
       <v-card-title class="headline">System Announcement</v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-card-text>
-        <ShowAnn :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
+        <ShowAnn v-if="items" :items="items" :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
       </v-card-text>
     </v-card>
   </v-container>
@@ -41,10 +41,11 @@ export default {
 
   data () {
     return {
+      items: null,
     }
   },
 
-  // created() {
+  created() {
     // window.onload = () => {
     //   for ( var i=0; i<100; ++i ) {
     //     var unicorn = document.createElement('span');
@@ -55,9 +56,10 @@ export default {
     //     this.move(unicorn);
     //   }
     // }
-  // },
+    this.getAnn();
+  },
 
-  // methods: {
+  methods: {
     // move(obj) {
     //   var W = window.innerWidth - obj.offsetWidth;
     //   var H = window.innerHeight - obj.offsetHeight;
@@ -77,7 +79,38 @@ export default {
     //     if ( objLeft > W )  objLeft = 0;
     //   }, 10);
     // }
-  // }
+    getAnn() {
+      this.$http.get('/api/ann/')
+        .then((res) => {
+          // console.log(res);
+          this.items = [];
+          res.data.data.forEach(ele => {
+            this.items.push({
+              'annId': ele.annId,
+              'title': ele.title,
+              'author': ele.creator,
+              'content': ele.markdown,
+              'createdTime': this.timeFormat(ele.createTime),
+              'lastUpdatedTime': this.timeFormat(ele.updateTime),
+              'lastUpdater': ele.updater});
+          })
+        })
+        .catch((err) => {
+          // console.log(err);
+        });
+    },
+    timeFormat(time) {
+      var tmp = new Date(time * 1000);
+      var year = tmp.getFullYear();
+      var month = '0' + (tmp.getMonth()+1);
+      var date = '0' + tmp.getDate();
+      var hour = '0' + tmp.getHours();
+      var min = '0' + tmp.getMinutes();
+      var sec = '0' + tmp.getSeconds();
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
+      return time;
+    },
+  }
 }
 </script>
 

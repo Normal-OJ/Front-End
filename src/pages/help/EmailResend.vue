@@ -11,22 +11,19 @@
             :key="idx"
           >
             <v-hover v-slot:default="{ hover }">
-              <ui-card
+              <v-card
                 :elevation="hover ? '6' : '2'"
                 height="auto"
                 :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '95vw'"
-                @click.native="open(idx)"
+                class="mx-auto"
                 style="cursor: pointer;"
+                @click="open(idx)"
               >
-                <template slot="subtitle"><span></span></template>
-                <template slot="title">{{ item.title }}</template>
-                <template slot="content">
-                  <p class="subtitle-1 text--primary">
+                <v-card-title>{{ item.title }}</v-card-title>
+                <v-card-text>
                     {{ item.text[0] }}<br>{{ item.text[1] }}
-                  </p>
-                </template>
-                <template slot="action"><span></span></template>
-              </ui-card>
+                </v-card-text>
+              </v-card>
             </v-hover>
           </v-col>
         </v-row>

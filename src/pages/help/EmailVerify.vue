@@ -5,16 +5,19 @@
   >
     <h2>Hello, {{ username }}</h2>
     <h3>Please fill out the form to complete your registeration.</h3>
-    <ui-card :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'">
-      <template slot="subtitle">
+    <v-card 
+      class="my-3 mx-auto flex-column d-flex"
+      :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
+    >
+      <v-card-subtitle>
         Profile avatar is powered by<a target="_blank" rel="noopener noreferrer" href="https://zh-tw.gravatar.com/" style="white-space: pre;"> Gravatar</a>
-      </template>
-      <template slot="title">
+      </v-card-subtitle>
+      <v-card-title>
         <v-row justify="center">
           <v-avatar size="100"><v-img :src="avatar"></v-img></v-avatar>
         </v-row>
-      </template>
-      <template slot="content">
+      </v-card-title>
+      <v-card-text>
         <v-form ref="form">
 
           <ui-alert
@@ -28,6 +31,7 @@
             v-model="profile.displayedName"
             label="Display Name (Optional)"
             hint="If display name is empty, username will be displayed on pages."
+            :rules="[v => v.length <= 16 || 'Display name\'s length must <= 16!']"
             prepend-icon="mdi-account-badge-horizontal-outline"
           ></v-text-field>
 
@@ -52,9 +56,8 @@
             @click.native="submit"
           ><template slot="content">Submit</template></ui-button>
         </v-form>
-      </template>
-      <template slot="action"><span></span></template>
-    </ui-card>
+      </v-card-text>
+    </v-card>
 
   </v-container>
 </template>
@@ -102,10 +105,10 @@ export default {
         if ( payload.active === false ) {
           return this.parseJwt(this.$cookies.get('jwt'));
         } else {
-          this.$router.push('/');
+          // this.$router.push('/');
         }
       } else {
-        this.$router.push('/');
+        // this.$router.push('/');
       }
     },
     parseJwt(token) {

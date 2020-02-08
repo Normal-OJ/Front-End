@@ -1,5 +1,5 @@
 <template>
-  <v-card tile outlined height="100vh">
+  <v-card tile outlined height="100%">
     <v-list>
       <v-list-item>
         <v-list-item-avatar>

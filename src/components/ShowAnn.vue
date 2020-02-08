@@ -1,21 +1,17 @@
 <template>
   <div>
     <v-row v-for="(item, idx) in items" :key="idx" justify="center">
-      <ui-card
-        :width="width"
-        elevation="2"
-        markdown
-        :mdContent="item.content"
+      <ui-post
+        :markdown="item.content"
         :readmore="`/course/${course}/announcement/${item.annId}`"
         mask
-      >
-        <template slot="subtitle">
-          Written by <a style="white-space: pre"> {{ item.author.username }}</a>, {{ item.createdTime }}.
-          <br>
-          <i>Last update on {{ item.lastUpdatedTime }} by <a>{{ item.lastUpdater.username }}</a>.</i>
-        </template>
-        <template slot="title">{{ item.title }}</template>
-      </ui-card>
+        :width="width"
+        :author="item.author.username"
+        :createdTime="item.createdTime"
+        :updater="updateInfo ? item.lastUpdater.username : null"
+        :updatedTime="updateInfo ? item.lastUpdatedTime : null"
+        :title="item.title"
+      ></ui-post>
     </v-row>
     <v-row v-if="items.length===0" justify="center">
       <h3>🦄 There's no announcement yet.</h3>
@@ -29,6 +25,10 @@ export default {
   name: 'ShowAnn',
 
   props: {
+    items: {
+      type: Array,
+      required: true,
+    },
     course: {
       type: String,
       default: '',
@@ -37,51 +37,17 @@ export default {
       type: String,
       default: '50vw'
     },
+    updateInfo: {
+      type: Boolean,
+      default: false,
+    }
   },
 
   data () {
     return {
-      items: null,
     }
   },
 
-  created() {
-    this.getAnn();
-  },
-
-  methods: {
-    getAnn() {
-      this.items = [];
-      this.$http.get(`/api/ann/${this.course}`)
-        .then((res) => {
-          // console.log(res);
-          res.data.data.forEach(ele => {
-            this.items.push({
-              'annId': ele.annId,
-              'title': ele.title,
-              'author': ele.creator,
-              'content': ele.markdown,
-              'createdTime': this.timeFormat(ele.createTime),
-              'lastUpdatedTime': this.timeFormat(ele.updateTime),
-              'lastUpdater': ele.updater});
-          })
-        })
-        .catch((err) => {
-          // console.log(err);
-        });
-    },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
-  }
 }
 </script>
 

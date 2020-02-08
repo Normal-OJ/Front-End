@@ -9,7 +9,12 @@
     <v-card-subtitle class="pb-0">
       <v-row no-gutters>
         <v-card-subtitle class="pa-0">
-          <slot name="subtitle">subtitle</slot> 
+          <div v-if="author">
+            Written by <a style="white-space: pre"> {{ author }}</a> on {{ createdTime }}.
+          </div>
+          <div v-if="updater">
+            <i>Last update on {{ updatedTime }}, updated by <a>{{ updater }}</a>.</i>
+          </div>
         </v-card-subtitle>
         <v-spacer></v-spacer>
         <!-- Menu -->
@@ -25,7 +30,6 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <!-- Menu -->
       </v-row>
     </v-card-subtitle>
 
@@ -34,15 +38,19 @@
       <slot name="title">title</slot>
     </v-card-title>
 
+    <!-- before markdown area -->
+    <v-card-text v-if="this.$slots.beforeMarkdown">
+      <slot name="beforeMarkdown"></slot>
+    </v-card-text>
     <!-- markdown content -->
     <v-card-text v-if="markdown" class="text--primary pt-4 pb-0">
       <div v-if="mask" class="mask">
-        <vue-markdown :source="mdContent"></vue-markdown>
+        <vue-markdown :source="markdown"></vue-markdown>
       </div>
     </v-card-text>
     <!-- plain content -->
-    <v-card-text v-else>
-      <slot name="content"></slot>
+    <v-card-text v-if="this.$slots.afterMarkdown">
+      <slot name="afterMarkdown"></slot>
     </v-card-text>
 
     <!-- actions -->
@@ -63,13 +71,21 @@
 import VueMarkdown from 'vue-markdown'
 export default {
 
-  name: 'UiCard',
+  name: 'UiPost',
 
   components: {
     VueMarkdown,
   },
 
   props: {
+    width: {
+      type: String,
+      default: '50vw',
+    },
+    height: {
+      type: String,
+      default: 'auto',
+    },
     menu: {
       type: Boolean,
       default: false,
@@ -78,33 +94,41 @@ export default {
       type: Array,
       default: () => ['edit', 'delete'],
     },
-    markdown: {
-      type: Boolean,
-      default: false,
-    },
-    mdContent: {
-      type: String,
-      default: '',
-    },
     elevation: {
       type: String,
-      default: '6',
+      default: '2',
     },
-    width: {
-      type: String,
-      default: 'auto',
-    },
-    height: {
-      type: String,
-      default: 'auto',
-    },
-    readmore: {
+    markdown: {
       type: String,
       default: null,
     },
     mask: {
       type: Boolean,
       default: false,
+    },
+    readmore: {
+      type: String,
+      default: null,
+    },
+    author: {
+      type: String,
+      default: null,
+    },
+    createdTime: {
+      type: String,
+      default: null,
+    },
+    updater: {
+      type: String,
+      default: null,
+    },
+    updatedTime: {
+      type: String,
+      default: null,
+    },
+    title: {
+      type: String,
+      default: null,
     },
   },
 

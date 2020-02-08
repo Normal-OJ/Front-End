@@ -29,7 +29,7 @@
               label="Display Name"
               class="mx-1"
               outlined
-              :rules="[v => v.length <= 16 || 'Display name\'s length must <= 16!']"
+              :rules="[v => v.length <= 16 || 'You can set Display name at most 16 characters!']"
             ></v-text-field>
             <v-text-field
               v-model="info.username"
@@ -54,7 +54,7 @@
               label="Bio"
               class="mx-1"
               outlined
-              :rules="[v => v.length <= 64 || 'Bio must shorter than 64!']"
+              :rules="[v => v.length <= 64 || 'You can type at most 64 characters!']"
             ></v-textarea>
           </v-row>
         </v-card-text>
