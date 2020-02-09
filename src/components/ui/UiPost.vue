@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="my-3 mx-auto flex-column d-flex"
+    class="my-3"
     :elevation="elevation"
     :width="width"
     :height="height"
@@ -25,8 +25,8 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="item in menuItems" :key="item">
-              <v-list-item-title @click="this.$emit(item)">{{ item }}</v-list-item-title>
+            <v-list-item v-for="(item, i) in menuItems" :key="i" @click="$emit(item)">
+              <v-list-item-title>{{ item }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -34,9 +34,7 @@
     </v-card-subtitle>
 
     <!-- title -->
-    <v-card-title class="display-1 pb-0 text-center">
-      <slot name="title">title</slot>
-    </v-card-title>
+    <v-card-title class="display-1 py-0">{{ title }}</v-card-title>
 
     <!-- before markdown area -->
     <v-card-text v-if="this.$slots.beforeMarkdown">

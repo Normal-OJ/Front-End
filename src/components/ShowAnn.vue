@@ -11,6 +11,9 @@
         :updater="updateInfo ? item.lastUpdater.username : null"
         :updatedTime="updateInfo ? item.lastUpdatedTime : null"
         :title="item.title"
+        :menu="menu"
+        @edit="$emit('edit', idx, item.annId)"
+        @delete="$emit('delete', idx, item.annId)"
       ></ui-post>
     </v-row>
     <v-row v-if="items.length===0" justify="center">
@@ -40,7 +43,11 @@ export default {
     updateInfo: {
       type: Boolean,
       default: false,
-    }
+    },
+    menu: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data () {

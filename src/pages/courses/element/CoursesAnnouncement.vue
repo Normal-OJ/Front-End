@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Creator v-model="dialog" type="New" title="Announcement" @cancel="cancel" @post="post">
+    <Creator v-if="perm" v-model="dialog" type="New" title="Announcement" @cancel="cancel" @post="post">
       <template slot="content">
         <v-form v-model="validForm" ref="form">
           <v-text-field
@@ -19,7 +19,9 @@
         </v-form>
       </template>
     </Creator>
-    <ShowAnn v-if="items" :items="items" :course="$route.params.name"></ShowAnn>
+    <ShowAnn v-if="items" :items="items" :course="$route.params.name" :menu="perm"
+      @edit="edit" @delete="deleteAnn"
+    ></ShowAnn>
   </div>
 </template>
 
@@ -36,8 +38,8 @@ export default {
       dialog: false,
       validForm: true,
       ann: {
-        'title': 'aaa',
-        'content': 'aaa',
+        'title': '',
+        'content': '',
       },
       perm: false,
     }
@@ -85,6 +87,9 @@ export default {
           });
       }
     },
+    edit(idx, id) {
+      console.log('editing', idx, id);
+    },
     editAnn() {
       if ( this.$refs.form.validate() ) {
         this.$http.put(`/api/ann`, {'title': this.newTitle, 'markdown': this.newContent, 'annId': this.editing})
@@ -98,10 +103,10 @@ export default {
           });
       }
     },
-    deleteAnn() {
-      this.$http.delete(`/api/ann`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'annId': this.editing}})
+    deleteAnn(idx, id) {
+      this.$http.delete(`/api/ann`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'annId': id}})
         .then((res) => {
-          this.$router.push(`/course/${this.$route.params.name}/announcement`);
+          // this.$router.to(0);
           // console.log(res);
         })
         .catch((err) => {

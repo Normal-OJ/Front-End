@@ -15,7 +15,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="perm <= 1">
+            <tr v-if="perm!==-1 && perm <= 1">
               <td colspan="3" class="px-0">
                 <v-hover v-slot:default="{ hover }">
                   <v-card
@@ -103,7 +103,7 @@ export default {
       ],
       errAlert: false,
       errMsg: '',
-      perm: false,
+      perm: -1,
     }
   },
 
@@ -131,10 +131,10 @@ export default {
         if ( payload.active === true ) {
           this.perm = payload.role;
         } else {
-          this.$router.push('/');
+          // this.$router.push('/');
         }
       } else {
-        this.$router.push('/');
+        // this.$router.push('/');
       }
     },
     parseJwt(token) {

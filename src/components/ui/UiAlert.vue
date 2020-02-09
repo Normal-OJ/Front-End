@@ -1,11 +1,11 @@
 <template>
   <v-alert
     v-model="alert"
-    dismissible
     colored-border
     border="left"
-    elevation="2"
     style="white-space: pre-line;"
+    :elevation="elevation"
+    :dismissible="dismissible"
     :transition="transition"
     :dense="dense"
     :type="type"
@@ -52,6 +52,14 @@ export default {
     transition: {
       type: String,
       default: 'scroll-y-transition',
+    },
+    elevation: {
+      type: String,
+      default: '2',
+    },
+    dismissible: {
+      type: Boolean,
+      default: true,
     },
   },
 
