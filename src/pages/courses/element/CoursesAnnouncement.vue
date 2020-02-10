@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Creator v-if="perm" v-model="dialog" type="New" title="Announcement" @cancel="cancel" @post="post">
+    <Creator v-if="perm" v-model="dialog" :type="type" title="Announcement" @cancel="cancel" @post="post">
       <template slot="content">
         <v-form v-model="validForm" ref="form">
           <v-text-field
@@ -19,8 +19,13 @@
         </v-form>
       </template>
     </Creator>
-    <ShowAnn v-if="items" :items="items" :course="$route.params.name" :menu="perm"
-      @edit="edit" @delete="deleteAnn"
+    <ShowAnn 
+      v-if="items" 
+      :items="items" 
+      :menu="perm"
+      :readmore="`/course/${$route.params.name}/announcement`"
+      mask
+      @edit="edit" @delete="deleteAnn" 
     ></ShowAnn>
   </div>
 </template>
@@ -42,6 +47,8 @@ export default {
         'content': '',
       },
       perm: false,
+      editing: -1,
+      type: 'New',
     }
   },
   created() {
@@ -53,7 +60,7 @@ export default {
       this.getAnn();
     },
     getAnn() {
-      this.$http.get(`/api/ann/${this.$route.params.name}`)
+      this.$http.get(`/api/course/${this.$route.params.name}/ann`)
         .then((res) => {
           // console.log(res);
           this.items = [];
@@ -73,40 +80,44 @@ export default {
         });
     },
     cancel() {
-      this.ann.title = '';
-      this.ann.content = '';
+      this.editing = -1;
+      this.type = 'New';
+      this.$refs.form.reset();
       this.dialog = false;
     },
     post() {
       if ( this.$refs.form.validate() ) {
-        this.$http.post(`${API_BASE_URL}/ann`, {'courseName': this.$route.params.name, 'title': this.ann.title, 'markdown': this.ann.content})
-          .then((res) => {
-            this.cancel();
-          })
-          .catch((err) => {
-          });
+        // console.log(this.editing);
+        if ( this.editing != -1 ) {
+          this.$http.put('/api/ann', {'title': this.ann.title, 'markdown': this.ann.content, 'annId': this.editing})
+            .then((res) => {
+              this.cancel();
+              this.$router.go(0);
+            })
+            .catch((err) => {
+            });
+        } else {
+          this.$http.post('/api/ann', {'courseName': this.$route.params.name, 'title': this.ann.title, 'markdown': this.ann.content})
+            .then((res) => {
+              this.cancel();
+              this.$router.go(0);
+            })
+            .catch((err) => {
+            });
+        }
       }
     },
     edit(idx, id) {
-      console.log('editing', idx, id);
-    },
-    editAnn() {
-      if ( this.$refs.form.validate() ) {
-        this.$http.put(`/api/ann`, {'title': this.newTitle, 'markdown': this.newContent, 'annId': this.editing})
-          .then((res) => {
-            this.cancel();
-            this.$router.to(0);
-            // console.log(res);
-          })
-          .catch((err) => {
-            // console.log(err);
-          });
-      }
+      this.editing = id;
+      this.type = 'Update';
+      this.ann.title = this.items[idx].title;
+      this.ann.content = this.items[idx].content;
+      this.dialog = true;
     },
     deleteAnn(idx, id) {
       this.$http.delete(`/api/ann`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'annId': id}})
         .then((res) => {
-          // this.$router.to(0);
+          this.$router.go(0);
           // console.log(res);
         })
         .catch((err) => {

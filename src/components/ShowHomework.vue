@@ -2,7 +2,7 @@
   <div>
     <v-row no-gutters v-for="(item, idx) in items" :key="idx" justify="center">
       <v-card
-        class="my-6"
+        class="my-3"
         elevation="2"
         width="50vw"
       >
@@ -12,6 +12,7 @@
             <v-card-title class="headline font-weight-bold py-0">{{ item.title }}</v-card-title>
             <v-spacer></v-spacer>
             <v-chip
+              class="mr-3"
               :color="item.status === 'End' ? 'error' : 'success'"
               label
             >{{ item.status }}</v-chip>

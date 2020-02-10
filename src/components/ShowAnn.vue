@@ -3,8 +3,8 @@
     <v-row v-for="(item, idx) in items" :key="idx" justify="center">
       <ui-post
         :markdown="item.content"
-        :readmore="`/course/${course}/announcement/${item.annId}`"
-        mask
+        :readmore="readmore ? `${readmore}/${item.annId}` : null"
+        :mask="mask"
         :width="width"
         :author="item.author.username"
         :createdTime="item.createdTime"
@@ -16,7 +16,7 @@
         @delete="$emit('delete', idx, item.annId)"
       ></ui-post>
     </v-row>
-    <v-row v-if="items.length===0" justify="center">
+    <v-row v-if="!items || items.length===0" justify="center">
       <h3>🦄 There's no announcement yet.</h3>
     </v-row>
   </div>
@@ -48,6 +48,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    readmore: {
+      type: String,
+      default: null,
+    },
+    mask: {
+      type: Boolean,
+      default: false,
+    }
   },
 
   data () {

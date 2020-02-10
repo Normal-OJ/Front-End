@@ -16,7 +16,7 @@
           Title
         </slot>
         <v-spacer></v-spacer>
-        <v-btn tile icon @click="dialog = false">
+        <v-btn tile icon @click="$emit('cancel'); dialog = false;">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>

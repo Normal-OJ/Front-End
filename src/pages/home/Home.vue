@@ -22,7 +22,13 @@
       <v-card-title class="headline">System Announcement</v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-card-text>
-        <ShowAnn v-if="items" :items="items" :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"></ShowAnn>
+        <ShowAnn 
+          v-if="items" 
+          :items="items" 
+          :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"
+          :readmore="`/post`"
+          mask
+        ></ShowAnn>
       </v-card-text>
     </v-card>
   </v-container>

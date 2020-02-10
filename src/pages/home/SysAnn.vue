@@ -1,27 +1,8 @@
 <template>
   <v-container>
-    <Creator v-if="perm" v-model="dialog" type="Update" title="Announcement" @cancel="cancel" @post="post" noActivator>
-      <template slot="content">
-        <v-form v-model="validForm" ref="form">
-          <v-text-field
-            label="Announcement Title"
-            counter="64"
-            :rules="[v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters']" 
-            v-model="ann.title"
-          ></v-text-field>
-          <v-textarea
-            label="Announcement Content"
-            :rules="[v => !!v || 'Sorry, the content cannot be empty']"
-            v-model="ann.content"
-            no-resize
-            auto-grow
-          ></v-textarea>
-        </v-form>
-      </template>
-    </Creator>
     <ShowAnn 
-      v-if="items" 
-      :items="items" 
+      v-if="items"
+      :items="items"
       :menu="perm"
       @edit="edit" @delete="deleteAnn" 
     ></ShowAnn>
@@ -31,17 +12,11 @@
 <script>
 export default {
 
-  name: 'CoursesAnnouncementPost',
+  name: 'SysAnn',
 
   data () {
     return {
       items: null,
-      dialog: false,
-      validForm: true,
-      ann: {
-        title: '',
-        content: '',
-      },
       perm: false,
     }
   },
@@ -54,8 +29,10 @@ export default {
 
   methods: {
     getAnn() {
-      this.$http.get(`/api/ann/${this.$route.params.name}/${this.$route.params.id}`)
+      this.$http.get(`/api/ann/${this.$route.params.id}`)
         .then((res) => {
+          console.log(`/api/ann/${this.$route.params.id}`);
+          console.log(res);
           this.items = [];
           res.data.data.forEach(ele => {
             this.items.push({
@@ -72,48 +49,35 @@ export default {
           // console.log(err);
         })
     },
-    cancel() {
-      this.editing = -1;
-      this.type = 'New';
-      this.$refs.form.reset();
-      this.dialog = false;
-    },
-    post() {
-      if ( this.$refs.form.validate() ) {
-        // console.log(this.editing);
-        if ( this.editing != -1 ) {
-          this.$http.put('/api/ann', {'title': this.ann.title, 'markdown': this.ann.content, 'annId': this.editing})
-            .then((res) => {
-              this.cancel();
-              this.$router.go(0);
-            })
-            .catch((err) => {
-            });
-        } else {
-          this.$http.post('/api/ann', {'courseName': this.$route.params.name, 'title': this.ann.title, 'markdown': this.ann.content})
-            .then((res) => {
-              this.cancel();
-              this.$router.go(0);
-            })
-            .catch((err) => {
-            });
-        }
-      }
+    operate(idx) {
+      if ( idx === 0 )
+        this.annDialog = true;
+      else if ( idx === 1 ) this.deleteAnn();
     },
     edit(idx, id) {
-      this.editing = id;
-      this.type = 'Update';
-      this.ann.title = this.items[idx].title;
-      this.ann.content = this.items[idx].content;
-      this.dialog = true;
+      console.log();
     },
-    deleteAnn(idx, id) {
-      this.$http.delete(`/api/ann`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'annId': id}})
+    editAnn() {
+      if ( this.$refs.form.validate() ) {
+        this.$http.put(`/api/ann`, {'title': this.newTitle, 'markdown': this.newContent, 'annId': this.$route.params.id})
+          .then((res) => {
+            this.annDialog = false;
+            // this.$router.go(0);
+            // console.log(res);
+          })
+          .catch((err) => {
+            // console.log(err);
+          });
+      }
+    },
+    deleteAnn() {
+      this.$http.delete(`/api/ann`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'annId': this.$route.params.id}})
         .then((res) => {
-          this.$router.go(0);
+          this.$router.push(`/course/${this.$route.params.name}/announcement`);
           // console.log(res);
         })
         .catch((err) => {
+          console.log(err);
         });
     },
     timeFormat(time) {
@@ -155,7 +119,6 @@ export default {
       return JSON.parse(atob(token.split('.')[1])).data;
     },
   }
-
 }
 </script>
 

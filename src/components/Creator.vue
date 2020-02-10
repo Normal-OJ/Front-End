@@ -1,15 +1,15 @@
 <template>
-  <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'" persistent>
+  <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'" persistent @cancel="$emit('cancel')">
     <template slot="activator">
       <v-hover v-slot:default="{ hover }">
-        <v-card class="my-3 mx-auto" width="50vw" elevation="2"
+        <v-card v-if="!noActivator" class="my-3 mx-auto" width="50vw" elevation="2"
           :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
           @click="dialog = true"
         >
           <v-card-title class="title">
             <v-icon large color="black">mdi-plus</v-icon>{{ type + ' ' + title }}
           </v-card-title>
-        </v-card>
+        </v-card><span v-else></span>
       </v-hover>
     </template>
     <template slot="title">{{ type + ' ' + title }}</template>
@@ -49,6 +49,10 @@ export default {
       type: String,
       required: true,
     },
+    noActivator: {
+      type: Boolean,
+      default: false,
+    }
   },
 
   data () {

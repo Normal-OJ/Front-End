@@ -21,6 +21,7 @@ import EmailVerify from '@/pages/help/EmailVerify'
 import EmailResend from '@/pages/help/EmailResend'
 import Profile from '@/pages/profile/Profile'
 import Demo from '@/components/Demo'
+import SysAnn from '@/pages/home/SysAnn'
 
 Vue.use(Router)
 
@@ -102,6 +103,11 @@ export default new Router({
       path: '/ui/demo',
       name: 'Demo',
       component: Demo
+    },
+    {
+      path: '/post/:id',
+      name: 'SysAnn',
+      component: SysAnn
     }
   ]
 })

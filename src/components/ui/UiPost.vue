@@ -6,11 +6,12 @@
     :height="height"
   >
     <!-- subtitle -->
-    <v-card-subtitle class="pb-0">
+    <v-card-subtitle>
       <v-row no-gutters>
         <v-card-subtitle class="pa-0">
           <div v-if="author">
-            Written by <a style="white-space: pre"> {{ author }}</a> on {{ createdTime }}.
+            <v-icon>mdi-account-edit</v-icon> Written by <a style="white-space: pre"> {{ author }} </a>
+            <v-icon>mdi-clock-outline</v-icon> {{ createdTime }}.
           </div>
           <div v-if="updater">
             <i>Last update on {{ updatedTime }}, updated by <a>{{ updater }}</a>.</i>
@@ -41,8 +42,8 @@
       <slot name="beforeMarkdown"></slot>
     </v-card-text>
     <!-- markdown content -->
-    <v-card-text v-if="markdown" class="text--primary pt-4 pb-0">
-      <div v-if="mask" class="mask">
+    <v-card-text v-if="markdown" class="text--primary pt-4">
+      <div :class="mask ? 'mask' : ''">
         <vue-markdown :source="markdown"></vue-markdown>
       </div>
     </v-card-text>
