@@ -4,7 +4,7 @@
 <script>
 export default {
 
-  name: 'CoursesContest',
+  name: 'CoursesProblems',
 
   data () {
     return {

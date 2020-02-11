@@ -1,10 +1,11 @@
 <template>
   <v-row no-gutters>
-    <v-col cols="2">
-      <CoursesSidebar style="position: fixed;"></CoursesSidebar>
+    <v-col cols="2" style="position: fixed; height: 100%;">
+      <CoursesSidebar></CoursesSidebar>
     </v-col>
+    <v-spacer></v-spacer>
     <v-col cols="10">
-        <router-view/>
+      <router-view/>
     </v-col>
   </v-row>
 </template>

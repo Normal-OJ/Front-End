@@ -4,7 +4,7 @@
       <v-card
         class="my-3"
         elevation="2"
-        width="50vw"
+        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'"
       >
         <v-card-title>
           <v-row>
@@ -24,8 +24,8 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(item, i) in menuItems" :key="i" @click="$emit(item)">
-                  <v-list-item-title>{{ item }}</v-list-item-title>
+                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="$emit(menu,i,item.id)">
+                  <v-list-item-title>{{ menu }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -73,6 +73,9 @@
           </div>
         </v-card-text>
       </v-card>
+    </v-row>
+    <v-row v-if="!items || items.length===0" justify="center">
+      <h3>🦄 There's no homework yet.</h3>
     </v-row>
   </div>
 </template>

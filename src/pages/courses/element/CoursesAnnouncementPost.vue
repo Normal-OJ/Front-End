@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <Creator v-if="perm" v-model="dialog" type="Update" title="Announcement" @cancel="cancel" @post="post" noActivator>
       <template slot="content">
         <v-form v-model="validForm" ref="form">
@@ -25,7 +25,7 @@
       :menu="perm"
       @edit="edit" @delete="deleteAnn" 
     ></ShowAnn>
-  </v-container>
+  </div>
 </template>
 
 <script>

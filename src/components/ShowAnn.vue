@@ -5,7 +5,7 @@
         :markdown="item.content"
         :readmore="readmore ? `${readmore}/${item.annId}` : null"
         :mask="mask"
-        :width="width"
+        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'"
         :author="item.author.username"
         :createdTime="item.createdTime"
         :updater="updateInfo ? item.lastUpdater.username : null"

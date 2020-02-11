@@ -2,7 +2,7 @@
   <v-card tile outlined height="100%">
     <v-list>
       <v-list-item>
-        <v-list-item-avatar>
+        <v-list-item-avatar v-if="$vuetify.breakpoint.mdAndUp">
           <v-img :src="avatar"></v-img>
         </v-list-item-avatar>
         <v-list-item-content>
@@ -29,7 +29,6 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    
   </v-card>
 </template>
 
@@ -53,6 +52,7 @@ export default {
         { 'title': 'Manage', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
       ],
       perm: false,
+      // drawer: false,
     }
   },
 

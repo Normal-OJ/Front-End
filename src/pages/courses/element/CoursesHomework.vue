@@ -101,13 +101,17 @@
       </template>
     </Creator>
     
-    <ShowHomework :items="items" :probs="probs" :perm="perm"></ShowHomework>
+    <ShowHomework :items="items" :probs="probs" :perm="perm"
+      @edit="edit" @delete="deleteHw"
+    ></ShowHomework>
   </div>
 </template>
 
 <script>
 var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-var localISOTime = (new Date()).toISOString().slice(0, -1);
+var localISOTime = (v) => {
+  return (new Date(new Date(v) - tzoffset)).toISOString().slice(0, -1);
+}
 import ShowHomework from '@/components/ShowHomework'
 export default {
 
@@ -125,19 +129,19 @@ export default {
       perm: false,
       titleRules: [
         v => !!v || 'Sorry, the title cannot be empty',
-        v => v.length <= 64 || 'Sorry, the length must be ≤ 64 characters',
+        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters',
       ],
       contentRules: [
         v => !!v || 'Sorry, the content cannot be empty',
-        v => v.length <= 100000 || 'Sorry, the length must be ≤ 100000 characters',
+        v => !!v && v.length <= 100000 || 'Sorry, the length must be ≤ 100000 characters',
       ],
       hw: {
         'title': '',
         'content': '',
-        'startDate': (new Date(Date.now() - tzoffset)).toISOString().substr(0, 10),
-        'endDate': (new Date(Date.now() - tzoffset)).toISOString().substr(0, 10),
-        'startTime': (new Date(Date.now() - tzoffset)).toISOString().substr(11, 5),
-        'endTime': (new Date(Date.now() - tzoffset)).toISOString().substr(11, 5),
+        'startDate': '',
+        'endDate': '',
+        'startTime': '',
+        'endTime': '',
         'problemIds': [],
         'scoreboardStatus': false,
       },
@@ -177,6 +181,7 @@ export default {
               'problemIds': ele.problemIds,
               'scoreboardStatus': ele.scoreboardStatus,
               'studentStatus': ele.studentStatus,
+              'id': ele.id,
             })
           })
           for ( var i=0; i<3; ++i ) {
@@ -208,36 +213,79 @@ export default {
       else if ( now <= ed ) return 'Running';
       else  return 'End';
     },
+    cancel() {
+      this.$refs.form.reset();
+      this.dialog = false;
+    },
+    edit(idx, id) {
+      this.editing = id;
+      this.type = 'Update';
+      this.hw.title = this.items[idx].title;
+      this.hw.content = this.items[idx].content;
+      this.hw.startDate = localISOTime(this.items[idx].start).substr(0,10);
+      this.hw.endDate = localISOTime(this.items[idx].end).substr(0,10);
+      this.hw.startTime = localISOTime(this.items[idx].start).substr(11,5);
+      this.hw.endTime = localISOTime(this.items[idx].end).substr(11,5);
+      this.hw.problemIds = this.items[idx].problemIds;
+      this.hw.scoreboardStatus = this.items[idx].scoreboardStatus;
+      this.dialog = true;
+    },
     post() {
       if ( this.$refs.form.validate() ) {
         var stD = this.hw.startDate.split('-');
         var edD = this.hw.endDate.split('-');
-        var data = {
-          'courseName': this.$route.params.name,
-          'name': this.hw.title,
-          'markdown': this.hw.content,
-          'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
-          'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
-          'problemIds': this.hw.problemIds,
-          'scordboardStatus': this.hw.scordboardStatus,
+        if ( this.editing != -1 ) {
+          var data = {
+            'newName': this.hw.title,
+            'markdown': this.hw.content,
+            'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
+            'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
+            'problemIds': this.hw.problemIds,
+            'scordboardStatus': this.hw.scordboardStatus,
+          }
+          this.$http.put(`/api/homework/${this.editing}`, data)
+            .then((res) => {
+              console.log(res);
+              this.cancel();
+              this.$router.go(0);
+            })
+            .catch((err) => {
+              console.log(err);
+              this.errMsg = err.response.message;
+              this.errAlert = true;
+            })
+        } else {
+          var data = {
+            'courseName': this.$route.params.name,
+            'name': this.hw.title,
+            'markdown': this.hw.content,
+            'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
+            'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
+            'problemIds': this.hw.problemIds,
+            'scordboardStatus': this.hw.scordboardStatus,
+          }
+          this.$http.post('/api/homework', data)
+            .then((res) => {
+              console.log(res);
+              this.cancel();
+              this.$router.go(0);
+            })
+            .catch((err) => {
+              console.log(err);
+              this.errMsg = err.response.message;
+              this.errAlert = true;
+            })
         }
-        this.$http.post('/api/homework', data)
-          .then((res) => {
-            console.log(res);
-            this.dialog = false;
-            this.$router.go(0);
-          })
-          .catch((err) => {
-            console.log(err);
-            this.errMsg = err.response.data.message;
-            this.errAlert = true;
-          })
       }
     },
-    cancel() {
-      this.hw.title = '';
-      this.hw.content = '';
-      this.dialog = false;
+    deleteHw(idx, id) {
+      this.$http.delete(`/api/homework/${id}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}})
+        .then((res) => {
+          this.$router.go(0);
+          // console.log(res);
+        })
+        .catch((err) => {
+        });
     },
     checkUser(username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)

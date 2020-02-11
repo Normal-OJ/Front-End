@@ -11,7 +11,8 @@ import Course from '@/pages/courses/Course'
 import CoursesAnnouncement from '@/pages/courses/element/CoursesAnnouncement'
 import CoursesAnnouncementPost from '@/pages/courses/element/CoursesAnnouncementPost'
 import CoursesHomework from '@/pages/courses/element/CoursesHomework'
-import CoursesContest from '@/pages/courses/element/CoursesContest'
+import CoursesProblems from '@/pages/courses/element/CoursesProblems'
+import CoursesSubmissions from '@/pages/courses/element/CoursesSubmissions'
 import CoursesDiscussion from '@/pages/courses/element/CoursesDiscussion'
 import CoursesDiscussionPost from '@/pages/courses/element/CoursesDiscussionPost'
 import CoursesScore from '@/pages/courses/element/CoursesScore'
@@ -71,7 +72,8 @@ export default new Router({
         { path: 'announcement', component: CoursesAnnouncement },
         { path: 'announcement/:id', component: CoursesAnnouncementPost },
         { path: 'homework', component: CoursesHomework },
-        { path: 'contest', component: CoursesContest },
+        { path: 'problems', component: CoursesProblems },
+        { path: 'submissions', component: CoursesSubmissions },
         { path: 'discussion', component: CoursesDiscussion },
         { path: 'discussion/:id', component: CoursesDiscussionPost },
         { path: 'score', component: CoursesScore },

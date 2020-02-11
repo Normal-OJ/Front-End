@@ -2,7 +2,7 @@
   <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'" persistent @cancel="$emit('cancel')">
     <template slot="activator">
       <v-hover v-slot:default="{ hover }">
-        <v-card v-if="!noActivator" class="my-3 mx-auto" width="50vw" elevation="2"
+        <v-card v-if="!noActivator" class="my-3 mx-auto" :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" elevation="2"
           :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
           @click="dialog = true"
         >
