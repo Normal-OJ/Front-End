@@ -16,7 +16,9 @@
       <v-list-item-group color="primary">
         <v-list-item 
           v-for="link in links"
-          v-if="link.title!=='Manage'||perm"
+          v-if="(link.title!=='Manage'||perm)
+              &&(courseName!=='Public'||
+              (link.title!=='Homework'&&link.title!=='Discussion'&&link.title!=='Score'))"
           :key="link.title"
           :to="link.path"
           link
@@ -43,13 +45,13 @@ export default {
       teacherName: 'teacherName',
       avatar: this.setAvatar(''),
       links: [
-        { 'title': 'Announcement', 'path': `/course/${this.$route.params.name}/announcement`, 'icon': 'mdi-bulletin-board'},
-        { 'title': 'Homework', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-multiple'},
+        { 'title': 'Announcements', 'path': `/course/${this.$route.params.name}/announcement`, 'icon': 'mdi-bulletin-board'},
+        { 'title': 'Homeworks', 'path': `/course/${this.$route.params.name}/homework`, 'icon': 'mdi-book-multiple'},
         { 'title': 'Submissions', 'path': `/course/${this.$route.params.name}/submissions`, 'icon': 'mdi-history'},
         { 'title': 'Problems', 'path': `/course/${this.$route.params.name}/problems`, 'icon': 'mdi-view-list'},
-        { 'title': 'Discussion', 'path': `/course/${this.$route.params.name}/discussion`, 'icon': 'mdi-comment-text'},
-        { 'title': 'Score', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
-        { 'title': 'Manage', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
+        // { 'title': 'Discussion', 'path': `/course/${this.$route.params.name}/discussion`, 'icon': 'mdi-comment-text'},
+        // { 'title': 'Grades', 'path': `/course/${this.$route.params.name}/score`, 'icon': 'mdi-chart-bar'},
+        { 'title': 'Manages', 'path': `/course/${this.$route.params.name}/manage`, 'icon': 'mdi-settings'},
       ],
       perm: false,
       // drawer: false,

@@ -1,6 +1,82 @@
 <template>
-  <div>
-    <!-- <v-row>
+  <v-container
+    fluid
+    width="100%"
+    height="100%"
+  >
+    <v-card height="100%" elevation="2">
+      <v-card-title class="headline">Student</v-card-title>
+      <v-divider class="mt-0"></v-divider>
+      <v-simple-table class="px-4">
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="font-weight-bold subtitle-1 text--primary">Username</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Display Name</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="perm!==-1 && perm <= 1">
+              <td colspan="3" class="px-0">
+                <v-hover v-slot:default="{ hover }">
+                  <v-card
+                    tile
+                    elevation="0"
+                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
+                    @click="dialog = true"
+                  >
+                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>New Course</v-card-title>
+                  </v-card>
+                </v-hover>
+              </td>
+            </tr>
+            <tr v-for="item in items" :key="item.title">
+              <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
+              <td class="subtitle-1">{{ item.teacher.username }}</td>
+              <td class="subtitle-1">
+                <span class="pr-1" v-for="ta in item.ta">{{ ta }}</span>
+              </td>
+            </tr>
+            <tr v-if="items.length===0">
+              <td>No data available.</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </v-card>
+    <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'">
+      <template slot="activator"><span></span></template>
+      <template slot="title">Add Students</template>
+      <template slot="body">
+        <v-card-text>
+          <ui-alert
+            v-model="errAlert"
+            dense
+            type="error"
+            :alertMsg="errMsg"
+          ></ui-alert>
+          <v-combobox
+            label="Users"
+            v-model="newUsers"
+            :items="users"
+            item-name="username"
+            chips
+            multiple
+          ></v-combobox>
+        </v-card-text>
+      </template>
+      <template slot="action-ok">
+        <ui-button color="primary" @click.native="submit">
+          <template slot="content">Submit</template>
+        </ui-button>
+      </template>
+    </ui-dialog>
+  </v-container>
+  <!-- <div>
+    <v-row>
       <v-col cols="12" md="6">
         <h3 class="mt-6 px-6">Manage Students</h3>
       </v-col>
@@ -114,8 +190,8 @@
           >Yes</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog> -->
-  </div>
+    </v-dialog>
+  </div> -->
 </template>
 
 <script>
@@ -125,27 +201,31 @@ export default {
 
   data () {
     return {
-      // headers: [
-      //   { 'title': 'username', 'key': 'username' },
-      //   { 'title': 'display name', 'key': 'displayedName' },
-      //   { 'title': 'role', 'key': 'role' }
-      // ],
-      // dialog: false,
-      // remove: false,
-      // users: [],
-      // TAs: [],
-      // oldUsers: [],
-      // errAlert: false,
-      // errMsg: [],
-      // newUsers: [],
-      // editing: -1,
+      dialog: false,
+      users: [],
+      items: [],
+      perm: true,
+    //   headers: [
+    //     { 'title': 'username', 'key': 'username' },
+    //     { 'title': 'display name', 'key': 'displayedName' },
+    //     { 'title': 'role', 'key': 'role' }
+    //   ],
+    //   dialog: false,
+    //   remove: false,
+    //   users: [],
+    //   TAs: [],
+    //   oldUsers: [],
+      errAlert: false,
+      errMsg: '',
+      newUsers: [],
+    //   editing: -1,
     }
   },
 
-  beforeMount() {
+  // beforeMount() {
     // this.getOldUsers();
     // this.getUsers();
-  },  
+  // },  
 
   methods: {
     // check(idx) {
