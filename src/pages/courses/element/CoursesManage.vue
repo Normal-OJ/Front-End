@@ -18,7 +18,11 @@
       </v-bottom-navigation>
     </div>
 
-    <ManageStudents v-show="activeBtn==='students'"></ManageStudents>
+    <ManageStudents 
+      v-show="activeBtn==='students'"
+      :items="items"
+      :users="users"
+    ></ManageStudents>
 
     <ManageProblems v-show="activeBtn==='problems'"></ManageProblems>
 
@@ -43,30 +47,56 @@ export default {
       dialog: false,
       users: [],
       items: [],
-      perm: true,
       errAlert: false,
       errMsg: '',
       newUsers: [],
-    //   headers: [
-    //     { 'title': 'username', 'key': 'username' },
-    //     { 'title': 'display name', 'key': 'displayedName' },
-    //     { 'title': 'role', 'key': 'role' }
-    //   ],
-    //   dialog: false,
-    //   remove: false,
-    //   users: [],
-    //   TAs: [],
-    //   oldUsers: [],
-    //   editing: -1,
     }
   },
 
-  // beforeMount() {
-    // this.getOldUsers();
-    // this.getUsers();
-  // },  
+  created() {
+    this.getStudents();
+  },
 
   methods: {
+    getStudents() {
+      this.$http.get(`/api/course/${this.$route.params.name}`)
+        .then((res) => {
+          var data = res.data.data;
+          this.items = [];
+          // data.TAs.forEach(ele => {
+          //   this.items.push(ele);
+          // })
+          for ( var key in data.studentNicknames ) {
+            this.items.push({'username': key, 'displayName': data.studentNicknames[key]});
+          }
+          this.getUsers();
+        })
+        .catch((err) => {
+
+        })
+    },
+    getUsers() {
+      this.$http.get('/api/course/Public')
+        .then((res) => {
+          var data = res.data.data;
+          this.users = [];
+          for ( var key in data.studentNicknames ) {
+            if ( !this.findInItems(key) ) {
+              this.users.push({'username': key, 'displayName': data.studentNicknames[key]});
+            }
+          }
+        })
+        .catch((err) => {
+
+        })
+    },
+    findInItems(username) {
+      let flag = false;
+      this.items.forEach(ele => {
+        if ( ele.username === username )  return flag = true;
+      });
+      return flag;
+    },
     // check(idx) {
     //   this.editing = idx;
     //   if ( editing >= this.TAs.length ) {
@@ -91,45 +121,6 @@ export default {
     //     studentNicknames[ele.username] = ele.displayName;
     //   })
     //   this.$http.delete(`/api/course/${this.$route.params.name}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'TAs': TAs, 'studentNicknames': studentNicknames}})
-    // },
-    // getOldUsers() {
-    //   this.$http.get(`/api/course/${this.$route.params.name}`)
-    //     .then((res) => {
-    //       var data = res.data.data;
-    //       data.TAs.forEach(ele => {
-    //         this.TAs.push(ele);
-    //       })
-    //       for ( var key in data.studentNicknames ) {
-    //         this.oldUsers.push({'username': key, 'displayName': data.studentNicknames[key]});
-    //       }
-    //     })
-    //     .catch((err) => {
-
-    //     })
-    // },
-    // getUsers() {
-    //   this.$http.get('/api/course/Public')
-    //     .then((res) => {
-    //       // console.log(res);
-    //       var data = res.data.data;
-    //       for ( var key in data.studentNicknames ) {
-    //         if ( !find(key) ) {
-    //           this.users.push({'username': key, 'displayName': data.studentNicknames[key]});
-    //         }
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       // console.log(err);
-    //     })
-    // },
-    // find(username) {
-    //   if ( this.oldUsers.indexOf(username) >= 0 ) return true;
-    //   for ( var i=0; i<this.TAs.length; i++ ) {
-    //     if ( this.TAs[i].usrname === username ) {
-    //       return true;
-    //     }
-    //   }
-    //   return false;
     // },
   },
 }
