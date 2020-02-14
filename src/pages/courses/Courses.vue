@@ -3,7 +3,7 @@
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '60vw' : '95vw', height: '100%' }"
   >
     <v-card height="100%" elevation="12">
-      <v-card-title class="headline">All Courses</v-card-title>
+      <v-card-title class="headline font-weight-bold">All Courses</v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-simple-table class="px-4">
         <template v-slot:default>

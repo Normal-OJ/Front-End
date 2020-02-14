@@ -3,8 +3,8 @@
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '50vw' : '75vw', height: '100%' }"
   >
     <v-card height="100%" elevation="2">
-      <v-card-title>
-        Submission
+      <v-card-title class="font-weight-bold">
+        Submissions
         <v-pagination
           v-model="page"
           :page="page"

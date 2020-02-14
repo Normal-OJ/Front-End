@@ -1,210 +1,52 @@
 <template>
-  <v-container
-    fluid
-    width="100%"
-    height="100%"
-  >
-    <v-card height="100%" elevation="2">
-      <v-card-title class="headline">Student</v-card-title>
-      <v-divider class="mt-0"></v-divider>
-      <v-simple-table class="px-4">
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="font-weight-bold subtitle-1 text--primary">Username</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Display Name</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="perm!==-1 && perm <= 1">
-              <td colspan="3" class="px-0">
-                <v-hover v-slot:default="{ hover }">
-                  <v-card
-                    tile
-                    elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
-                    @click="dialog = true"
-                  >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>New Course</v-card-title>
-                  </v-card>
-                </v-hover>
-              </td>
-            </tr>
-            <tr v-for="item in items" :key="item.title">
-              <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
-              <td class="subtitle-1">{{ item.teacher.username }}</td>
-              <td class="subtitle-1">
-                <span class="pr-1" v-for="ta in item.ta">{{ ta }}</span>
-              </td>
-            </tr>
-            <tr v-if="items.length===0">
-              <td>No data available.</td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
-    </v-card>
-    <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'">
-      <template slot="activator"><span></span></template>
-      <template slot="title">Add Students</template>
-      <template slot="body">
-        <v-card-text>
-          <ui-alert
-            v-model="errAlert"
-            dense
-            type="error"
-            :alertMsg="errMsg"
-          ></ui-alert>
-          <v-combobox
-            label="Users"
-            v-model="newUsers"
-            :items="users"
-            item-name="username"
-            chips
-            multiple
-          ></v-combobox>
-        </v-card-text>
-      </template>
-      <template slot="action-ok">
-        <ui-button color="primary" @click.native="submit">
-          <template slot="content">Submit</template>
-        </ui-button>
-      </template>
-    </ui-dialog>
-  </v-container>
-  <!-- <div>
-    <v-row>
-      <v-col cols="12" md="6">
-        <h3 class="mt-6 px-6">Manage Students</h3>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="6" md="3">
-        <v-btn class="text-none title mt-6 ml-6" dark color="primary" @click="dialog = true" large>
-          <v-icon class="pr-1">mdi-plus</v-icon>
-          Add User
+  <div>
+    <div class="pa-3">
+      <v-bottom-navigation
+        v-model="activeBtn"
+        color="primary"
+        grow
+      >
+        <v-btn value="students">
+          <span>Students</span>
+          <v-icon>mdi-account</v-icon>
         </v-btn>
-      </v-col>
-    </v-row>
-    <v-simple-table class="px-6">
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th
-              v-for="(header, idx) in headers"
-              :key="idx"
-              class="title"
-              v-text="header.title"
-            ></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(ta, idx) in TAs"
-            :key="idx"
-            class="title"
-          >
-            <td class="title" v-text="ta.username"></td>
-            <td class="title" v-text="ta.displayedName"></td>
-            <td class="title">
-              <v-select
-                v-model="TAs[idx].role"
-                value="TA"
-                :items="['TA', 'Student', 'Remove from course']"
-                @change="check(idx)"
-              ></v-select>
-            </td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
-    <v-dialog v-model="dialog" width="70vw">
-      <v-card>
-        <v-toolbar color="primary" dark dense>
-          <div class="headline">Add User</div>
-          <v-spacer></v-spacer>
-          <v-btn tile icon @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
-        </v-toolbar>
-        <v-card-text class="title pt-3 black--text">
-          <v-alert
-            v-model="errAlert"
-            dismissible
-            colored-border
-            border="left"
-            dense
-            elevation="2"
-            type="error"
-            transition="scroll-y-transition"
-          ><v-row v-for="(msg, idx) in errMsg" :key="idx">{{ msg }}</v-row></v-alert>
-          <v-combobox
-            label="Users(you can create new tag)"
-            v-model="newUsers"
-            :items="users"
-            item-name="username"
-            chips
-            multiple
-          ></v-combobox>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="secondary"
-            outlined
-            @click="dialog = false"
-            class="text-none title"
-          >Cancel</v-btn>
-          <v-btn
-            color="primary"
-            dark
-            @click="submit"
-            class="text-none title"
-          >Submit</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="remove" width="70vw">
-      <v-card>
-        <v-toolbar color="primary" dark dense>
-          <div class="headline">Remove User</div>
-          <v-spacer></v-spacer>
-          <v-btn tile icon @click="remove = false"><v-icon>mdi-close</v-icon></v-btn>
-        </v-toolbar>
-        <v-card-text class="title pt-3 black--text">
-          Are you sure to remove this user?
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            outlined
-            @click="remove = false"
-            class="text-none title"
-          >No</v-btn>
-          <v-btn
-            color="secondary"
-            dark
-            @click="del"
-            class="text-none title"
-          >Yes</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div> -->
+
+        <v-btn value="problems">
+          <span>Problems</span>
+          <v-icon>mdi-view-list</v-icon>
+        </v-btn>
+      </v-bottom-navigation>
+    </div>
+
+    <ManageStudents v-show="activeBtn==='students'"></ManageStudents>
+
+    <ManageProblems v-show="activeBtn==='problems'"></ManageProblems>
+
+  </div>
 </template>
 
 <script>
+import ManageStudents from './ManageStudents';
+import ManageProblems from './ManageProblems';
+
 export default {
 
   name: 'CoursesManage',
 
+  components: {
+    ManageStudents, ManageProblems,
+  },
+
   data () {
     return {
+      activeBtn: 'students',
       dialog: false,
       users: [],
       items: [],
       perm: true,
+      errAlert: false,
+      errMsg: '',
+      newUsers: [],
     //   headers: [
     //     { 'title': 'username', 'key': 'username' },
     //     { 'title': 'display name', 'key': 'displayedName' },
@@ -215,9 +57,6 @@ export default {
     //   users: [],
     //   TAs: [],
     //   oldUsers: [],
-      errAlert: false,
-      errMsg: '',
-      newUsers: [],
     //   editing: -1,
     }
   },

@@ -3,7 +3,7 @@
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '50vw' : '75vw', height: '100%' }"
   >
     <v-card height="100%" elevation="2">
-      <v-card-title>
+      <v-card-title class="font-weight-bold">
         Problems
         <v-pagination
           v-model="page"
@@ -18,7 +18,7 @@
           <thead>
             <tr>
               <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Problem</th>
+              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Name</th>
               <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Tags</th>
               <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">AC rate</th>

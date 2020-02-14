@@ -5,7 +5,7 @@
     <v-card height="100%" elevation="12">
       <!-- Pinned -->
       <v-card elevation="0" tile>
-        <v-card-title class="headline">
+        <v-card-title class="headline font-weight-bold">
           <v-icon class="mr-1" style="transform: rotate(45deg);">mdi-pin</v-icon>Pinned
         </v-card-title>
         <v-divider class="mt-0"></v-divider>
@@ -19,7 +19,7 @@
       <!-- <v-divider></v-divider> -->
 
       <!-- Ann -->
-      <v-card-title class="headline">System Announcement</v-card-title>
+      <v-card-title class="headline font-weight-bold">System Announcement</v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-card-text>
         <ShowAnn 
