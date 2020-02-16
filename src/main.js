@@ -14,15 +14,10 @@ import UiDialog from './components/ui/UiDialog'
 import UiButton from './components/ui/UiButton'
 import UiAlert from './components/ui/UiAlert'
 import UiPost from './components/ui/UiPost'
-import ShowAnn from './components/ShowAnn'
-import Creator from './components/Creator'
 Vue.component('ui-dialog', UiDialog);
 Vue.component('ui-button', UiButton);
 Vue.component('ui-alert', UiAlert);
 Vue.component('ui-post', UiPost);
-Vue.component('ShowAnn', ShowAnn);
-Vue.component('Creator', Creator);
-
 
 new Vue({
   vuetify,

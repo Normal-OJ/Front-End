@@ -4,15 +4,21 @@
       v-if="items"
       :items="items"
       :menu="perm"
+      updateInfo
       @edit="edit" @delete="deleteAnn" 
     ></ShowAnn>
   </v-container>
 </template>
 
 <script>
+import ShowAnn from '@/components/courses/ShowAnn'
 export default {
 
   name: 'SysAnn',
+
+  components: {
+    ShowAnn,
+  },
 
   data () {
     return {

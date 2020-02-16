@@ -4,7 +4,7 @@
 <script>
 export default {
 
-  name: 'CoursesDiscussionPost',
+  name: 'CoursesGrades',
 
   data () {
     return {

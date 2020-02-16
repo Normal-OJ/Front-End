@@ -33,19 +33,19 @@
         </v-card-title>
         <v-divider class="mt-0"></v-divider>
         <!-- info -->
-        <v-card-text class="text--primary py-0">
+        <v-card-text class="py-0">
           <v-alert
             type="info"
             dense
             elevation="0"
           >{{ 'Due Time: ' + item.end }}</v-alert>
         </v-card-text>
-        <v-card-title>Description</v-card-title>
+        <v-card-title class="font-weight-bold">Description</v-card-title>
           <v-card-text class="text--primary">
             <vue-markdown :source="item.content"></vue-markdown>
           </v-card-text>
           <v-divider></v-divider>
-        <v-card-title>Problem</v-card-title>
+        <v-card-title class="font-weight-bold">Problem</v-card-title>
           <v-simple-table class="px-3">
             <template v-slot:default>
               <thead>

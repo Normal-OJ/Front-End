@@ -258,7 +258,7 @@ const API_BASE_URL = '/api';
 
 export default {
 
-  name: 'CoursesDiscussion',
+  name: 'CoursesDiscussions',
 
   components: {
     VueMarkdown,

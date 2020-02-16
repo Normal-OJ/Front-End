@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Creator v-if="perm" v-model="dialog" type="Update" title="Announcement" @cancel="cancel" @post="post" noActivator>
+    <Creator v-if="perm" v-model="dialog" :type="type" title="Announcement" @cancel="cancel" @post="post">
       <template slot="content">
         <v-form v-model="validForm" ref="form">
           <v-text-field
@@ -23,15 +23,25 @@
       v-if="items" 
       :items="items" 
       :menu="perm"
+      :readmore="`/course/${$route.params.name}/announcement`"
+      mask
       @edit="edit" @delete="deleteAnn" 
     ></ShowAnn>
   </div>
 </template>
 
 <script>
+import Creator from '@/components/courses/Creator'
+import ShowAnn from '@/components/courses/ShowAnn'
+const API_BASE_URL = '/api';
+
 export default {
 
-  name: 'CoursesAnnouncementPost',
+  name: 'CoursesAnnouncements',
+
+  components: {
+    Creator, ShowAnn
+  },
 
   data () {
     return {
@@ -39,23 +49,26 @@ export default {
       dialog: false,
       validForm: true,
       ann: {
-        title: '',
-        content: '',
+        'title': '',
+        'content': '',
       },
       perm: false,
+      editing: -1,
+      type: 'New',
     }
   },
-
-  beforeMount() {
-    this.getAnn();
-    this.checkUser(this.getUsername());
-    // console.log(this.perm);
+  created() {
+    this.init();
   },
-
   methods: {
+    init() {
+      this.checkUser(this.getUsername());
+      this.getAnn();
+    },
     getAnn() {
-      this.$http.get(`/api/ann/${this.$route.params.name}/${this.$route.params.id}`)
+      this.$http.get(`/api/course/${this.$route.params.name}/ann`)
         .then((res) => {
+          // console.log(res);
           this.items = [];
           res.data.data.forEach(ele => {
             this.items.push({
@@ -66,11 +79,11 @@ export default {
               'createdTime': this.timeFormat(ele.createTime),
               'lastUpdatedTime': this.timeFormat(ele.updateTime),
               'lastUpdater': ele.updater});
-          });
+          })
         })
         .catch((err) => {
           // console.log(err);
-        })
+        });
     },
     cancel() {
       this.editing = -1;
@@ -116,17 +129,6 @@ export default {
         .catch((err) => {
         });
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
     checkUser(username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
@@ -134,12 +136,10 @@ export default {
           data.TAs.forEach(ele => {
             if ( ele.username === username ) {
               this.perm = true;
-              return;
             }
           })
         })
         .catch((err) => {
-          console.log(err);
         });
     },
     getUsername() {
@@ -154,8 +154,18 @@ export default {
     parseJwt(token) {
       return JSON.parse(atob(token.split('.')[1])).data;
     },
+    timeFormat(time) {
+      var tmp = new Date(time * 1000);
+      var year = tmp.getFullYear();
+      var month = '0' + (tmp.getMonth()+1);
+      var date = '0' + tmp.getDate();
+      var hour = '0' + tmp.getHours();
+      var min = '0' + tmp.getMinutes();
+      var sec = '0' + tmp.getSeconds();
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
+      return time;
+    },
   }
-
 }
 </script>
 

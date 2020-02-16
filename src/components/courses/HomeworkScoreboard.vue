@@ -40,6 +40,7 @@
         </template>
       </v-simple-table>
     </template>
+    <template slot="action-cancel"><span></span></template>
   </ui-dialog>
 </template>
 

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import CoursesSidebar from './element/CoursesSidebar';
+import CoursesSidebar from './CoursesSidebar';
 
 export default {
 

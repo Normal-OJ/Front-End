@@ -35,14 +35,16 @@
 </template>
 
 <script>
-import Ranking from './Ranking'
+import ShowAnn from '@/components/courses/ShowAnn'
+// import Ranking from './Ranking'
 
 export default {
 
   name: 'Home',
 
   components: {
-    Ranking
+    ShowAnn,
+    // Ranking
   },
 
   data () {

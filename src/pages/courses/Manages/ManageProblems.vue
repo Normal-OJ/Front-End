@@ -48,7 +48,7 @@
               <td></td>
             </tr>
             <tr v-if="items.length===0">
-              <td colspan="6">No data available.</td>
+              <td colspan="6">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>

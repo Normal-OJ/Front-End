@@ -4,7 +4,7 @@
   >
     <v-card height="100%" elevation="2">
       <v-card-title class="font-weight-bold">
-        Problems
+        Submissions
         <v-pagination
           v-model="page"
           :page="page"
@@ -18,22 +18,22 @@
           <thead>
             <tr>
               <th class="font-weight-bold subtitle-1 text--primary">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Name</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Type</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
-              <th class="font-weight-bold subtitle-1 text--primary">AC rate</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Problem</th>
+              <th class="font-weight-bold subtitle-1 text--primary">User</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Result</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Time</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.submissionId">
+              <td>{{ item.submissionId }}</td>
               <td>{{ item.problemId }}</td>
-              <td>{{ item.problemName }}</td>
-              <td>{{ item.type }}</td>
-              <td>{{ item.tags }}</td>
-              <td>{{ item.acRate }}</td>
+              <td>{{ item.user.username }}</td>
+              <td>{{ item.status }}</td>
+              <td>{{ timeFormat(item.timestamp) }}</td>
             </tr>
             <tr v-if="items.length===0">
-              <td colspan="5">No data available.</td>
+              <td colspan="5">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>
@@ -45,7 +45,7 @@
 <script>
 export default {
 
-  name: 'CoursesProblems',
+  name: 'CoursesSubmissions',
 
   data () {
     return {
@@ -55,7 +55,7 @@ export default {
   },
 
   created() {
-    this.getProblems();
+    this.getSubmissions();
   },
 
   computed: {
@@ -66,26 +66,27 @@ export default {
 
   watch: {
     page() {
-      this.getProblems();
+      this.getSubmissions();
     }
   },
 
   methods: {
-    getProblems() {
-      // var query = `?offset=${(this.page-1)*10}&count=${10}`;
+    getSubmissions() {
+      this.items = [];
 
-      // // this.loading = true;
+      var query = `?offset=${(this.page-1)*10}&count=${10}`;
+      // this.loading = true;
 
-      // this.$http.get(`/api/submission${query}`)
-      //   .then((res) => {
-      //     // this.loading = false;
-      //     console.log(res.data.data);
-      //     this.items = res.data.data.submissions;
-      //   })
-      //   .catch((err) => {
-      //     // this.loading = false;
-      //     console.log(err);
-      //   });
+      this.$http.get(`/api/submission${query}`)
+        .then((res) => {
+          // this.loading = false;
+          console.log(res.data.data);
+          this.items = res.data.data.submissions;
+        })
+        .catch((err) => {
+          // this.loading = false;
+          console.log(err);
+        });
     },
     timeFormat(time) {
       const tmp = new Date(time * 1000);

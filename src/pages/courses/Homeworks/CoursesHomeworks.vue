@@ -108,17 +108,18 @@
 </template>
 
 <script>
+import Creator from '@/components/courses/Creator'
+import ShowHomework from '@/components/courses/ShowHomework'
 var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
 var localISOTime = (v) => {
   return (new Date(new Date(v) - tzoffset)).toISOString().slice(0, -1);
 }
-import ShowHomework from '@/components/ShowHomework'
 export default {
 
-  name: 'CoursesHomework',
+  name: 'CoursesHomeworks',
 
   components: {
-    ShowHomework,
+    Creator, ShowHomework,
   },
 
   data () {
