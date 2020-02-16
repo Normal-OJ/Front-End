@@ -17,11 +17,11 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Problem</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">User</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Result</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Time</th>
+              <th class="font-weight-bold subtitle-1 text--primary">ID</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Problem</th>
+              <th class="font-weight-bold subtitle-1 text--primary">User</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Result</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Time</th>
             </tr>
           </thead>
           <tbody>
@@ -32,35 +32,10 @@
               <td>{{ item.status }}</td>
               <td>{{ timeFormat(item.timestamp) }}</td>
             </tr>
-          </tbody>
-          <!-- <tbody>
-            <tr v-if="perm!==-1 && perm <= 1">
-              <td colspan="3" class="px-0">
-                <v-hover v-slot:default="{ hover }">
-                  <v-card
-                    tile
-                    elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
-                    @click="dialog = true"
-                  >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>New Course</v-card-title>
-                  </v-card>
-                </v-hover>
-              </td>
-            </tr>
-            <tr v-for="item in items" :key="item.title">
-              <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
-              <td class="subtitle-1">{{ item.teacher.username }}</td>
-              <td class="subtitle-1">
-                <span class="pr-1" v-for="ta in item.ta">{{ ta }}</span>
-              </td>
-            </tr>
             <tr v-if="items.length===0">
-              <td>You have not enrolled in any course.</td>
-              <td></td>
-              <td></td>
+              <td colspan="5">No data available.</td>
             </tr>
-          </tbody> -->
+          </tbody>
         </template>
       </v-simple-table>
     </v-card>
@@ -97,8 +72,9 @@ export default {
 
   methods: {
     getSubmissions() {
-      var query = `?offset=${(this.page-1)*10}&count=${10}`;
+      this.items = [];
 
+      var query = `?offset=${(this.page-1)*10}&count=${10}`;
       // this.loading = true;
 
       this.$http.get(`/api/submission${query}`)

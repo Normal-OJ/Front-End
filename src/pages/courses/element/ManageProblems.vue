@@ -352,7 +352,7 @@ export default {
           hint: '',
         },
         testCaseInfo: {
-          language: 7,
+          language: 0,
           fillInTemplate: '',
           cases: [{
             "caseCount": null,

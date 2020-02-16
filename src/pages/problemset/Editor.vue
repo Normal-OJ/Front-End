@@ -1,6 +1,6 @@
 <template>
-  <v-card tile outlined elevation="0" height="100%" width="50%" style="position: fixed;">
-    <v-row class="px-6" style="height: 10%;">
+  <v-card tile elevation="0" height="100%">
+    <!-- <v-row class="px-6" style="height: 10%;">
       <v-col v-for="(item, key, idx) in editorConfig" :key="idx" :cols="selectItem.width[idx]">
         <v-select
           :label="selectItem.title[key]"
@@ -9,15 +9,41 @@
           @change="modifyConfig"
         ></v-select>
       </v-col>
-    </v-row>
+    </v-row> -->
     <codemirror
       v-model="code"
       v-if="show"
       ref="CM"
       :options="cmOption"
-      :style="{ height: '75%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
+      :style="{ height: '85%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
-    <v-row class="pa-3" style="height: 15%;">
+    <div class="px-4" style="height: 15%; width: 100%;">
+      <v-row>
+        <v-col cols="4">
+          <v-file-input
+            prepend-icon="mdi-upload"
+            label="Upload File"
+          ></v-file-input>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="4">
+          <v-form ref="form"><v-select
+            :rules="[v => 0 <= v && v <= 2 || 'Please select programming language.']"
+            label="Select Language"
+            v-model="editorConfig.language"
+            :items="selectItem.languageItem"
+            @change="modifyConfig"
+          ></v-select></v-form>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="auto" align-self="center">
+          <ui-button color="primary" @click.native="submit">
+            <template slot="content">Submit</template>
+          </ui-button>
+        </v-col>
+      </v-row>
+    </div>
+    <!-- <v-row class="pa-3" style="height: 15%;">
       <v-spacer></v-spacer>
       <v-btn
         class="text-none headline"
@@ -26,7 +52,7 @@
         @click="submit"
       ><v-icon>mdi-send</v-icon>Submit</v-btn>
       <v-spacer></v-spacer>
-    </v-row>
+    </v-row> -->
   </v-card>
 </template>
 
@@ -38,9 +64,9 @@ import JSZip from 'jszip';
 var LANG = ['text/x-csrc', 'text/x-c++src', {name: "python", version: 3}];
 var LANG_EXT = ['.c', '.cpp', '.py'];
 var DEFAULT_CODE = [
-  '#include<stdio.h>\n\nint main() {\n\n\n\treturn 0;\n}',
-  '#include<iostream>\nusing namespace std;\n\nint main() {\n\n\n\treturn 0;\n}',
-  ''
+  '// you can paste or upload your code for submitting',
+  '// you can paste or upload your code for submitting',
+  '#  you can paste or upload your code for submitting',
 ];
 var FONT_SIZE = [], THEME_ITEM = ['default', 'monokai', 'dracula', 'base16-dark', 'base16-light', 'eclipse', 'material'], THEME = [];
 for ( var i=8; i<=28; ++i ) FONT_SIZE.push({ 'text': `${i}`, 'value': i });
@@ -106,69 +132,73 @@ export default {
       },
     }
   },
-  created() {
-    document.addEventListener('beforeunload', this.setCode);
-  },
+  // created() {
+    // document.addEventListener('beforeunload', this.setCode);
+  // },
   beforeMount () {
     this.setConfig();
   },
   methods: {
     async submit() {
-      this.setCode(this.editorConfig.language);
-      var zip = new JSZip();
-      zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
-      var code = await zip.generateAsync({type:"blob"});
-      var formData = new FormData();
-      formData.append( 'code', code ); 
-      this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
-        .then((res) => {
-          console.log(res);
-          var submissionId = res.data.data.submissionId;
-          this.$http.put(`/api/submission/${res.data.data.submissionId}?token=${res.data.data.token}`, 
-            formData,
-            {
-              headers: {'Content-Type':'multipart/form-data'}, 
-            })
-            .then((res) => {
-              console.log(res);
-              console.log('submissionId:'+ submissionId);
-              this.$emit('getSubmission');
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if ( this.$refs.form.validate() ) {
+        // this.setCode(this.editorConfig.language);
+        var zip = new JSZip();
+        zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
+        var code = await zip.generateAsync({type:"blob"});
+        var formData = new FormData();
+        formData.append( 'code', code ); 
+        this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
+          .then((res) => {
+            // console.log(res);
+            var submissionId = res.data.data.submissionId;
+            this.$http.put(`/api/submission/${res.data.data.submissionId}?token=${res.data.data.token}`, 
+              formData,
+              {
+                headers: {'Content-Type':'multipart/form-data'}, 
+              })
+              .then((res) => {
+                // console.log(res);
+                console.log('submissionId:'+ submissionId);
+                this.$emit('getSubmission');
+              })
+              .catch((err) => {
+                // console.log(err);
+              });
+          })
+          .catch((err) => {
+            // console.log(err);
+          });
+      }
     },
     setConfig() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          console.log(payload.editorConfig);
-          this.editorConfig = payload.editorConfig;
-          if ( !this.editorConfig ) {
+      // if ( this.$cookies.isKey('jwt') ) {
+      //   var payload = this.parseJwt(this.$cookies.get('jwt'));
+      //   if ( payload.active === true ) {
+      //     // console.log(payload.editorConfig);
+      //     this.editorConfig = payload.editorConfig;
+      //     if ( !this.editorConfig ) {
             this.editorConfig = {
-              'fontSize': 14,
+              'fontSize': 16,
               'indentType': 1, // 0: space, 1: tab
               'tabSize': 4,
-              'theme': 'default',
-              'language': 0, // 0: c, 1: cpp, 2: py
+              'theme': 'monokai',
+              'language': -1, // 0: c, 1: cpp, 2: py
             }
-          }
-          this.code = this.getCode(this.editorConfig.language);
+          // }
+          // console.log(this.editorConfig);
+          this.code = '// you can paste or upload your code for submitting';
+          // this.code = this.getCode(this.editorConfig.language);
           this.updateOption();
-        }
-      }
+      //   }
+      // }
     },
     modifyConfig() {
       this.$http.put('/api/profile/config', this.editorConfig)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         })
       this.updateOption();
     },
@@ -177,21 +207,21 @@ export default {
       this.cmOption.tabSize = this.editorConfig.tabSize;
       this.cmOption.indentUnit = this.editorConfig.tabSize;
       this.cmOption.theme = this.editorConfig.theme;
-      this.code = this.setCode(LANG.indexOf(this.cmOption.mode));
+      // this.code = this.setCode(LANG.indexOf(this.cmOption.mode));
       this.cmOption.mode = LANG[this.editorConfig.language];
-      this.code = this.getCode(this.editorConfig.language);
+      // this.code = this.getCode(this.editorConfig.language);
     },
-    setCode(lang) {
-      this.$cookies.set(`code-${this.$route.param}-${lang}`, this.code);
-    },
-    getCode(lang) {
-      if ( this.$cookies.isKey(`code-${this.$route.params.id}-${lang}`) ) {
-        return this.$cookies.get(`code-${this.$route.params.id}-${lang}`);
-      } else {
-        this.$cookies.set(`code-${this.$route.params.id}-${lang}`, DEFAULT_CODE[lang]);
-        return DEFAULT_CODE[lang];
-      }
-    },
+    // setCode(lang) {
+    //   this.$cookies.set(`code-${this.$route.param}-${lang}`, this.code);
+    // },
+    // getCode(lang) {
+    //   if ( this.$cookies.isKey(`code-${this.$route.params.id}-${lang}`) ) {
+    //     return this.$cookies.get(`code-${this.$route.params.id}-${lang}`);
+    //   } else {
+    //     this.$cookies.set(`code-${this.$route.params.id}-${lang}`, DEFAULT_CODE[lang]);
+    //     return DEFAULT_CODE[lang];
+    //   }
+    // },
     parseJwt(token) {
       return JSON.parse(atob(token.split('.')[1])).data;
     },

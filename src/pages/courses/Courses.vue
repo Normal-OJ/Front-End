@@ -37,9 +37,7 @@
               </td>
             </tr>
             <tr v-if="items.length===0">
-              <td>You have not enrolled in any course.</td>
-              <td></td>
-              <td></td>
+              <td colspan="3">You have not enrolled in any course.</td>
             </tr>
           </tbody>
         </template>

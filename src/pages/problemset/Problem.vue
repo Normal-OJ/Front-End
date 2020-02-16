@@ -1,51 +1,71 @@
 <template>
   <v-row no-gutters style="height: 100%; width: 100%">
-    <v-row no-gutters style="height: 100%; width: 100%">
-      <v-col cols="6" style="height: 100%;">
-        <v-card tile outlined elevation="0" height="100%" width="100%">
-          <v-row no-gutters justify="center">
-            <v-card-title class="display-2 font-weight-bold" v-text="id + ' - ' + name"></v-card-title>
+    <v-col cols="12" md="6" style="height: 100%;">
+      <v-card tile outlined height="100%" v-if="prob">
+        <v-card-title class="headline font-weight-bold justify-center">
+          {{ prob.problemName }}
+        </v-card-title>
+        <v-divider class="mt-0"></v-divider>
+        <v-card-subtitle>
+          <v-row class="pl-4">
+            Tags:
+            <v-chip 
+              class="mx-1"
+              v-for="tag in prob.tags"
+              :key="tag"
+              small label
+            ><a href="" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
           </v-row>
-          <v-divider color="dark"></v-divider>
-          <v-card-subtitle class="py-1 title">
-            <v-row>
-              <v-col cols="10">
-                Tags:
-                <v-chip 
-                  class="ma-1 title"
-                  v-for="tag in tags"
-                  :key="tag" 
-                  label
-                ><a :href="`/problems?offset=0&count=-1&tags=${tag}`" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
-              </v-col>
-              <v-col cols="2">
-                Type: {{ type===0 ? 'default' : 'fill-in' }}
-              </v-col>
-            </v-row>
-          </v-card-subtitle>
-          <v-tabs v-model="tab" fixed-tabs slider-size="4">
-            <v-tab class="text-none title">Description</v-tab>
-            <v-tab class="text-none title">Submission</v-tab>
-          </v-tabs>
-          <v-tabs-items v-model="tab" style="width: 100%">
-            <v-tab-item style="width: 100%">
-              <div class="px-6" style="width: 100%" wrap>
-                <vue-markdown :source="desc"></vue-markdown>
-              </div>
-            </v-tab-item>
-            <v-tab-item style="width: 100%">
-              <v-card class="pa-3" elevation="0" width="100%">
-              <!-- Table of Submissions -->
-                <HistorySubmissions :submData.sync="submData" :show.sync="show"></HistorySubmissions>
-              </v-card>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-card>
-      </v-col>
-      <v-col cols="6" style="height: 100%;">
-        <Editor v-on:getSubmission="setSubmission"></Editor>
-      </v-col>
-    </v-row>
+        </v-card-subtitle>
+        <v-tabs v-model="tab" fixed-tabs slider-size="4">
+          <v-tab class="text-none title">Description</v-tab>
+          <v-tab class="text-none title">Submission</v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab" style="width: 100%">
+          <v-tab-item style="width: 100%">
+            <div class="px-6" style="width: 100%" wrap>
+              <h2>Problem Description</h2>
+              <vue-markdown :source="prob.description.description"></vue-markdown>
+              <h2>Input</h2>
+              <vue-markdown :source="prob.description.input"></vue-markdown>
+              <h2>Output</h2>
+              <vue-markdown :source="prob.description.output"></vue-markdown>
+              <h2>Examples</h2>
+              <v-row v-for="idx in sampleLength" :key="'preview'+idx">
+                <v-card width="100%" outlined class="mb-1">
+                  <v-card-title class="pb-0">
+                    Input
+                    <ui-button color="grey" icon class="ml-3">
+                      <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
+                    </ui-button>
+                  </v-card-title>
+                  <v-card-text><code style="width: 100%;">{{ prob.description.sampleInput[idx-1] }}</code></v-card-text>
+                  <v-card-title class="py-0">
+                    Output
+                    <ui-button color="grey" icon class="ml-3">
+                      <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
+                    </ui-button>
+                  </v-card-title>
+                  <v-card-text><code style="width: 100%;">{{ prob.description.sampleOutput[idx-1] }}</code></v-card-text>
+                </v-card>
+              </v-row>
+              <h2>Hint</h2>
+              <vue-markdown :source="prob.description.hint"></vue-markdown>
+              <br>
+            </div>
+          </v-tab-item>
+          <v-tab-item style="width: 100%">
+            <v-card class="pa-3" elevation="0" width="100%">
+            <!-- Table of Submissions -->
+              <HistorySubmissions :submData.sync="submData" :show.sync="show"></HistorySubmissions>
+            </v-card>
+          </v-tab-item>
+        </v-tabs-items>
+      </v-card>
+    </v-col>
+    <v-col cols="12" md="6" style="height: 100%;">
+      <Editor @getSubmission="setSubmission"></Editor>
+    </v-col>
   </v-row>
 </template>
 
@@ -53,7 +73,7 @@
 import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
 import HistorySubmissions from './HistorySubmissions'
-const LANG = ['C (c11)', 'C++ (c++11)', 'Python (py3)'];
+const LANG = ['C11', 'C++11', 'Python3'];
 const API_BASE_URL = '/api';
 export default {
   name: 'Problem',
@@ -65,18 +85,14 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      name: '',
-      type: '',
-      tags: [],
-      owner: '',
-      desc: '',
+      prob: null,
       tab: null,
       submHeader: ['Timestamp', 'Status', 'Score', 'Run Time', 'Memory', 'Language'],
       submData: [],
       show: true,
     }
   },
-  beforeMount() {
+  created() {
     this.getProb();
     this.getSubm();
   },
@@ -84,11 +100,8 @@ export default {
     getProb() {
       this.$http.get(`${API_BASE_URL}/problem/view/${this.$route.params.id}`)
         .then((res) => {
-          console.log('res:', res)
-          this.name = res.data.data.problemName;
-          this.desc = res.data.data.description;
-          this.tags = res.data.data.tags;
-          this.type = res.data.data.type;
+          console.log('res:', res);
+          this.prob = res.data.data;
         })
         .catch((err) => {
         })

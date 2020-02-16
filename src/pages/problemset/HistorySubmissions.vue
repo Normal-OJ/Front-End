@@ -23,7 +23,7 @@
                 class="mx-auto"
                 type="text"
               ></v-skeleton-loader>
-              <p v-else class="title"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
+              <p v-else class="subtitle-1"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
             </td>
           </tr>
           <tr 
@@ -34,7 +34,7 @@
               v-if="data['Status']!==0"
               v-for="header in submHeader"
               :key="header"
-            ><p class="title" v-if="header==='Status'"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
+            ><p class="subtitle-1" v-if="header==='Status'"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
              <p class="body-1" v-else-if="header==='Run Time' && data[header]" v-text="data[header]+'ms'"></p>
              <p class="body-1" v-else-if="header==='Memory' && data[header]" v-text="data[header]+'KB'"></p>
              <p class="body-1" v-else v-text="data[header]"></p></td>

@@ -17,11 +17,11 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Name</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Type</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">Tags</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: auto;">AC rate</th>
+              <th class="font-weight-bold subtitle-1 text--primary">ID</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Name</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Type</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
+              <th class="font-weight-bold subtitle-1 text--primary">AC rate</th>
             </tr>
           </thead>
           <tbody>
@@ -32,35 +32,10 @@
               <td>{{ item.tags }}</td>
               <td>{{ item.acRate }}</td>
             </tr>
-          </tbody>
-          <!-- <tbody>
-            <tr v-if="perm!==-1 && perm <= 1">
-              <td colspan="3" class="px-0">
-                <v-hover v-slot:default="{ hover }">
-                  <v-card
-                    tile
-                    elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
-                    @click="dialog = true"
-                  >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>New Course</v-card-title>
-                  </v-card>
-                </v-hover>
-              </td>
-            </tr>
-            <tr v-for="item in items" :key="item.title">
-              <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
-              <td class="subtitle-1">{{ item.teacher.username }}</td>
-              <td class="subtitle-1">
-                <span class="pr-1" v-for="ta in item.ta">{{ ta }}</span>
-              </td>
-            </tr>
             <tr v-if="items.length===0">
-              <td>You have not enrolled in any course.</td>
-              <td></td>
-              <td></td>
+              <td colspan="5">No data available.</td>
             </tr>
-          </tbody> -->
+          </tbody>
         </template>
       </v-simple-table>
     </v-card>
