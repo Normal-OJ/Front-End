@@ -2,22 +2,29 @@
   <div>
     <v-row v-for="(item, idx) in items" :key="idx" justify="center">
       <ui-post
-        :markdown="item.content"
-        :readmore="readmore ? `${readmore}/${item.annId}` : null"
-        :mask="mask"
+        :markdown="content ? item.content : null"
         :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'"
         :author="item.author.username"
         :createdTime="item.createdTime"
-        :updater="updateInfo ? item.lastUpdater.username : null"
-        :updatedTime="updateInfo ? item.lastUpdatedTime : null"
         :title="item.title"
         :menu="menu"
-        @edit="$emit('edit', idx, item.annId)"
-        @delete="$emit('delete', idx, item.annId)"
-      ></ui-post>
+        :readmore="readmore"
+        @edit="$emit('edit', idx, item.postId)"
+        @delete="$emit('delete', idx, item.postId)"
+      >
+        <template slot="action">
+          <ui-button v-if="readmore" text :to="`${readmore}/${item.postId}`" class="mt-3">
+            <template slot="content">
+              <v-icon class="mr-1">mdi-page-next</v-icon><u>Enter Discussion Area</u>
+              <!-- <v-icon>mdi-open-in-new</v-icon>Read More -->
+            </template>
+          </ui-button>
+          <div></div>
+        </template>
+      </ui-post>
     </v-row>
     <v-row v-if="!items || items.length===0" justify="center">
-      <h3>🦄 There's no announcement yet.</h3>
+      <h3>🦄 There's no discussion yet.</h3>
     </v-row>
   </div>
 </template>
@@ -25,7 +32,7 @@
 <script>
 export default {
 
-  name: 'ShowAnn',
+  name: 'ShowPost',
 
   props: {
     items: {
@@ -36,10 +43,6 @@ export default {
       type: String,
       default: '50vw'
     },
-    updateInfo: {
-      type: Boolean,
-      default: false,
-    },
     menu: {
       type: Boolean,
       default: false,
@@ -48,17 +51,17 @@ export default {
       type: String,
       default: null,
     },
-    mask: {
+    content: {
       type: Boolean,
-      default: false,
+      default: true,
     }
   },
 
   data () {
     return {
-    }
-  },
 
+    }
+  }
 }
 </script>
 

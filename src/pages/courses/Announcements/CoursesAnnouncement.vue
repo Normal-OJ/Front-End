@@ -117,7 +117,8 @@ export default {
     deleteAnn(idx, id) {
       this.$http.delete(`/api/ann`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'annId': id}})
         .then((res) => {
-          this.$router.go(0);
+          this.$router.push(`/course/${this.$route.params.name}/announcements`);
+          // this.$router.go(0);
           // console.log(res);
         })
         .catch((err) => {

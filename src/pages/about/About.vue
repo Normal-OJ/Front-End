@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12" lg="6">
         <h1>Our Team</h1>
-        6 students from NTNU CSIE 111
+        6 students at NTNU CSIE 111
         <v-row v-for="i in items.length/2" :key="i">
           <v-col cols="6" v-for="j in 2">
             <v-card :color="items[(i-1)*2+j-1].color" dark>
@@ -93,7 +93,7 @@ export default {
         {
           title: 'First Release',
           content: 'Release for demo. (SE 2019 Fall)',
-          date: '2020/02/17',
+          date: '2020/01/07',
         },
       ],
       conts: ['aisu170232', 'brianchangtw', 'Dynzer', 'fuji', 'hackbabu9033', 'Ikaros1110', 'shangchiwu', 'Snowball0409'],
