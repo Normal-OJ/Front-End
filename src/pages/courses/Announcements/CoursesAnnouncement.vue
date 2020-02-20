@@ -1,5 +1,17 @@
 <template>
   <div>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          fab fixed small
+          :to="{ path: '../announcements' }"
+          color="secondary"
+          v-on="on"
+          class="ma-3"
+        ><v-icon>mdi-backburger</v-icon></v-btn>
+      </template>
+      <span>Return</span>
+    </v-tooltip>
     <Creator v-if="perm" v-model="dialog" type="Update" title="Announcement" @cancel="cancel" @post="post" noActivator>
       <template slot="content">
         <v-form v-model="validForm" ref="form">

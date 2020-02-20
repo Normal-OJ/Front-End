@@ -1,5 +1,17 @@
 <template>
   <div>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          fab fixed small
+          :to="{ path: '../discussions' }"
+          color="secondary"
+          v-on="on"
+          class="ma-3"
+        ><v-icon>mdi-backburger</v-icon></v-btn>
+      </template>
+      <span>Return</span>
+    </v-tooltip>
     <Creator v-if="perm" v-model="dialog" :type="type" title="Discussion" @cancel="cancel" @post="submit" noActivator>
       <template slot="content">
         <v-form v-model="validForm" ref="form">
@@ -26,17 +38,18 @@
       @edit="edit" @delete="deletePost" 
     ></ShowPost>
     <v-row justify="center">
-      <v-card width="50vw" elevation="0" style="background: transparent;">
+      <v-card :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" elevation="0" style="background: transparent;">
         <ui-button
           v-if="items && items.length > 0"
           color="white"
+          @click.native="focus = !focus"
         >
           <template slot="content"><v-icon class="mr-1">mdi-comment</v-icon>Comment</template>
         </ui-button>
       </v-card>
     </v-row>
     <div v-if="items" v-for="item in items">
-      <ShowReply :items="item.reply">
+      <ShowReply :items="item.reply" :focus="focus" @newComment="newComment" @editComment="editComment">
       </ShowReply>
     </div>
   </div>
@@ -64,38 +77,13 @@ export default {
       validForm: false,
       items: [],
       post: {
-        course: this.$route.params.name,
         title: '',
         content: '',
         targetThreadId: null,
       },
       perm: false,
       username: null,
-      // target: {
-      //   'title': '',
-      //   'content': '',
-      //   'targetThreadId': ''
-      // },
-      // commentMenu: [
-      //   'reply',
-      //   'edit',
-      //   'delete',
-      // ],
-      // commentRules: [
-      //   // v => !!v || 'The message will be delete if the field is blank'
-      // ],
-      // titleRules: [
-      //   v => !!v || 'Title is required.',
-      //   v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters',
-      // ],
-      // contentRules: [
-      //   v => !!v || 'Content is required.',
-      //   v => !!v && v.length <= 100000 || 'Sorry, the length must be ≤ 100000 characters',
-      // ],
-      // posts: [],
-      // perm: false,
-      // username: '',
-      // snackbar: false,
+      focus: false,
     }
   },
   created() {
@@ -107,7 +95,6 @@ export default {
     getPost() {
       this.$http.get(`${API_BASE_URL}/post/view/${this.$route.params.name}/${this.$route.params.id}`)
         .then((res) => {
-          console.log(res);
           this.items = [];
           res.data.data.forEach(ele => {
             if ( ele.thread.status != 1 ) {
@@ -130,9 +117,6 @@ export default {
     },
     cancel() {
       this.post.targetThreadId = null;
-      this.post.course = this.$route.params.name;
-      this.type = 'New';
-      this.$refs.form.reset();
       this.dialog = false;
     },
     submit() {
@@ -160,16 +144,15 @@ export default {
     },
     edit(idx, id) {
       this.type = 'Update';
-      this.post.course = null;
       this.post.title = this.items[idx].title;
       this.post.content = this.items[idx].content;
       this.post.targetThreadId = id;
       this.dialog = true;
     },
     deletePost(idx,id) {
-      // console.log(id);
+      console.log(id);
       this.post.targetThreadId = id;
-      this.$http.delete(`${API_BASE_URL}/post`, {headers: {'Content-Type': 'application/json'}, data: {targetThreadId: this.post.targetThreadId}})
+      this.$http.delete(`${API_BASE_URL}/post`, {headers: {'Content-Type': 'application/json'}, data: {targetThreadId: id}})
         .then((res) => {
           this.$router.push(`/course/${this.$route.params.name}/discussions`);
           // console.log(res);
@@ -177,6 +160,26 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    newComment(id, content) {
+      this.$http.post(`${API_BASE_URL}/post`, {targetThreadId: id, content: content})
+        .then((res) => {
+          // console.log(res);
+          this.$router.go(0);
+        })
+        .catch((err) => {
+          // console.log(err);
+        })
+    },
+    editComment(id, content) {
+      this.$http.put(`${API_BASE_URL}/post`, {targetThreadId: id, content: content})
+        .then((res) => {
+          // console.log(res);
+          this.$router.go(0);
+        })
+        .catch((err) => {
+          // console.log(err);
+        })
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);

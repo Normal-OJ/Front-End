@@ -9,6 +9,10 @@
     :outlined="outlined"
     :to="to"
     :loading="loading"
+    :x-large="xLarge"
+    :large="large"
+    :small="small"
+    :x-small="xSmall"
   >
     <slot name="content">
       <v-icon>mdi-lock</v-icon>
@@ -51,6 +55,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    large: {
+      type: Boolean,
+      default: false,
+    },
+    small: {
+      type: Boolean,
+      default: false,
+    },
+    xLarge: {
+      type: Boolean,
+      default: false,
+    },
+    xSmall: {
+      type: Boolean,
+      default: false,
+    }, 
   },
 
   data () {

@@ -13,15 +13,6 @@ Description: Github README style. Includes theme for Pygmentized code blocks.
   src: url("/monaco.ttf") format("truetype");
 }
 
-@font-face {
-  font-family: 'PTSerif';
-  src: url("/PTSerif-Regular.ttf") format("truetype");
-}
-
-.katex-mathml {
-  font-family: PTSerif;
-}
-
 .katex-html {
   display: none;
 }
