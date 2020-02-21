@@ -32,7 +32,7 @@
               <td>{{ item.tags }}</td>
               <td>{{ item.acRate }}</td>
             </tr>
-            <tr v-if="items.length===0">
+            <tr v-if="items && items.length===0">
               <td colspan="5">🦄 No data available.</td>
             </tr>
           </tbody>
@@ -50,7 +50,7 @@ export default {
   data () {
     return {
       page: 1,
-      items: [],
+      items: null,
     }
   },
 
@@ -72,20 +72,20 @@ export default {
 
   methods: {
     getProblems() {
-      // var query = `?offset=${(this.page-1)*10}&count=${10}`;
+      var query = `?offset=${(this.page-1)*10}&count=${10}`;
 
-      // // this.loading = true;
+      // this.loading = true;
 
-      // this.$http.get(`/api/submission${query}`)
-      //   .then((res) => {
-      //     // this.loading = false;
-      //     console.log(res.data.data);
-      //     this.items = res.data.data.submissions;
-      //   })
-      //   .catch((err) => {
-      //     // this.loading = false;
-      //     console.log(err);
-      //   });
+      this.$http.get(`/api/problem${query}`)
+        .then((res) => {
+          // console.log(res.data.data);
+          this.items = res.data.data;
+          // this.loading = false;
+        })
+        .catch((err) => {
+          // this.loading = false;
+          // console.log(err);
+        });
     },
     timeFormat(time) {
       const tmp = new Date(time * 1000);

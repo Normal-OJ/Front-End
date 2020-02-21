@@ -1,5 +1,5 @@
 <template>
-  <v-card tile elevation="0" height="100%">
+  <v-card tile elevation="0" height="80vh">
     <!-- <v-row class="px-6" style="height: 10%;">
       <v-col v-for="(item, key, idx) in editorConfig" :key="idx" :cols="selectItem.width[idx]">
         <v-select
@@ -15,6 +15,7 @@
       v-if="show"
       ref="CM"
       :options="cmOption"
+      placeholder="paste or upload your code for submitting"
       :style="{ height: '85%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
     <div class="px-4" style="height: 15%; width: 100%;">
@@ -63,11 +64,11 @@ import JSZip from 'jszip';
 
 var LANG = ['text/x-csrc', 'text/x-c++src', {name: "python", version: 3}];
 var LANG_EXT = ['.c', '.cpp', '.py'];
-var DEFAULT_CODE = [
-  '// you can paste or upload your code for submitting',
-  '// you can paste or upload your code for submitting',
-  '#  you can paste or upload your code for submitting',
-];
+// var DEFAULT_CODE = [
+//   '// you can paste or upload your code for submitting',
+//   '// you can paste or upload your code for submitting',
+//   '#  you can paste or upload your code for submitting',
+// ];
 var FONT_SIZE = [], THEME_ITEM = ['default', 'monokai', 'dracula', 'base16-dark', 'base16-light', 'eclipse', 'material'], THEME = [];
 for ( var i=8; i<=28; ++i ) FONT_SIZE.push({ 'text': `${i}`, 'value': i });
 THEME_ITEM.forEach((theme) => {THEME.push({ 'text': theme, 'value': theme })});
@@ -141,32 +142,26 @@ export default {
   methods: {
     async submit() {
       if ( this.$refs.form.validate() ) {
-        // this.setCode(this.editorConfig.language);
         var zip = new JSZip();
         zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
         var code = await zip.generateAsync({type:"blob"});
         var formData = new FormData();
-        formData.append( 'code', code ); 
+        formData.append('code', code); 
         this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
           .then((res) => {
-            // console.log(res);
-            var submissionId = res.data.data.submissionId;
-            this.$http.put(`/api/submission/${res.data.data.submissionId}?token=${res.data.data.token}`, 
-              formData,
-              {
-                headers: {'Content-Type':'multipart/form-data'}, 
-              })
-              .then((res) => {
-                // console.log(res);
-                console.log('submissionId:'+ submissionId);
-                this.$emit('getSubmission');
-              })
-              .catch((err) => {
-                // console.log(err);
-              });
+            return this.$http.put(`/api/submission/${res.data.data.submissionId}`, 
+                                  formData,
+                                  {
+                                    headers: { 'Content-Type' : 'multipart/form-data' }, 
+                                  })
+          })
+          .then((res) => {
+            console.log(res);
+            console.log('submissionId:'+ submissionId);
+            this.$emit('getSubmission');
           })
           .catch((err) => {
-            // console.log(err);
+            console.log(err);
           });
       }
     },
@@ -186,7 +181,8 @@ export default {
             }
           // }
           // console.log(this.editorConfig);
-          this.code = '// you can paste or upload your code for submitting';
+          this.code = '';
+          // this.code = '// you can paste or upload your code for submitting';
           // this.code = this.getCode(this.editorConfig.language);
           this.updateOption();
       //   }

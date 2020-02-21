@@ -38,14 +38,25 @@
               </td>
             </tr>
             <tr v-for="item in items" :key="item.problemId">
-              <td class="subtitle-1">{{ item.problemId }}</td>
-              <td class="subtitle-1">{{ item.problemName }}</td>
+              <td class="subtitle-1"><a :href="`/problem/${item.problemId}`">{{ item.problemId }}</a></td>
+              <td class="subtitle-1"><a :href="`/problem/${item.problemId}`">{{ item.problemName }}</a></td>
               <td class="subtitle-1">{{ item.status }}</td>
               <td class="subtitle-1">{{ item.type }}</td>
               <td class="subtitle-1">
                 <span class="pr-1" v-for="tag in item.tags">{{ tag }}</span>
               </td>
-              <td></td>
+              <td>
+                <!-- <ui-button class="mr-1" color="info">
+                  <template slot="content">
+                    <v-icon>mdi-chart-bar</v-icon>
+                  </template>
+                </ui-button>
+                <ui-button class="mr-1" color="info">
+                  <template slot="content">
+                    <v-icon>mdi-chart-bar</v-icon>
+                  </template>
+                </ui-button> -->
+              </td>
             </tr>
             <tr v-if="items.length===0">
               <td colspan="6">🦄 No data available.</td>
@@ -384,7 +395,10 @@ export default {
       this.tags = [];
       this.$http.get('/api/problem?offset=0&count=-1')
         .then((res) => {
+          console.log(res);
           res.data.data.forEach(ele => {
+            ele.status = ele.status===0 ? 'Online' : 'Offline';
+            ele.type = ele.type===0 ? 'default' : 'fillInTemplate';
             this.items.push(ele);
             ele.tags.forEach(tag => {
               this.tags.push(tag);
@@ -397,20 +411,23 @@ export default {
         })
     },
     submit() {
+      this.prob.testCaseInfo.cases.forEach(ele => {
+        ele.caseCount = Number(ele.caseCount);
+        ele.caseScore = Number(ele.caseScore);
+        ele.memoryLimit = Number(ele.memoryLimit);
+        ele.timeLimit = Number(ele.timeLimit);
+      });
       if ( this.$refs.form.validate() ) {
         this.$http.post('/api/problem/manage', this.prob)
+          .then(() => {
+            return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, zip)
+          })
           .then((res) => {
-            this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, zip)
-              .then((res) => {
-                // console.log(res);
-                this.$router.go(0);
-              })
-              .catch((err) => {
-
-              })
+            // console.log(res);
+            this.$router.go(0);
           })
           .catch((err) => {
-            // console.log(err);
+
           })
       }
     },

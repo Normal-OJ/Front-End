@@ -16,7 +16,7 @@
       <v-list-item-group color="primary">
         <v-list-item 
           v-for="link in links"
-          v-if="(link.title!=='Manage'||perm)
+          v-if="(link.title!=='Manages'||perm)
               &&(courseName!=='Public'||
               (link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
           :key="link.title"

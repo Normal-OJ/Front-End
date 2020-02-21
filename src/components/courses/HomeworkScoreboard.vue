@@ -18,24 +18,25 @@
             <tr>
               <th class="font-weight-bold subtitle-1 text--primary" v-text="'username'"></th>
               <th
-                v-for="(prob,idx) in probs"
+                v-for="(prob, idx) in probs"
                 :key="idx"
                 class="font-weight-bold subtitle-1 text--primary"
-                v-text="prob"
+                v-text="(idx+1) + ' (id: ' + prob + ')'"
               ></th>
             </tr></thead>
           <tbody>
             <tr
-              v-for="(item,idx) in Object.keys(items)"
-              :key="idx"
+              v-for="(item, idx) in Object.keys(items)"
+              :key="-idx"
             >
               <td class="subtitle-1" v-text="item"></td>
               <td
-                v-for="(prob,idx) in probs"
-                :key="idx"
+                v-for="prob in probs"
                 class="subtitle-1"
-                v-text="(items[item][prob].problemStatus===0 ? 'Solved' : 'Unsolved')+'('+items[item[prop].score]+'pts)'"
-              ></td></tr>
+              >
+                {{ (items[item][prob].problemStatus === 0 ? 'Solved' : 'Unsolved') + ' / ' + items[item][prob].score + 'pts' + ' / ' + items[item][prob].submissionIds.length + 'tries' }}
+              </td>
+            </tr>
           </tbody>
         </template>
       </v-simple-table>
@@ -49,7 +50,16 @@ export default {
 
   name: 'CoursesHomeworkScoreboard',
 
-  props: ['items', 'probs'],
+  props: {
+    items: {
+      type: Object,
+      required: true,
+    },
+    probs: {
+      type: Array,
+      required: true,
+    },
+  },
 
   data () {
     return {

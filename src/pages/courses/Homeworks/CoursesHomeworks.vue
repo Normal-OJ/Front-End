@@ -199,10 +199,7 @@ export default {
       this.$http.get('/api/problem?offset=0&count=-1')
         .then((res) => {
           console.log(res);
-          res.data.data.forEach(ele => {
-            ele['probname'] = ele.problemId + ' - ' + ele.problemName;
-            this.probs.push(ele);
-          })
+          this.probs = res.data.data;
         })
         .catch((err) => {
           console.log(err);

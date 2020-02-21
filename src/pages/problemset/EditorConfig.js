@@ -23,3 +23,5 @@ import 'codemirror/addon/dialog/dialog.css'
 import 'codemirror/addon/search/searchcursor.js'
 import 'codemirror/addon/search/search.js'
 import 'codemirror/keymap/sublime.js'
+// placeholder
+import 'codemirror/addon/display/placeholder.js'

@@ -37,6 +37,8 @@
           <v-alert
             type="info"
             dense
+            dark
+            colored-border
             elevation="0"
           >{{ 'Due Time: ' + item.end }}</v-alert>
         </v-card-text>
@@ -51,14 +53,16 @@
               <thead>
                 <tr>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'#'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Problem'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Problem id'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Problem Name'"></th>
                   <!-- <th v-if="item.studentStatus" class="title text-left" v-text="'Score'"></th> -->
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(id, idx) in item.problemIds" :key="idx">
-                  <td class="title text-left" v-text="idx+1"></td>
-                  <td class="title text-left">
+                  <td class="subtitle-1" v-text="idx+1"></td>
+                  <td class="subtitle-1" v-text="id"></td>
+                  <td class="subtitle-1">
                     <a target="_blank" rel="noopener noreferrer" :href="'problem/'+id" v-text="findProb(id)"></a>
                   </td>
                   <!-- <td v-if="item.studentStatus" class="title text-left" v-text="item.studentStatus ? item.studentStatus.id : ''"></td> -->
@@ -68,7 +72,8 @@
           </v-simple-table>
           <div v-if="perm">
             <v-card-text>
-              <HomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds"></HomeworkScoreboard>
+              <HomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds" :probsName="item.problem">
+              </HomeworkScoreboard>
             </v-card-text>
           </div>
         </v-card-text>
@@ -121,7 +126,7 @@ export default {
     findProb(id) {
       for ( var i=0; i<this.probs.length; i++ ) {
         if ( this.probs[i].problemId === id ) {
-          return this.probs[i].probname;
+          return this.probs[i].problemName;
         }
       }
     },
