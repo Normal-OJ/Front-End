@@ -79,9 +79,9 @@ export default {
 
       this.$http.get(`/api/submission${query}`)
         .then((res) => {
-          // this.loading = false;
-          console.log(res.data.data);
+          // console.log(res.data.data);
           this.items = res.data.data.submissions;
+          // this.loading = false;
         })
         .catch((err) => {
           // this.loading = false;

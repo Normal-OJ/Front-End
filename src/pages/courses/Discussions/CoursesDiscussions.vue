@@ -71,10 +71,11 @@ export default {
           console.log(res);
           this.items = [];
           res.data.data.forEach(ele => {
-            if ( ele.thread.status != 1 ) {
+            if ( ele.thread.status !== 1 ) {
               this.items.push({
                 'postId': ele.thread.id,
                 'title': ele.title,
+                'status': ele.status,
                 'author': ele.thread.author,
                 'content': ele.thread.content,
                 'createdTime': this.timeFormat(ele.thread.created),

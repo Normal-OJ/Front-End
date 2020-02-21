@@ -101,6 +101,7 @@ export default {
               this.items.push({
                 'postId': ele.thread.id,
                 'title': ele.title,
+                'status': ele.status,
                 'author': ele.thread.author,
                 'content': ele.thread.content,
                 'createdTime': this.timeFormat(ele.thread.created),

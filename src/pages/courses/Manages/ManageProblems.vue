@@ -419,15 +419,22 @@ export default {
       });
       if ( this.$refs.form.validate() ) {
         this.$http.post('/api/problem/manage', this.prob)
-          .then(() => {
-            return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, zip)
+          .then((res) => {
+            console.log(res);
+            var formData = new FormData();
+            formData.append('case', this.zip); 
+            return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, 
+                                  formData,
+                                  {
+                                    headers: { 'Content-Type' : 'multipart/form-data' }, 
+                                  })
           })
           .then((res) => {
             // console.log(res);
             this.$router.go(0);
           })
           .catch((err) => {
-
+            console.log(err);
           })
       }
     },

@@ -27,10 +27,21 @@
           <tbody>
             <tr v-for="item in items" :key="item.submissionId">
               <td>{{ item.problemId }}</td>
-              <td>{{ item.problemName }}</td>
+              <td>
+                <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+item.problemId">
+                  {{ item.problemName }}
+                </a>
+              </td>
               <td>{{ item.type }}</td>
-              <td>{{ item.tags }}</td>
-              <td>{{ item.acRate }}</td>
+              <td>
+                <v-chip 
+                  class="mx-1"
+                  v-for="tag in item.tags"
+                  :key="tag"
+                  label small
+                >tag</v-chip>
+              </td>
+              <td>{{ item.ACUser + '/' + item.submitter }}</td>
             </tr>
             <tr v-if="items && items.length===0">
               <td colspan="5">🦄 No data available.</td>
@@ -78,7 +89,7 @@ export default {
 
       this.$http.get(`/api/problem${query}`)
         .then((res) => {
-          // console.log(res.data.data);
+          console.log(res.data.data);
           this.items = res.data.data;
           // this.loading = false;
         })
