@@ -4,7 +4,7 @@
     width="100%"
     height="100%"
   >
-    <v-card height="100%" elevation="2" v-if="!create">
+    <v-card height="100%" elevation="2" v-if="creating === false">
       <v-card-title class="font-weight-bold">Manage Problems</v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-chip v-if="items" label class="ml-3">
@@ -30,32 +30,37 @@
                     tile
                     elevation="0"
                     :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
-                    @click="create = true"
+                    @click="create(-1)"
                   >
                     <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>Add Problems</v-card-title>
                   </v-card>
                 </v-hover>
               </td>
             </tr>
-            <tr v-for="item in items" :key="item.problemId">
+            <tr v-for="(item, idx) in items" :key="item.problemId">
               <td class="subtitle-1"><a :href="`/problem/${item.problemId}`">{{ item.problemId }}</a></td>
               <td class="subtitle-1"><a :href="`/problem/${item.problemId}`">{{ item.problemName }}</a></td>
               <td class="subtitle-1">{{ item.status }}</td>
               <td class="subtitle-1">{{ item.type }}</td>
               <td class="subtitle-1">
-                <span class="pr-1" v-for="tag in item.tags">{{ tag }}</span>
+                <v-chip 
+                  class="mx-1"
+                  v-for="tag in item.tags"
+                  :key="tag"
+                  label small
+                >{{ tag }}</v-chip>
               </td>
               <td>
-                <!-- <ui-button class="mr-1" color="info">
+                <ui-button class="mr-1" color="info" @click.native="edit(idx)">
                   <template slot="content">
-                    <v-icon>mdi-chart-bar</v-icon>
+                    <v-icon>mdi-pencil</v-icon>Edit
                   </template>
                 </ui-button>
-                <ui-button class="mr-1" color="info">
+                <ui-button class="mr-1" color="error">
                   <template slot="content">
-                    <v-icon>mdi-chart-bar</v-icon>
+                    <v-icon>mdi-delete</v-icon>Delete
                   </template>
-                </ui-button> -->
+                </ui-button>
               </td>
             </tr>
             <tr v-if="items.length===0">
@@ -93,15 +98,27 @@
                   counter="64"
                   :rules="nameRules"
                   filled
-                  class="pr-1"
                 ></v-text-field>
-                <v-select
-                  v-model="prob.status"
-                  label="Status*"
-                  :items="[{text: 'Online', value: 0}, {text: 'Offline', value: 1}]"
-                  filled
-                  class="pl-1"
-                ></v-select>
+              </v-row>
+              <v-row>
+                <v-col cols="auto" md="6" class="px-0">
+                  <v-select
+                    v-model="prob.status"
+                    label="Status*"
+                    :items="[{text: 'Online', value: 0}, {text: 'Offline (hidden)', value: 1}]"
+                    filled
+                    class="pr-1"
+                  ></v-select>
+                </v-col>
+                <v-col cols="auto" md="6" class="px-0">
+                  <v-select
+                    v-model="prob.type"
+                    label="Type*"
+                    :items="[{text: 'Defult (programming)', value: 0}, {text: 'Handwritten', value: 2}]"
+                    filled
+                    class="pl-1"
+                  ></v-select>
+                </v-col>
               </v-row>
               <v-row>
                 <v-combobox
@@ -260,7 +277,7 @@
               </v-row>
               <v-row>
                 <v-spacer></v-spacer>
-                <ui-button color="secondary" @click.native="create = false" class="mr-3">
+                <ui-button color="secondary" @click.native="creating = false" class="mr-3">
                   <template slot="content">Cancel</template>
                 </ui-button>
                 <ui-button color="primary" @click.native="submit">
@@ -340,12 +357,10 @@ export default {
 
   data () {
     return {
-      create: false,
+      creating: false,
       items: [],
       errAlert: false,
       errMsg: '',
-      sampleLength: 1,
-      subtaskLength: 1,
       tags: [],
       form: true,
       prob: {
@@ -374,7 +389,6 @@ export default {
         },
         canViewStdout: true,
         allowedLanguage: 7,
-        handwritten: false,
       },
       nameRules: [
         v => !!v || 'Please enter the problem name.',
@@ -383,6 +397,17 @@ export default {
       rule: false,
       zip: null,
     }
+  },
+
+  computed: {
+    sampleLength() {
+      if ( this.prob.description.sampleInput )
+        return this.prob.description.sampleInput.length;
+    },
+    subtaskLength() {
+      if ( this.prob.testCaseInfo.cases )
+        return this.prob.testCaseInfo.cases.length;
+    },
   },
 
   created() {
@@ -398,7 +423,7 @@ export default {
           console.log(res);
           res.data.data.forEach(ele => {
             ele.status = ele.status===0 ? 'Online' : 'Offline';
-            ele.type = ele.type===0 ? 'default' : 'fillInTemplate';
+            ele.type = ele.type===0 ? 'default' : (ele.type===1 ? 'fillInTemplate' : 'handwritten');
             this.items.push(ele);
             ele.tags.forEach(tag => {
               this.tags.push(tag);
@@ -418,24 +443,49 @@ export default {
         ele.timeLimit = Number(ele.timeLimit);
       });
       if ( this.$refs.form.validate() ) {
-        this.$http.post('/api/problem/manage', this.prob)
-          .then((res) => {
-            console.log(res);
-            var formData = new FormData();
-            formData.append('case', this.zip); 
-            return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, 
-                                  formData,
-                                  {
-                                    headers: { 'Content-Type' : 'multipart/form-data' }, 
-                                  })
-          })
-          .then((res) => {
-            // console.log(res);
-            this.$router.go(0);
-          })
-          .catch((err) => {
-            console.log(err);
-          })
+        if ( this.creating === -1 ) {
+          this.$http.post('/api/problem/manage', this.prob)
+            .then((res) => {
+              // console.log(res);
+              if ( !this.zip ) {
+                this.$router.go(0);
+              }
+              var formData = new FormData();
+              formData.append('case', this.zip); 
+              return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, 
+                                    formData,
+                                    {
+                                      headers: { 'Content-Type' : 'multipart/form-data' }, 
+                                    })
+            })
+            .then((res) => {
+              // console.log(res);
+              this.$router.go(0);
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+        } else {
+          this.$http.put(`/api/problem/manage/${this.items[this.editing].problemId}`, this.prob)
+            .then((res) => {
+              if ( !this.zip ) {
+                this.$router.go(0);
+              }
+              var formData = new FormData();
+              formData.append('case', this.zip); 
+              return this.$http.put(`/api/problem/manage/${this.items[this.editing].problemId}`, 
+                                    formData,
+                                    {
+                                      headers: { 'Content-Type' : 'multipart/form-data' }, 
+                                    })
+            })
+            .then((res) => {
+              this.$router.go(0);
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+        }
       }
     },
     editSample(val) {
@@ -462,6 +512,34 @@ export default {
       }
       this.subtaskLength += val;
       this.subtaskLength = Math.max(this.subtaskLength, 1);
+    },
+    create(idx) {
+      this.creating = idx;
+    },
+    edit(idx) {
+      this.create(idx);
+      this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
+        .then((res) => {
+          console.log(res.data.data);
+          var data = res.data.data
+          for (const [key, value] of Object.entries(data)) {
+            if ( key === 'testCase' ) {
+              this.prob['testCaseInfo'] = value;
+            } else {
+              this.prob[key] = value;
+            }
+          }
+          data.testCase.cases.forEach((ele, idx) => {
+            this.prob.testCaseInfo.cases[idx]['caseCount'] = ele.input.length;
+          })
+          console.log(this.prob);
+          this.create = true;
+        })
+        .catch((err) => {
+          // console.log(err);
+        })
+      // this.prob = this.items[idx];
+      // this.create = true;
     },
   }
 }
