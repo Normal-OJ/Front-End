@@ -102,9 +102,11 @@ export default {
       submData: [],
       show: true,
       snackbar: false,
+      username: '',
     }
   },
   created() {
+    this.getUsername();
     this.getProb();
     this.getSubm();
   },
@@ -112,16 +114,16 @@ export default {
     getProb() {
       this.$http.get(`${API_BASE_URL}/problem/view/${this.$route.params.id}`)
         .then((res) => {
-          console.log('res:', res);
+          // console.log('res:', res);
           this.prob = res.data.data;
         })
         .catch((err) => {
         })
     },
     getSubm() {
-      this.submData = [];
-      this.$http.get(`${API_BASE_URL}/submission?offset=0&count=-1&problemId=${this.$route.params.id}`)
+      this.$http.get(`${API_BASE_URL}/submission?offset=0&count=-1&username=${this.username}&problemId=${this.$route.params.id}`)
         .then((res) => {
+          this.submData = [];
           console.log('subm:', res);
           res.data.data.submissions.forEach((ele) => {
             if ( ele.status === -1 ) {
@@ -154,7 +156,6 @@ export default {
         })
     },
     setSubmission() {
-      this.submData = [];
       this.getSubm();
       this.tab = 1;
     },
@@ -166,7 +167,7 @@ export default {
           console.log(data);
           if ( data.status === -1 ) {
             this.show = false;
-            await this.delay(400);
+            await this.delay(1000);
             this.updateSubm(sid);
           } else {
             this.getSubm();
@@ -206,12 +207,24 @@ export default {
       var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
       return time;
     },
+    getUsername() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === true ) {
+          this.username = payload.username;
+        } else {
+          // this.$router.push('/');
+        }
+      } else {
+        // this.$router.push('/');
+      }
+    },
+    parseJwt(token) {
+      return JSON.parse(atob(token.split('.')[1])).data;
+    },
   }
 }
 </script>
 
 <style lang="css" scoped>
-a:hover {
-  text-decoration: underline;
-}
 </style>

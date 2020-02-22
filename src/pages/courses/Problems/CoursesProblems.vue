@@ -39,7 +39,7 @@
                   v-for="tag in item.tags"
                   :key="tag"
                   label small
-                >tag</v-chip>
+                >{{ tag }}</v-chip>
               </td>
               <td>{{ item.ACUser + '/' + item.submitter }}</td>
             </tr>

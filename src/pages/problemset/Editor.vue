@@ -157,7 +157,7 @@ export default {
           })
           .then((res) => {
             console.log(res);
-            console.log('submissionId:'+ submissionId);
+            // console.log('submissionId:'+ submissionId);
             this.$emit('getSubmission');
           })
           .catch((err) => {
@@ -189,13 +189,13 @@ export default {
       // }
     },
     modifyConfig() {
-      this.$http.put('/api/profile/config', this.editorConfig)
-        .then((res) => {
-          // console.log(res);
-        })
-        .catch((err) => {
-          // console.log(err);
-        })
+      // this.$http.put('/api/profile/config', this.editorConfig)
+      //   .then((res) => {
+      //     // console.log(res);
+      //   })
+      //   .catch((err) => {
+      //     // console.log(err);
+      //   })
       this.updateOption();
     },
     updateOption() {
@@ -235,5 +235,8 @@ export default {
   height: 100%;
   width: 100%;
   direction: ltr;
+}
+.CodeMirror-placeholder {
+  color: grey !important;
 }
 </style>
