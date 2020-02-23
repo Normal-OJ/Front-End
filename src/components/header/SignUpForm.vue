@@ -57,7 +57,6 @@
       v-model="dialog"
       :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"
     >
-      <template slot="activator"><span></span></template>
       <template slot="title">Email Verification</template>
       <template slot="body">
         <v-container class="text-center text--primary">

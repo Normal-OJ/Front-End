@@ -18,18 +18,20 @@
           <thead>
             <tr>
               <th class="font-weight-bold subtitle-1 text--primary">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Problem</th>
+              <th class="font-weight-bold subtitle-1 text--primary">PID</th>
               <th class="font-weight-bold subtitle-1 text--primary">User</th>
               <th class="font-weight-bold subtitle-1 text--primary">Result</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Score</th>
               <th class="font-weight-bold subtitle-1 text--primary">Time</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.submissionId">
-              <td>{{ item.submissionId }}</td>
-              <td>{{ item.problemId }}</td>
+              <td><a :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a></td>
+              <td><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
               <td>{{ item.user.username }}</td>
-              <td>{{ item.status }}</td>
+              <td :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
+              <td>{{ item.score }}</td>
               <td>{{ timeFormat(item.timestamp) }}</td>
             </tr>
             <tr v-if="items.length===0">
@@ -51,6 +53,8 @@ export default {
     return {
       page: 1,
       items: [],
+      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
+      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
     }
   },
 

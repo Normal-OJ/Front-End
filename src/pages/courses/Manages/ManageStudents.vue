@@ -62,7 +62,6 @@
     <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"
       @cancel="cancel" persistent alert
     >
-      <template slot="activator"><span></span></template>
       <template slot="title">Add Students</template>
       <template slot="body">
         <v-card-text>

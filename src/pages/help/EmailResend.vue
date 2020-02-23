@@ -31,7 +31,6 @@
           v-model="dialog"
           :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
         >
-          <template slot="activator"><span></span></template>
           <template slot="title">{{ diaTitle }}</template>
           <template slot="body">
             <v-card-text v-if="show">

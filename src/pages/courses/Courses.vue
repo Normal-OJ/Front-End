@@ -44,7 +44,6 @@
       </v-simple-table>
     </v-card>
     <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'">
-      <template slot="activator"><span></span></template>
       <template slot="title">New Course</template>
       <template slot="body">
         <v-card-text>
