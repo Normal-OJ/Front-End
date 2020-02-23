@@ -26,7 +26,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(item, i) in menuItems" :key="i" @click="$emit(item)">
+            <v-list-item v-for="(item, i) in menuItems" :key="i" @click="menuEmit(item)">
               <v-list-item-title>{{ item }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -63,6 +63,29 @@
         </ui-button>
       </slot>
     </v-card-actions>
+    <v-dialog
+      v-model="dialog"
+      :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '75vw'"
+    >
+      <v-card>
+        <v-card-title></v-card-title>
+        <v-card-text class="text-center text--primary">
+          <v-icon color="warning" size="5rem">mdi-alert-circle-outline</v-icon>
+          <p class="display-1">Are you sure?</p>
+          <p class="title">You won't be able to recover this!</p>
+        </v-card-text>
+        <v-card-actions class="pb-12">
+          <v-spacer></v-spacer>
+          <ui-button class="mx-3" large color="primary" @click.native="$emit('delete'); dialog = false">
+            <template slot="content">Yes</template>
+          </ui-button>
+          <ui-button class="mx-3" large color="secondary" @click.native="dialog = false">
+            <template slot="content">No</template>
+          </ui-button>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -133,8 +156,18 @@ export default {
 
   data () {
     return {
-
+      dialog: false,
     }
+  },
+
+  methods: {
+    menuEmit(item) {
+      if ( item === 'edit' )
+        this.$emit(item);
+      else {
+        this.dialog = true;
+      }
+    },
   }
 }
 </script>

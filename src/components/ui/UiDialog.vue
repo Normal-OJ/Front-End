@@ -1,13 +1,13 @@
 <template>
 	<v-dialog v-model="dialog" :width="width" :persistent="persistent">
-    <template v-slot:activator="{ on: { click } }">
+    <template v-slot:activator="{ on: { click } }" v-if="this.$slots.activator">
       <slot name="activator">
-        <ui-button @click.native="click">
+        <!-- <ui-button @click.native="click">
           <template v-slot:content>
             <v-icon>mdi-plus</v-icon>
             Activator
           </template>
-        </ui-button>
+        </ui-button> -->
       </slot>
     </template>
     <v-card>
@@ -16,9 +16,9 @@
           Title
         </slot>
         <v-spacer></v-spacer>
-        <v-btn tile icon @click="$emit('cancel'); dialog = false;">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+        <ui-button tile icon color="white" :alert="alert" @alertClick="cancel(true)" @click.native="cancel(false)">
+          <template slot="content"><v-icon>mdi-close</v-icon></template>
+        </ui-button>
       </v-toolbar>
       <v-card-text>
         <slot name="body">
@@ -33,12 +33,12 @@
         <slot name="actions">
           <v-spacer></v-spacer>
           <slot name="action-cancel">
-            <ui-button outlined color="secondary" @click.native="dialog = false">
+            <ui-button outlined color="secondary" :alert="alert" @alertClick="cancel(true)" @click.native="cancel(false)">
               <template slot="content">Cancel</template>
             </ui-button>
           </slot>
           <slot name="action-ok">
-            <ui-button color="primary" @click.native="ok()">
+            <ui-button color="primary" @click.native="ok">
               <template slot="content">Ok</template>
             </ui-button>
           </slot>
@@ -66,6 +66,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    alert: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   watch: {
@@ -84,6 +88,12 @@ export default {
   },
 
   methods: {
+    cancel(check) {
+      if ( !this.alert || check ) {
+        this.$emit('cancel');
+        this.dialog = false;
+      }
+    },
     ok() {
       this.dialog = false;
     },

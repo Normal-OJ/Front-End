@@ -45,7 +45,7 @@
                     <v-icon>mdi-chart-bar</v-icon>
                   </template>
                 </ui-button>
-                <ui-button color="error" @click.native="del(idx)">
+                <ui-button class="mr-1" color="error" alert @alertClick="del(idx)">
                   <template slot="content">
                     <v-icon>mdi-account-remove</v-icon>
                   </template>
@@ -60,7 +60,7 @@
       </v-simple-table>
     </v-card>
     <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"
-      @cancel="cancel" persistent
+      @cancel="cancel" persistent alert
     >
       <template slot="activator"><span></span></template>
       <template slot="title">Add Students</template>
@@ -83,12 +83,12 @@
         </v-card-text>
       </template>
       <template slot="action-cancel">
-        <ui-button outlined color="secondary" @click.native="cancel">
+        <ui-button outlined class="mx-1" color="secondary" alert @alertClick="cancel">
           <template slot="content">Cancel</template>
         </ui-button>
       </template>
       <template slot="action-ok">
-        <ui-button color="primary" @click.native="submit">
+        <ui-button class="mx-1" color="primary" @click.native="submit">
           <template slot="content">Submit</template>
         </ui-button>
       </template>

@@ -24,7 +24,7 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="$emit(menu,i,item.id)">
+                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="menuEmit(menu,i,item.id)">
                   <v-list-item-title>{{ menu }}</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -82,6 +82,29 @@
     <v-row v-if="!items || items.length===0" justify="center">
       <h3>🦄 There's no homework yet.</h3>
     </v-row>
+    <v-dialog
+      v-model="dialog"
+      :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '75vw'"
+    >
+      <v-card>
+        <v-card-title></v-card-title>
+        <v-card-text class="text-center text--primary">
+          <v-icon color="warning" size="5rem">mdi-alert-circle-outline</v-icon>
+          <p class="display-1">Are you sure?</p>
+          <p class="title">You won't be able to recover this!</p>
+        </v-card-text>
+        <v-card-actions class="pb-12">
+          <v-spacer></v-spacer>
+          <ui-button class="mx-3" large color="primary" @click.native="$emit('delete', menu.i, menu.id); dialog = false">
+            <template slot="content">Yes</template>
+          </ui-button>
+          <ui-button class="mx-3" large color="secondary" @click.native="dialog = false">
+            <template slot="content">No</template>
+          </ui-button>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -118,7 +141,11 @@ export default {
 
   data () {
     return {
-
+      dialog: false,
+      menu: {
+        i: null,
+        id: null,
+      },
     }
   },
 
@@ -128,6 +155,15 @@ export default {
         if ( this.probs[i].problemId === id ) {
           return this.probs[i].problemName;
         }
+      }
+    },
+    menuEmit(item, i, id) {
+      this.menu.i = i;
+      this.menu.id = id;
+      if ( item === 'edit' ) {
+        this.$emit(item,i,id);
+      } else {
+        this.dialog = true;
       }
     },
   }

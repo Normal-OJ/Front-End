@@ -56,7 +56,7 @@
                     <v-icon>mdi-pencil</v-icon>Edit
                   </template>
                 </ui-button>
-                <ui-button class="mr-1" color="error" @click.native="del(idx)">
+                <ui-button class="mr-1" color="error" alert @alertClick="del(idx)">
                   <template slot="content">
                     <v-icon>mdi-delete</v-icon>Delete
                   </template>
@@ -277,7 +277,7 @@
               </v-row>
               <v-row>
                 <v-spacer></v-spacer>
-                <ui-button color="secondary" @click.native="creating = false" class="mr-3">
+                <ui-button color="secondary" alert @alertClick="creating = false" class="mr-3">
                   <template slot="content">Cancel</template>
                 </ui-button>
                 <ui-button color="primary" @click.native="submit">
@@ -374,33 +374,7 @@ export default {
       errMsg: '',
       tags: [],
       form: true,
-      prob: {
-        problemName: '',
-        status: null,
-        tags: [],
-        type: 0,
-        courses: [this.$route.params.name],
-        description: {
-          description: '',
-          input: '',
-          output: '',
-          sampleInput: [''],
-          sampleOutput: [''],
-          hint: '',
-        },
-        testCaseInfo: {
-          language: 0,
-          fillInTemplate: '',
-          cases: [{
-            "caseCount": null,
-            "caseScore": null,
-            "memoryLimit": 536871,
-            "timeLimit": 1000,
-          }],
-        },
-        canViewStdout: true,
-        allowedLanguage: 7,
-      },
+      prob: null,
       nameRules: [
         v => !!v || 'Please enter the problem name.',
         v => !!v && v.length <= 64 || 'Sorry, the length is at most 64 characters.',
@@ -437,10 +411,40 @@ export default {
   },
 
   created() {
+    this.init();
     this.getProbs();
   },
 
   methods: {
+    init() {
+      this.prob = {
+        problemName: '',
+        status: null,
+        tags: [],
+        type: 0,
+        courses: [this.$route.params.name],
+        description: {
+          description: '',
+          input: '',
+          output: '',
+          sampleInput: [''],
+          sampleOutput: [''],
+          hint: '',
+        },
+        testCaseInfo: {
+          language: 0,
+          fillInTemplate: '',
+          cases: [{
+            "caseCount": null,
+              "caseScore": null,
+              "memoryLimit": 536871,
+            "timeLimit": 1000,
+          }],
+        },
+        canViewStdout: true,
+        allowedLanguage: 7,
+      };
+    },
     getProbs() {
       this.items = [];
       this.tags = [];
@@ -522,8 +526,8 @@ export default {
         this.prob.description.sampleInput.pop();
         this.prob.description.sampleOutput.pop();
       }
-      this.sampleLength += val;
-      this.sampleLength = Math.max(this.sampleLength, 1);
+      // this.sampleLength += val;
+      // this.sampleLength = Math.max(this.sampleLength, 1);
     },
     editSubtask(val) {
       if ( val > 0 )   {
@@ -536,11 +540,14 @@ export default {
       } else if ( this.subtaskLength > 1 ) {
         this.prob.testCaseInfo.cases.pop();
       }
-      this.subtaskLength += val;
-      this.subtaskLength = Math.max(this.subtaskLength, 1);
+      // this.subtaskLength += val; 
+      // this.subtaskLength = Math.max(this.subtaskLength, 1);
     },
     toCreate(idx) {
       this.creating = idx;
+      if ( idx === -1 ) {
+        this.init();
+      }
     },
     edit(idx) {
       this.toCreate(idx);

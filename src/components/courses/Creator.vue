@@ -1,5 +1,5 @@
 <template>
-  <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'" persistent @cancel="$emit('cancel')">
+  <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'" persistent @cancel="$emit('cancel')" alert>
     <template slot="activator">
       <v-hover v-slot:default="{ hover }">
         <v-card v-if="!noActivator" class="my-3 mx-auto" :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" elevation="2"
@@ -19,7 +19,7 @@
       </v-card-text>
     </template>
     <template slot="action-cancel">
-      <ui-button outlined color="secondary" @click.native="$emit('cancel')">
+      <ui-button outlined color="secondary" alert @alertClick="$emit('cancel')">
         <template slot="content">Cancel</template>
       </ui-button>
     </template>

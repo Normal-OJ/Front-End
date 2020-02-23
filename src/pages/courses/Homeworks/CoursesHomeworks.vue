@@ -91,7 +91,7 @@
           <v-select
             v-model="hw.problemIds"
             :items="probs"
-            item-text="probname"
+            item-text="displayedName"
             item-value="problemId"
             :menu-props="{ maxHeight: '400' }"
             label="Select Problems"
@@ -200,6 +200,9 @@ export default {
         .then((res) => {
           console.log(res);
           this.probs = res.data.data;
+          this.probs.forEach(ele => {
+            ele['displayedName'] = ele.problemId + ' - ' + ele.problemName;
+          })
         })
         .catch((err) => {
           console.log(err);

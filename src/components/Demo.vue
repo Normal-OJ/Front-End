@@ -64,6 +64,14 @@
         <div class="ml-6">counter: {{ cnt }}</div>
       </v-col>
     </v-row>
+    <h5>Alert button</h5>
+    <v-row>
+      <ui-button
+        alert
+      >
+        <template slot="content">owwow</template>
+      </ui-button>
+    </v-row>
     <!-- UiButton -->
     <!-- UiAlert -->
     <h1>UiAlert</h1>
@@ -103,14 +111,7 @@
     <h1>UiCard</h1>
     <p>props: menu(Boolean), markdown(Boolean), mdContent(String)</p>
     <p>slots: title, subtitle, content, action</p>
-    <ui-card menu v-on:edit="console.log('heyheyhey')">
-      <template slot="subtitle">
-        <span style="white-space: pre;">Written by </span><a href="/ui/demo">uier</a>
-      </template>
-      <template slot="title">
-        Holy Component
-      </template>
-    </ui-card>
+    <i>replaced by ui-post</i>
     <!-- UiCard -->
   </v-container>
 </template>

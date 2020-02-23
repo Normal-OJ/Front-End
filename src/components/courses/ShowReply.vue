@@ -22,7 +22,7 @@
                   </v-btn>
                 </template>
                 <v-list>
-                  <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="operation(menu, item.id, item.content)">
+                  <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="operation(menu, item.id, item.content, false)">
                     <v-list-item-title>{{ menu }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -33,7 +33,7 @@
               <vue-markdown :source="item.content"></vue-markdown>
             </v-card-subtitle>
             <v-row>
-              <ui-button v-if="item.status===0" text x-small @click.native="$refs.item[idx].style.display = ''; $refs.reply[idx].focus();">
+              <ui-button v-if="item.status===0" text small @click.native="$refs.item[idx].style.display = ''; $refs.reply[idx].focus();">
                 <template slot="content">&#8594; Reply</template>
               </ui-button>
             </v-row>
@@ -62,7 +62,7 @@
           <v-row>
             <v-spacer></v-spacer>
             <v-col cols="auto" class="pt-0">
-              <ui-button @click.native="editing = -1; editingReply = '';" color="secondary" outlined>
+              <ui-button alert @alertClick="editing = -1; editingReply = '';" color="secondary" outlined>
                 <template slot="content">discard</template>
               </ui-button>
             </v-col>
@@ -97,7 +97,7 @@
                     </v-btn>
                   </template>
                   <v-list>
-                    <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="operation(menu, thread.id, thread.content)">
+                    <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="operation(menu, thread.id, thread.content, false)">
                       <v-list-item-title>{{ menu }}</v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -132,7 +132,7 @@
             <v-row>
               <v-spacer></v-spacer>
               <v-col cols="auto" class="pt-0">
-                <ui-button @click.native="editing = -1; editingReply = '';" color="secondary" outlined>
+                <ui-button alert @alertClick="editing = -1; editingReply = '';" color="secondary" outlined>
                   <template slot="content">discard</template>
                 </ui-button>
               </v-col>
@@ -211,6 +211,29 @@
         </v-row>
       </v-card>
     </v-row>
+    <v-dialog
+      v-model="dialog"
+      :width="$vuetify.breakpoint.mdAndUp ? '30vw' : '75vw'"
+    >
+      <v-card>
+        <v-card-title></v-card-title>
+        <v-card-text class="text-center text--primary">
+          <v-icon color="warning" size="5rem">mdi-alert-circle-outline</v-icon>
+          <p class="display-1">Are you sure?</p>
+          <p class="title">You won't be able to recover this!</p>
+        </v-card-text>
+        <v-card-actions class="pb-12">
+          <v-spacer></v-spacer>
+          <ui-button class="mx-3" large color="primary" @click.native="operation('delete', deleting, null, true); dialog = false">
+            <template slot="content">Yes</template>
+          </ui-button>
+          <ui-button class="mx-3" large color="secondary" @click.native="dialog = false">
+            <template slot="content">No</template>
+          </ui-button>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -243,6 +266,7 @@ export default {
 
   data () {
     return {
+      dialog: false,
       comment: '',
       reply: new Array(this.items.length),
       menuItems: [
@@ -251,20 +275,26 @@ export default {
       ],
       editingReply: '',
       editing: -1,
+      deleting: -1,
     }
   },
 
   methods: {
-    operation(op, id, content) {
+    operation(op, id, content, check) {
       if ( op === 'delete' ) {
-        this.$http.delete('/api/post', {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {targetThreadId: id}})
-        .then((res) => {
-          // this.$router.push(`/course/${this.$route.params.name}/announcements`);
-          this.$router.go(0);
-          // console.log(res);
-        })
-        .catch((err) => {
-        });
+        if ( check ) {
+          this.$http.delete('/api/post', {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {targetThreadId: id}})
+            .then((res) => {
+              // this.$router.push(`/course/${this.$route.params.name}/announcements`);
+              this.$router.go(0);
+              // console.log(res);
+            })
+            .catch((err) => {
+            });
+        } else {
+          this.deleting = id;
+          this.dialog = true;
+        }
       } else {
         if ( this.editing === -1 ) {
           this.editingReply = content;
