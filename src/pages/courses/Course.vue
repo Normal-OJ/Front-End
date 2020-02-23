@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters>
     <v-col cols="2" style="position: fixed; height: 100%;">
-      <CoursesSidebar></CoursesSidebar>
+      <CourseSidebar></CourseSidebar>
     </v-col>
     <v-spacer></v-spacer>
     <v-col cols="10">
@@ -11,14 +11,14 @@
 </template>
 
 <script>
-import CoursesSidebar from './CoursesSidebar';
+import CourseSidebar from './CourseSidebar';
 
 export default {
 
   name: 'Course',
 
   components: {
-    CoursesSidebar,
+    CourseSidebar,
   },
 
   data () {

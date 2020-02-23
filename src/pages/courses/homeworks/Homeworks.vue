@@ -116,7 +116,7 @@ var localISOTime = (v) => {
 }
 export default {
 
-  name: 'CoursesHomeworks',
+  name: 'Homeworks',
 
   components: {
     Creator, ShowHomework,

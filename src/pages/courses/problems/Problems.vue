@@ -56,7 +56,7 @@
 <script>
 export default {
 
-  name: 'CoursesProblems',
+  name: 'Problems',
 
   data () {
     return {

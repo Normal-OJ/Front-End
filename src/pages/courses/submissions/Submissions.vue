@@ -47,7 +47,7 @@
 <script>
 export default {
 
-  name: 'CoursesSubmissions',
+  name: 'Submissions',
 
   data () {
     return {

@@ -6,15 +6,15 @@ import Problem from '@/pages/problem/Problem'
 import Submission from '@/pages/submission/Submission'
 import Courses from '@/pages/courses/Courses'
 import Course from '@/pages/courses/Course'
-import CoursesAnnouncement from '@/pages/courses/Announcements/CoursesAnnouncement'
-import CoursesAnnouncements from '@/pages/courses/Announcements/CoursesAnnouncements'
-import CoursesHomeworks from '@/pages/courses/Homeworks/CoursesHomeworks'
-import CoursesProblems from '@/pages/courses/Problems/CoursesProblems'
-import CoursesSubmissions from '@/pages/courses/Submissions/CoursesSubmissions'
-import CoursesDiscussion from '@/pages/courses/Discussions/CoursesDiscussion'
-import CoursesDiscussions from '@/pages/courses/Discussions/CoursesDiscussions'
-import CoursesGrades from '@/pages/courses/Grades/CoursesGrades'
-import CoursesManages from '@/pages/courses/Manages/CoursesManages'
+import CoursesAnnouncement from '@/pages/courses/announcements/Announcement'
+import CoursesAnnouncements from '@/pages/courses/announcements/Announcements'
+import CoursesHomeworks from '@/pages/courses/homeworks/Homeworks'
+import CoursesProblems from '@/pages/courses/problems/Problems'
+import CoursesSubmissions from '@/pages/courses/submissions/Submissions'
+import CoursesDiscussion from '@/pages/courses/discussions/Discussion'
+import CoursesDiscussions from '@/pages/courses/discussions/Discussions'
+import CoursesGrades from '@/pages/courses/grades/Grades'
+import CoursesManages from '@/pages/courses/manages/Manages'
 import Inbox from '@/pages/inbox/Inbox'
 import About from '@/pages/about/About'
 import EmailVerify from '@/pages/help/EmailVerify'
@@ -32,26 +32,16 @@ export default new Router({
       name: 'Home',
       component: Home
     },
-    // {
-    //   path: '/problems',
-    //   name: 'Problemset',
-    //   component: Problemset
-    // },
-    // {
-    //   path: '/problems/manage',
-    //   name: 'ProblemsManage',
-    //   component: ProblemsManage
-    // },
+    {
+      path: '/post/:id',
+      name: 'SysAnn',
+      component: SysAnn
+    },
     {
       path: '/problem/:id',
       name: 'Problem',
       component: Problem
     },
-    // {
-    //   path: '/submissions',
-    //   name: 'Submissions',
-    //   component: Submissions
-    // },
     {
       path: '/submission/:id',
       name: 'Submission',
@@ -109,10 +99,5 @@ export default new Router({
       name: 'Demo',
       component: Demo
     },
-    {
-      path: '/post/:id',
-      name: 'SysAnn',
-      component: SysAnn
-    }
   ]
 })

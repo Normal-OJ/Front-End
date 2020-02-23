@@ -46,7 +46,7 @@ import Creator from '@/components/courses/Creator'
 import ShowAnn from '@/components/courses/ShowAnn'
 export default {
 
-  name: 'CoursesAnnouncement',
+  name: 'Announcement',
 
   components: {
     Creator, ShowAnn

@@ -37,7 +37,7 @@ const API_BASE_URL = '/api';
 
 export default {
 
-  name: 'CoursesAnnouncements',
+  name: 'Announcements',
 
   components: {
     Creator, ShowAnn

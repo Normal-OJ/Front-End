@@ -4,7 +4,7 @@
 <script>
 export default {
 
-  name: 'CoursesGrades',
+  name: 'Grades',
 
   data () {
     return {

@@ -38,7 +38,7 @@
 <script>
 export default {
 
-  name: 'CoursesSidebar',
+  name: 'CourseSidebar',
 
   data () {
     return {

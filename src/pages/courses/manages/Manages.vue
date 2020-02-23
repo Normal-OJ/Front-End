@@ -35,7 +35,7 @@ import ManageProblems from './ManageProblems';
 
 export default {
 
-  name: 'CoursesManages',
+  name: 'Manages',
 
   components: {
     ManageStudents, ManageProblems,

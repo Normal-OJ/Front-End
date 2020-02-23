@@ -63,7 +63,7 @@ const API_BASE_URL = '/api';
 
 export default {
 
-  name: 'CoursesDiscussion',
+  name: 'Discussion',
 
   components: {
     Creator, ShowPost, ShowReply,
