@@ -30,7 +30,7 @@
                     tile
                     elevation="0"
                     :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
-                    @click="create(-1)"
+                    @click="toCreate(-1)"
                   >
                     <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>Add Problems</v-card-title>
                   </v-card>
@@ -56,7 +56,7 @@
                     <v-icon>mdi-pencil</v-icon>Edit
                   </template>
                 </ui-button>
-                <ui-button class="mr-1" color="error">
+                <ui-button class="mr-1" color="error" @click.native="del(idx)">
                   <template slot="content">
                     <v-icon>mdi-delete</v-icon>Delete
                   </template>
@@ -284,6 +284,15 @@
                   <template slot="content">Submit</template>
                 </ui-button>
               </v-row>
+              <v-row>
+                <h4 class="my-0 mr-3">Current Testdata</h4>
+              </v-row>
+              <v-row>
+                <ui-button v-if="testdata" color="info" @click.native="download">
+                  <template slot="content"><v-icon>mdi-download</v-icon></template>
+                </ui-button>
+                <h5 v-else>No data</h5>
+              </v-row>
             </v-container>
           </v-form>
         </v-col>
@@ -347,6 +356,8 @@
 
 <script>
 import VueMarkdown from 'vue-markdown';
+import JSZip from 'jszip';
+
 export default {
 
   name: 'ManageStudents',
@@ -396,6 +407,7 @@ export default {
       ],
       rule: false,
       zip: null,
+      testdata: null,
     }
   },
 
@@ -410,6 +422,20 @@ export default {
     },
   },
 
+  watch: {
+    zip() {
+      var zip = new JSZip();
+      zip.file('testdata.zip', this.zip);
+      zip.generateAsync({type:"base64"})
+        .then((base64) => {
+          this.testdata = "data:application/zip;base64," + base64;
+        })
+        .catch(() => {
+          this.testdata = null;
+        })
+    },
+  },
+
   created() {
     this.getProbs();
   },
@@ -420,7 +446,7 @@ export default {
       this.tags = [];
       this.$http.get('/api/problem?offset=0&count=-1')
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           res.data.data.forEach(ele => {
             ele.status = ele.status===0 ? 'Online' : 'Offline';
             ele.type = ele.type===0 ? 'default' : (ele.type===1 ? 'fillInTemplate' : 'handwritten');
@@ -466,14 +492,14 @@ export default {
               console.log(err);
             })
         } else {
-          this.$http.put(`/api/problem/manage/${this.items[this.editing].problemId}`, this.prob)
+          this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
             .then((res) => {
               if ( !this.zip ) {
                 this.$router.go(0);
               }
               var formData = new FormData();
               formData.append('case', this.zip); 
-              return this.$http.put(`/api/problem/manage/${this.items[this.editing].problemId}`, 
+              return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, 
                                     formData,
                                     {
                                       headers: { 'Content-Type' : 'multipart/form-data' }, 
@@ -513,14 +539,15 @@ export default {
       this.subtaskLength += val;
       this.subtaskLength = Math.max(this.subtaskLength, 1);
     },
-    create(idx) {
+    toCreate(idx) {
       this.creating = idx;
     },
     edit(idx) {
-      this.create(idx);
+      this.toCreate(idx);
+      var zip = new JSZip();
       this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
-        .then((res) => {
-          console.log(res.data.data);
+        .then(async(res) => {
+          // console.log(res.data.data);
           var data = res.data.data
           for (const [key, value] of Object.entries(data)) {
             if ( key === 'testCase' ) {
@@ -529,10 +556,26 @@ export default {
               this.prob[key] = value;
             }
           }
+          var isFile = false;
           data.testCase.cases.forEach((ele, idx) => {
             this.prob.testCaseInfo.cases[idx]['caseCount'] = ele.input.length;
+            ele.input.forEach((file, jdx) => {
+              isFile = true;
+              zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
+            })
+            ele.output.forEach((file, jdx) => {
+              zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
+            })
           })
-          console.log(this.prob);
+          // console.log(this.prob);
+          if ( isFile ) {
+            await zip.generateAsync({type:"base64"})
+              .then((base64) => {
+                this.testdata = "data:application/zip;base64," + base64;
+              })
+          } else {
+            this.testdata = null;
+          }
           this.create = true;
         })
         .catch((err) => {
@@ -540,6 +583,19 @@ export default {
         })
       // this.prob = this.items[idx];
       // this.create = true;
+    },
+    del(idx) {
+      this.$http.delete(`/api/problem/manage/${this.items[idx].problemId}`, {headers: {'Content-Type': 'application/json'}})
+        .then((res) => {
+          this.$router.go(0);
+          // console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    download() {
+      window.location = this.testdata;
     },
   }
 }
