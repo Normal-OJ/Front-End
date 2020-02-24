@@ -1,14 +1,31 @@
 <template>
   <v-simple-table>
     <template v-slot:default>
-      <thead>
+      <thead v-if="type === 2">
+        <tr>
+          <th><p class="subtitle-1 font-weight-bold">Timestamp</p></th>
+          <th><p class="subtitle-1 font-weight-bold">Score</p></th>
+          <th><p class="subtitle-1 font-weight-bold">Feedback</p></th>
+        </tr>
+      </thead>
+      <thead v-else>
         <tr>
           <th 
             v-for="header in submHeader" :key="header"
           ><p class="subtitle-1 font-weight-bold" v-text="header"></p></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody v-if="type === 2">
+        <tr
+          v-for="(data, idx) in submData"
+          :key="idx"
+        >
+          <td><p class="subtitle-1" v-text="data['Timestamp']"></p></td>
+          <td><p class="subtitle-1" v-text="data['Score']===-1 ? 'Pending' : data['Score']"></p></td>
+          <td><p class="subtitle-1" v-text=""></p></td>
+        </tr>
+      </tbody>
+      <tbody v-else>
         <!-- Loading -->
         <tr 
           v-if="!show"
@@ -51,7 +68,7 @@ export default {
 
   name: 'HistorySubmissions',
 
-  props: ['submData', 'show'],
+  props: ['submData', 'show', 'type'],
 
   data () {
     return {

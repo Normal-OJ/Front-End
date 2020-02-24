@@ -96,7 +96,10 @@
                   v-model="prob.problemName"
                   label="Name*"
                   counter="64"
-                  :rules="nameRules"
+                  :rules="[
+                    v => !!v || 'Please enter the problem name.',
+                    v => !!v && v.length <= 64 || 'Sorry, the length is at most 64 characters.',
+                  ]"
                   filled
                 ></v-text-field>
               </v-row>
@@ -135,11 +138,14 @@
                   v-model="prob.description.description"
                   label="Description*"
                   rows="2"
+                  :rules="[
+                    v => !!v || 'Sorry, problem description is required.',
+                  ]"
                   auto-grow
                   filled
                 ></v-textarea>
               </v-row>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <v-textarea
                   v-model="prob.description.input"
                   label="Input"
@@ -157,7 +163,7 @@
                   class="pl-1"
                 ></v-textarea>
               </v-row>
-              <v-row class="pb-4">
+              <v-row class="pb-4" v-show="prob.type != 2">
                 <h4 class="my-0">Examples</h4>
                 <ui-button color="primary" icon @click.native="editSample(1)">
                   <template slot="content">
@@ -170,7 +176,7 @@
                   </template>
                 </ui-button>
               </v-row>
-              <v-row v-for="idx in sampleLength" :key="'sample'+idx">
+              <v-row v-for="idx in sampleLength" :key="'sample'+idx" v-show="prob.type != 2">
                 <v-textarea
                   v-model="prob.description.sampleInput[idx-1]"
                   :label="'Sample Input' + idx"
@@ -188,7 +194,7 @@
                   class="pl-1"
                 ></v-textarea>
               </v-row>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <v-textarea
                   v-model="prob.description.hint"
                   label="Hint"
@@ -197,7 +203,7 @@
                   filled
                 ></v-textarea>
               </v-row>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <h4 class="my-0">Subtask</h4>
                 <ui-button color="primary" icon @click.native="editSubtask(1)">
                   <template slot="content">
@@ -210,7 +216,7 @@
                   </template>
                 </ui-button>
               </v-row>
-              <div v-for="idx in subtaskLength" :key="'subtask'+idx">
+              <div v-for="idx in subtaskLength" :key="'subtask'+idx" v-show="prob.type != 2">
                 <v-row>
                   <h5 class="my-0">{{ 'Subtask' + idx }}</h5>
                 </v-row>
@@ -219,8 +225,8 @@
                     v-model="prob.testCaseInfo.cases[idx-1].caseCount"
                     label="Number of testdata"
                     :rules="[
-                      v => !!v || 'Please enter the number of testdata.',
-                      v => !!v && v <= 100 || 'The maximum number of testdata is 100.'
+                      v => !!v || prob.type == 2 || 'Please enter the number of testdata.',
+                      v => !!v && v <= 100 || prob.type == 2 || 'The maximum number of testdata is 100.'
                     ]"
                     filled
                     class="pr-1"
@@ -228,7 +234,7 @@
                   <v-text-field
                     v-model="prob.testCaseInfo.cases[idx-1].caseScore"
                     label="Score of this subtask"
-                    :rules="[v => !!v || 'Please enter the score.']"
+                    :rules="[v => !!v || prob.type == 2 || 'Please enter the score.']"
                     filled
                     class="pl-1"
                   ></v-text-field>
@@ -237,20 +243,20 @@
                   <v-text-field
                     v-model="prob.testCaseInfo.cases[idx-1].memoryLimit"
                     label="Memory Limit(KB)"
-                    :rules="[v => !!v || 'Please enter the memory limit.']"
+                    :rules="[v => !!v || prob.type == 2 || 'Please enter the memory limit.']"
                     filled
                     class="pr-1"
                   ></v-text-field>
                   <v-text-field
                     v-model="prob.testCaseInfo.cases[idx-1].timeLimit"
                     label="Time Limit(ms)"
-                    :rules="[v => !!v || 'Please enter the time limit.']"
+                    :rules="[v => !!v || prob.type == 2 || 'Please enter the time limit.']"
                     filled
                     class="pl-1"
                   ></v-text-field>
                 </v-row>
               </div>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <h4 class="my-0 mr-3">Testdata</h4>
                 <ui-dialog v-model="rule">
                   <template slot="activator">
@@ -272,7 +278,7 @@
                   <template slot="action-cancel"><span></span></template>
                 </ui-dialog>
               </v-row>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <v-file-input v-model="zip" show-size label="Upload Testdata(zip)"></v-file-input>
               </v-row>
               <v-row>
@@ -284,10 +290,10 @@
                   <template slot="content">Submit</template>
                 </ui-button>
               </v-row>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <h4 class="my-0 mr-3">Current Testdata</h4>
               </v-row>
-              <v-row>
+              <v-row v-show="prob.type != 2">
                 <ui-button v-if="testdata" color="info" @click.native="download">
                   <template slot="content"><v-icon>mdi-download</v-icon></template>
                 </ui-button>
@@ -319,31 +325,33 @@
               <div class="px-6" style="width: 100%" wrap>
                 <h2>Problem Description</h2>
                 <vue-markdown :source="prob.description.description"></vue-markdown>
-                <h2>Input</h2>
-                <vue-markdown :source="prob.description.input"></vue-markdown>
-                <h2>Output</h2>
-                <vue-markdown :source="prob.description.output"></vue-markdown>
-                <h2>Examples</h2>
-                <v-row v-for="idx in sampleLength" :key="'preview'+idx">
-                  <v-card width="100%" outlined class="mb-1">
-                    <v-card-title class="pb-0">
-                      Input
-                      <ui-button color="grey" icon class="ml-3">
-                        <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
-                      </ui-button>
-                    </v-card-title>
-                    <v-card-text><code style="width: 100%;">{{ prob.description.sampleInput[idx-1] }}</code></v-card-text>
-                    <v-card-title class="py-0">
-                      Output
-                      <ui-button color="grey" icon class="ml-3">
-                        <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
-                      </ui-button>
-                    </v-card-title>
-                    <v-card-text><code style="width: 100%;">{{ prob.description.sampleOutput[idx-1] }}</code></v-card-text>
-                  </v-card>
-                </v-row>
-                <h2>Hint</h2>
-                <vue-markdown :source="prob.description.hint"></vue-markdown>
+                <div v-show="prob.type != 2">
+                  <h2>Input</h2>
+                  <vue-markdown :source="prob.description.input"></vue-markdown>
+                  <h2>Output</h2>
+                  <vue-markdown :source="prob.description.output"></vue-markdown>
+                  <h2>Examples</h2>
+                  <v-row v-for="idx in sampleLength" :key="'preview'+idx">
+                    <v-card width="100%" outlined class="mb-1">
+                      <v-card-title class="pb-0">
+                        Input
+                        <ui-button color="grey" icon class="ml-3">
+                          <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
+                        </ui-button>
+                      </v-card-title>
+                      <v-card-text><code style="width: 100%;">{{ prob.description.sampleInput[idx-1] }}</code></v-card-text>
+                      <v-card-title class="py-0">
+                        Output
+                        <ui-button color="grey" icon class="ml-3">
+                          <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
+                        </ui-button>
+                      </v-card-title>
+                      <v-card-text><code style="width: 100%;">{{ prob.description.sampleOutput[idx-1] }}</code></v-card-text>
+                    </v-card>
+                  </v-row>
+                  <h2>Hint</h2>
+                  <vue-markdown :source="prob.description.hint"></vue-markdown>
+                </div>
                 <br>
               </div>
             </v-card>
@@ -375,10 +383,6 @@ export default {
       tags: [],
       form: true,
       prob: null,
-      nameRules: [
-        v => !!v || 'Please enter the problem name.',
-        v => !!v && v.length <= 64 || 'Sorry, the length is at most 64 characters.',
-      ],
       rule: false,
       zip: null,
       testdata: null,
@@ -419,7 +423,7 @@ export default {
     init() {
       this.prob = {
         problemName: '',
-        status: null,
+        status: 0,
         tags: [],
         type: 0,
         courses: [this.$route.params.name],
@@ -436,12 +440,12 @@ export default {
           fillInTemplate: '',
           cases: [{
             "caseCount": null,
-              "caseScore": null,
-              "memoryLimit": 536871,
+            "caseScore": null,
+            "memoryLimit": 536871,
             "timeLimit": 1000,
           }],
         },
-        canViewStdout: true,
+        canViewStdout: false,
         allowedLanguage: 7,
       };
     },
@@ -564,16 +568,18 @@ export default {
             }
           }
           var isFile = false;
-          data.testCase.cases.forEach((ele, idx) => {
-            this.prob.testCaseInfo.cases[idx]['caseCount'] = ele.input.length;
-            ele.input.forEach((file, jdx) => {
-              isFile = true;
-              zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
+          if ( data.testCase ) {
+            data.testCase.cases.forEach((ele, idx) => {
+              this.prob.testCaseInfo.cases[idx]['caseCount'] = ele.input.length;
+              ele.input.forEach((file, jdx) => {
+                isFile = true;
+                zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
+              })
+              ele.output.forEach((file, jdx) => {
+                zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
+              })
             })
-            ele.output.forEach((file, jdx) => {
-              zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
-            })
-          })
+          }
           // console.log(this.prob);
           if ( isFile ) {
             await zip.generateAsync({type:"base64"})

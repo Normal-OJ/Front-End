@@ -1,5 +1,5 @@
 <template>
-  <v-card tile elevation="0" height="80vh">
+  <v-card tile elevation="0" color="transparent">
     <!-- <v-row class="px-6" style="height: 10%;">
       <v-col v-for="(item, key, idx) in editorConfig" :key="idx" :cols="selectItem.width[idx]">
         <v-select
@@ -12,48 +12,44 @@
     </v-row> -->
     <codemirror
       v-model="code"
-      v-if="show"
+      v-if="type !== 2"
       ref="CM"
       :options="cmOption"
       placeholder="paste or upload your code for submitting"
-      :style="{ height: '85%', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
+      :style="{ height: '80vh', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
     <div class="px-4" style="height: 15%; width: 100%;">
-      <v-row>
-        <v-col cols="4">
-          <v-file-input
-            prepend-icon="mdi-upload"
-            label="Upload File"
-          ></v-file-input>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="4">
-          <v-form ref="form"><v-select
-            :rules="[v => 0 <= v && v <= 2 || 'Please select programming language.']"
-            label="Select Language"
-            v-model="editorConfig.language"
-            :items="selectItem.languageItem"
-            @change="modifyConfig"
-          ></v-select></v-form>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="auto" align-self="center">
-          <ui-button color="primary" @click.native="submit">
-            <template slot="content">Submit</template>
-          </ui-button>
-        </v-col>
-      </v-row>
+      <v-form ref="form">
+        <v-row>
+          <v-col :cols="type !== 2 ? 4 : 6">
+            <v-file-input
+              prepend-icon="mdi-upload"
+              show-size
+              ref="file"
+              v-model="file"
+              :rules="[v => type!==2 || !!v || 'Please upload your pdf.']"
+              label="Upload File"
+            ></v-file-input>
+          </v-col>
+          <v-spacer v-if="type !== 2"></v-spacer>
+          <v-col cols="4" v-if="type !== 2">
+            <v-select
+              :rules="[v => type===2 || (0 <= v && v <= 2) || 'Please select programming language.']"
+              label="Select Language"
+              v-model="editorConfig.language"
+              :items="selectItem.languageItem"
+              @change="modifyConfig"
+            ></v-select>
+          </v-col>
+          <v-spacer v-if="type !== 2"></v-spacer>
+          <v-col cols="auto" align-self="center">
+            <ui-button color="primary" @click.native="submit">
+              <template slot="content">Submit</template>
+            </ui-button>
+          </v-col>
+        </v-row>
+      </v-form>
     </div>
-    <!-- <v-row class="pa-3" style="height: 15%;">
-      <v-spacer></v-spacer>
-      <v-btn
-        class="text-none headline"
-        color="primary"
-        large
-        @click="submit"
-      ><v-icon>mdi-send</v-icon>Submit</v-btn>
-      <v-spacer></v-spacer>
-    </v-row> -->
   </v-card>
 </template>
 
@@ -64,51 +60,52 @@ import JSZip from 'jszip';
 
 var LANG = ['text/x-csrc', 'text/x-c++src', {name: "python", version: 3}];
 var LANG_EXT = ['.c', '.cpp', '.py'];
-// var DEFAULT_CODE = [
-//   '// you can paste or upload your code for submitting',
-//   '// you can paste or upload your code for submitting',
-//   '#  you can paste or upload your code for submitting',
-// ];
-var FONT_SIZE = [], THEME_ITEM = ['default', 'monokai', 'dracula', 'base16-dark', 'base16-light', 'eclipse', 'material'], THEME = [];
-for ( var i=8; i<=28; ++i ) FONT_SIZE.push({ 'text': `${i}`, 'value': i });
-THEME_ITEM.forEach((theme) => {THEME.push({ 'text': theme, 'value': theme })});
+// var FONT_SIZE = [], THEME_ITEM = ['default', 'monokai', 'dracula', 'base16-dark', 'base16-light', 'eclipse', 'material'], THEME = [];
+// for ( var i=8; i<=28; ++i ) FONT_SIZE.push({ 'text': `${i}`, 'value': i });
+// THEME_ITEM.forEach((theme) => {THEME.push({ 'text': theme, 'value': theme })});
 
 export default {
   name: 'Editor',
   components: {
     codemirror
   },
+  props: {
+    type: {
+      type: Number,
+      required: true,
+    },
+  },
   data () {
     return {
-      show: true,
       editorConfig: null,
       selectItem: {
-        title: {
-          'fontSize': 'Font Size',
-          'theme': 'Theme',
-          'language': 'Language',
-          'indentType': 'Indent',
-          'tabSize': 'Indent Width',
-        },
-        width: ['2', '2', '2', '3', '3'],
-        fontSizeItem: FONT_SIZE,
-        themeItem: THEME,
+        // title: {
+        //   'fontSize': 'Font Size',
+        //   'theme': 'Theme',
+        //   'language': 'Language',
+        //   'indentType': 'Indent',
+        //   'tabSize': 'Indent Width',
+        // },
+        // width: ['2', '2', '2', '3', '3'],
+        // fontSizeItem: FONT_SIZE,
+        // themeItem: THEME,
         languageItem: [
           { 'text': 'C (c11)', 'value': 0 },
           { 'text': 'C++ (c++11)', 'value': 1 },
           { 'text': 'Python (python3)', 'value': 2 },
         ],
-        indentTypeItem: [
-          { 'text': 'space', 'value': 0 },
-          { 'text': 'tab', 'value': 1 },
-        ],
-        tabSizeItem: [
-          { 'text': '2', 'value': 2 },
-          { 'text': '4', 'value': 4 },
-          { 'text': '8', 'value': 8 },
-        ],
+        // indentTypeItem: [
+        //   { 'text': 'space', 'value': 0 },
+        //   { 'text': 'tab', 'value': 1 },
+        // ],
+        // tabSizeItem: [
+        //   { 'text': '2', 'value': 2 },
+        //   { 'text': '4', 'value': 4 },
+        //   { 'text': '8', 'value': 8 },
+        // ],
       },
       code: '',
+      file: null,
       cmOption: {
         autoCloseBrackets: true,
         indentUnit: 4,
@@ -143,11 +140,16 @@ export default {
     async submit() {
       if ( this.$refs.form.validate() ) {
         var zip = new JSZip();
-        zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
+        if ( this.type===2 ) {
+          zip.file('main.pdf', this.file);
+          this.editorConfig.language = 2;
+        } else {
+          zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
+        }
         var code = await zip.generateAsync({type:"blob"});
         var formData = new FormData();
         formData.append('code', code); 
-        this.$http.post('/api/submission', {problemId: this.$route.params.id, languageType: this.editorConfig.language})
+        this.$http.post('/api/submission', {problemId: Number(this.$route.params.id), languageType: Number(this.editorConfig.language)})
           .then((res) => {
             return this.$http.put(`/api/submission/${res.data.data.submissionId}`, 
                                   formData,
@@ -156,7 +158,8 @@ export default {
                                   })
           })
           .then((res) => {
-            console.log(res);
+            this.$refs.file.reset();
+            // console.log(res);
             // console.log('submissionId:'+ submissionId);
             this.$emit('getSubmission');
           })

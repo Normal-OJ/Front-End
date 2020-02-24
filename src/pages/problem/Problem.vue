@@ -26,49 +26,51 @@
             <div class="px-6" style="width: 100%" wrap>
               <h2>Description</h2>
               <vue-markdown :source="prob.description.description"></vue-markdown>
-              <h2>Input</h2>
-              <vue-markdown :source="prob.description.input"></vue-markdown>
-              <h2>Output</h2>
-              <vue-markdown :source="prob.description.output"></vue-markdown>
-              <h2>Examples</h2>
-              <v-row v-for="(i, idx) in prob.description.sampleInput.length" :key="idx">
-                <v-card width="100%" outlined class="mb-1">
-                  <v-card-title class="pb-0">
-                    Input
-                    <ui-button color="grey" icon class="ml-3" @click.native="copy('I', idx)">
-                      <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
-                    </ui-button>
-                  </v-card-title>
-                  <v-card-text>
-                    <code ref="sampleI" style="width: 100%;" class="subtitle-1">{{ prob.description.sampleInput[idx] }}</code>
-                  </v-card-text>
-                  <v-card-title class="py-0">
-                    Output
-                    <ui-button color="grey" icon class="ml-3" @click.native="copy('O', idx)">
-                      <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
-                    </ui-button>
-                  </v-card-title>
-                  <v-card-text>
-                    <code ref="sampleO" style="width: 100%;" class="subtitle-1">{{ prob.description.sampleOutput[idx] }}</code>
-                  </v-card-text>
-                </v-card>
-              </v-row>
-              <h2 v-if="prob.description.hint">Hint</h2>
-              <vue-markdown :source="prob.description.hint"></vue-markdown>
+              <div v-if="prob.type!==2">
+                <h2>Input</h2>
+                <vue-markdown :source="prob.description.input"></vue-markdown>
+                <h2>Output</h2>
+                <vue-markdown :source="prob.description.output"></vue-markdown>
+                <h2>Examples</h2>
+                <v-row v-for="(i, idx) in prob.description.sampleInput.length" :key="idx">
+                  <v-card width="100%" outlined class="mb-1">
+                    <v-card-title class="pb-0">
+                      Input
+                      <ui-button color="grey" icon class="ml-3" @click.native="copy('I', idx)">
+                        <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
+                      </ui-button>
+                    </v-card-title>
+                    <v-card-text>
+                      <code ref="sampleI" style="width: 100%;" class="subtitle-1">{{ prob.description.sampleInput[idx] }}</code>
+                    </v-card-text>
+                    <v-card-title class="py-0">
+                      Output
+                      <ui-button color="grey" icon class="ml-3" @click.native="copy('O', idx)">
+                        <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
+                      </ui-button>
+                    </v-card-title>
+                    <v-card-text>
+                      <code ref="sampleO" style="width: 100%;" class="subtitle-1">{{ prob.description.sampleOutput[idx] }}</code>
+                    </v-card-text>
+                  </v-card>
+                </v-row>
+                <h2 v-if="prob.description.hint">Hint</h2>
+                <vue-markdown :source="prob.description.hint"></vue-markdown>
+              </div>
               <br>
             </div>
           </v-tab-item>
           <v-tab-item style="height: 100%; width: 100%;">
             <v-card class="pa-3" elevation="0" width="100%">
             <!-- Table of Submissions -->
-              <HistorySubmissions :submData.sync="submData" :show.sync="show"></HistorySubmissions>
+              <HistorySubmissions :submData.sync="submData" :show.sync="show" :type="prob.type"></HistorySubmissions>
             </v-card>
           </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-col>
-    <v-col cols="12" md="6" style="height: 100%;">
-      <Editor @getSubmission="setSubmission"></Editor>
+    <v-col cols="12" md="6" v-if="prob">
+      <Editor @getSubmission="setSubmission" :type="prob.type"></Editor>
     </v-col>
     <v-snackbar
       v-model="snackbar" class="subtitle-1"
@@ -124,9 +126,9 @@ export default {
       this.$http.get(`${API_BASE_URL}/submission?offset=0&count=-1&username=${this.username}&problemId=${this.$route.params.id}`)
         .then((res) => {
           this.submData = [];
-          console.log('subm:', res);
+          // console.log('subm:', res);
           res.data.data.submissions.forEach((ele) => {
-            if ( ele.status === -1 ) {
+            if ( ele.status === -1 && this.prob.type !== 2 ) {
               this.submData.splice(0,0,{
                 'Timestamp' : null,
                 'Status' : ele.status+1,
@@ -149,10 +151,10 @@ export default {
               })
             }
           });
-          console.log(this.submData);
+          // console.log(this.submData);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
         })
     },
     setSubmission() {
@@ -160,23 +162,25 @@ export default {
       this.tab = 1;
     },
     updateSubm(sid) {
-      this.$http.get(`${API_BASE_URL}/submission/${sid}`)
-        .then(async(res) => {
-          // console.log(res);
-          var data = res.data.data;
-          console.log(data);
-          if ( data.status === -1 ) {
-            this.show = false;
-            await this.delay(1000);
-            this.updateSubm(sid);
-          } else {
-            this.getSubm();
-            this.show = true;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if ( this.prob.type !== 2 ) {
+        this.$http.get(`${API_BASE_URL}/submission/${sid}`)
+          .then(async(res) => {
+            // console.log(res);
+            var data = res.data.data;
+            console.log(data);
+            if ( data.status === -1 ) {
+              this.show = false;
+              await this.delay(1000);
+              this.updateSubm(sid);
+            } else {
+              this.getSubm();
+              this.show = true;
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     },
     delay(delayInms) {
       return new Promise(resolve  => {
