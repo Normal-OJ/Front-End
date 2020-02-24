@@ -34,8 +34,16 @@
               <td>{{ item.score }}</td>
               <td>{{ timeFormat(item.timestamp) }}</td>
             </tr>
-            <tr v-if="items.length===0">
-              <td colspan="5">🦄 No data available.</td>
+            <tr v-show="loading">
+              <td colspan="6">
+                <v-skeleton-loader
+                  class="mx-auto"
+                  type="table-row"
+                ></v-skeleton-loader>
+              </td>
+            </tr>
+            <tr v-if="!loading && (!items || items.length===0)">
+              <td colspan="6">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>
@@ -52,7 +60,8 @@ export default {
   data () {
     return {
       page: 1,
-      items: [],
+      items: null,
+      loading: false,
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
     }
@@ -76,20 +85,18 @@ export default {
 
   methods: {
     getSubmissions() {
-      this.items = [];
-
+      this.loading = true;
       var query = `?offset=${(this.page-1)*10}&count=${10}`;
-      // this.loading = true;
-
+      this.items = [];
       this.$http.get(`/api/submission${query}`)
         .then((res) => {
           // console.log(res.data.data);
           this.items = res.data.data.submissions;
-          // this.loading = false;
+          this.loading = false;
         })
         .catch((err) => {
-          // this.loading = false;
-          console.log(err);
+          // console.log(err);
+          this.loading = false;
         });
     },
     timeFormat(time) {

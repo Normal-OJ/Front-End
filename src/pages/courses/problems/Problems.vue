@@ -32,7 +32,7 @@
                   {{ item.problemName }}
                 </a>
               </td>
-              <td>{{ item.type }}</td>
+              <td>{{ item.type===0 ? 'Programming' : 'Handwritting' }}</td>
               <td>
                 <v-chip 
                   class="mx-1"
@@ -43,7 +43,15 @@
               </td>
               <td>{{ item.ACUser + '/' + item.submitter }}</td>
             </tr>
-            <tr v-if="items && items.length===0">
+            <tr v-show="loading">
+              <td colspan="6">
+                <v-skeleton-loader
+                  class="mx-auto"
+                  type="table-row"
+                ></v-skeleton-loader>
+              </td>
+            </tr>
+            <tr v-if="!loading && (!items || items.length===0)">
               <td colspan="5">🦄 No data available.</td>
             </tr>
           </tbody>
@@ -62,6 +70,7 @@ export default {
     return {
       page: 1,
       items: null,
+      loading: false,
     }
   },
 
@@ -83,19 +92,18 @@ export default {
 
   methods: {
     getProblems() {
+      this.loading = true;
       var query = `?offset=${(this.page-1)*10}&count=${10}`;
-
-      // this.loading = true;
-
+      this.items = [];
       this.$http.get(`/api/problem${query}`)
         .then((res) => {
-          console.log(res.data.data);
+          // console.log(res.data.data);
           this.items = res.data.data;
-          // this.loading = false;
+          this.loading = false;
         })
         .catch((err) => {
-          // this.loading = false;
           // console.log(err);
+          this.loading = false;
         });
     },
     timeFormat(time) {

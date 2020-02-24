@@ -16,7 +16,14 @@
         @delete="$emit('delete', idx, item.annId)"
       ></ui-post>
     </v-row>
-    <v-row v-if="!items || items.length===0" justify="center">
+    <v-row v-show="!items">
+      <v-skeleton-loader
+        class="mx-auto"
+        type="image"
+        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" 
+      ></v-skeleton-loader>
+    </v-row>
+    <v-row v-if="items && items.length === 0" justify="center">
       <h3>🦄 There's no announcement yet.</h3>
     </v-row>
   </div>
