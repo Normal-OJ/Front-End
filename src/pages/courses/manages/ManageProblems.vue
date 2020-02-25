@@ -222,7 +222,7 @@
                 </v-row>
                 <v-row>
                   <v-text-field
-                    v-model="prob.testCaseInfo.cases[idx-1].caseCount"
+                    v-model="prob.testCaseInfo.tasks[idx-1].caseCount"
                     label="Number of testdata"
                     :rules="[
                       v => !!v || prob.type == 2 || 'Please enter the number of testdata.',
@@ -232,7 +232,7 @@
                     class="pr-1"
                   ></v-text-field>
                   <v-text-field
-                    v-model="prob.testCaseInfo.cases[idx-1].caseScore"
+                    v-model="prob.testCaseInfo.tasks[idx-1].taskScore"
                     label="Score of this subtask"
                     :rules="[v => !!v || prob.type == 2 || 'Please enter the score.']"
                     filled
@@ -241,14 +241,14 @@
                 </v-row>
                 <v-row>
                   <v-text-field
-                    v-model="prob.testCaseInfo.cases[idx-1].memoryLimit"
+                    v-model="prob.testCaseInfo.tasks[idx-1].memoryLimit"
                     label="Memory Limit(KB)"
                     :rules="[v => !!v || prob.type == 2 || 'Please enter the memory limit.']"
                     filled
                     class="pr-1"
                   ></v-text-field>
                   <v-text-field
-                    v-model="prob.testCaseInfo.cases[idx-1].timeLimit"
+                    v-model="prob.testCaseInfo.tasks[idx-1].timeLimit"
                     label="Time Limit(ms)"
                     :rules="[v => !!v || prob.type == 2 || 'Please enter the time limit.']"
                     filled
@@ -395,8 +395,8 @@ export default {
         return this.prob.description.sampleInput.length;
     },
     subtaskLength() {
-      if ( this.prob.testCaseInfo.cases )
-        return this.prob.testCaseInfo.cases.length;
+      if ( this.prob.testCaseInfo.tasks )
+        return this.prob.testCaseInfo.tasks.length;
     },
   },
 
@@ -438,9 +438,9 @@ export default {
         testCaseInfo: {
           language: 0,
           fillInTemplate: '',
-          cases: [{
+          tasks: [{
             "caseCount": null,
-            "caseScore": null,
+            "taskScore": null,
             "memoryLimit": 536871,
             "timeLimit": 1000,
           }],
@@ -470,9 +470,9 @@ export default {
         })
     },
     submit() {
-      this.prob.testCaseInfo.cases.forEach(ele => {
+      this.prob.testCaseInfo.tasks.forEach(ele => {
         ele.caseCount = Number(ele.caseCount);
-        ele.caseScore = Number(ele.caseScore);
+        ele.taskScore = Number(ele.taskScore);
         ele.memoryLimit = Number(ele.memoryLimit);
         ele.timeLimit = Number(ele.timeLimit);
       });
@@ -535,14 +535,14 @@ export default {
     },
     editSubtask(val) {
       if ( val > 0 )   {
-        this.prob.testCaseInfo.cases.push({
+        this.prob.testCaseInfo.tasks.push({
             "caseCount": null,
-            "caseScore": null,
+            "taskScore": null,
             "memoryLimit": 536871,
             "timeLimit": 1000,
           });
       } else if ( this.subtaskLength > 1 ) {
-        this.prob.testCaseInfo.cases.pop();
+        this.prob.testCaseInfo.tasks.pop();
       }
       // this.subtaskLength += val; 
       // this.subtaskLength = Math.max(this.subtaskLength, 1);
@@ -569,8 +569,8 @@ export default {
           }
           var isFile = false;
           if ( data.testCase ) {
-            data.testCase.cases.forEach((ele, idx) => {
-              this.prob.testCaseInfo.cases[idx]['caseCount'] = ele.input.length;
+            data.testCase.tasks.forEach((ele, idx) => {
+              this.prob.testCaseInfo.tasks[idx]['caseCount'] = ele.input.length;
               ele.input.forEach((file, jdx) => {
                 isFile = true;
                 zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
