@@ -63,7 +63,7 @@
                   <td class="subtitle-1" v-text="idx+1"></td>
                   <td class="subtitle-1" v-text="id"></td>
                   <td class="subtitle-1">
-                    <a target="_blank" rel="noopener noreferrer" :href="'problem/'+id" v-text="findProb(id)"></a>
+                    <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+id" v-text="findProb(id)"></a>
                   </td>
                   <!-- <td v-if="item.studentStatus" class="title text-left" v-text="item.studentStatus ? item.studentStatus.id : ''"></td> -->
                 </tr>

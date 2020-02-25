@@ -500,6 +500,7 @@ export default {
               console.log(err);
             })
         } else {
+          this.prob
           this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
             .then((res) => {
               if ( !this.zip ) {
@@ -560,6 +561,7 @@ export default {
         .then(async(res) => {
           // console.log(res.data.data);
           var data = res.data.data
+          console.log(data);
           for (const [key, value] of Object.entries(data)) {
             if ( key === 'testCase' ) {
               this.prob['testCaseInfo'] = value;
@@ -567,6 +569,7 @@ export default {
               this.prob[key] = value;
             }
           }
+          
           var isFile = false;
           if ( data.testCase ) {
             data.testCase.tasks.forEach((ele, idx) => {
@@ -578,9 +581,12 @@ export default {
               ele.output.forEach((file, jdx) => {
                 zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
               })
+              delete this.prob.testCaseInfo.tasks[idx]['input'];
+              delete this.prob.testCaseInfo.tasks[idx]['output'];
             })
           }
-          // console.log(this.prob);
+
+          console.log(this.prob);
           if ( isFile ) {
             await zip.generateAsync({type:"base64"})
               .then((base64) => {
