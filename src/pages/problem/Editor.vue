@@ -37,7 +37,7 @@
               :rules="[v => type===2 || (0 <= v && v <= 2) || 'Please select programming language.']"
               label="Select Language"
               v-model="editorConfig.language"
-              :items="selectItem.languageItem"
+              :items="languageItem"
               @change="modifyConfig"
             ></v-select>
           </v-col>
@@ -74,11 +74,15 @@ export default {
       type: Number,
       required: true,
     },
+    languageItem: {
+      type: Array,
+      required: true,
+    },
   },
   data () {
     return {
       editorConfig: null,
-      selectItem: {
+      // selectItem: {
         // title: {
         //   'fontSize': 'Font Size',
         //   'theme': 'Theme',
@@ -89,11 +93,11 @@ export default {
         // width: ['2', '2', '2', '3', '3'],
         // fontSizeItem: FONT_SIZE,
         // themeItem: THEME,
-        languageItem: [
-          { 'text': 'C (c11)', 'value': 0 },
-          { 'text': 'C++ (c++11)', 'value': 1 },
-          { 'text': 'Python (python3)', 'value': 2 },
-        ],
+        // languageItem: [
+        //   { 'text': 'C (c11)', 'value': 0 },
+        //   { 'text': 'C++ (c++11)', 'value': 1 },
+        //   { 'text': 'Python (python3)', 'value': 2 },
+        // ],
         // indentTypeItem: [
         //   { 'text': 'space', 'value': 0 },
         //   { 'text': 'tab', 'value': 1 },
@@ -103,7 +107,7 @@ export default {
         //   { 'text': '4', 'value': 4 },
         //   { 'text': '8', 'value': 8 },
         // ],
-      },
+      // },
       code: '',
       file: null,
       cmOption: {

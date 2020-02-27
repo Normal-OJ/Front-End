@@ -146,6 +146,17 @@
                 ></v-textarea>
               </v-row>
               <v-row v-show="prob.type != 2">
+                <v-select
+                  v-model="prob.allowedLanguage"
+                  label="Allowed Languages"
+                  :rules="[v => !!v || 'At least one language should be chosen.']"
+                  multiple
+                  :items="[{text: 'C', value: 1}, {text: 'C++', value: 2}, {text: 'Python', value: 4}]"
+                  filled
+                >
+                </v-select>
+              </v-row>
+              <v-row v-show="prob.type != 2">
                 <v-textarea
                   v-model="prob.description.input"
                   label="Input"
@@ -446,7 +457,7 @@ export default {
           }],
         },
         canViewStdout: false,
-        allowedLanguage: 7,
+        allowedLanguage: [1, 2, 4],
       };
     },
     getProbs() {
@@ -470,12 +481,25 @@ export default {
         })
     },
     submit() {
-      this.prob.testCaseInfo.tasks.forEach(ele => {
-        ele.caseCount = Number(ele.caseCount);
-        ele.taskScore = Number(ele.taskScore);
-        ele.memoryLimit = Number(ele.memoryLimit);
-        ele.timeLimit = Number(ele.timeLimit);
-      });
+      if ( this.prob.testCaseInfo ) {
+        if ( this.prob.type === 2 ) {
+          delete this.prob.testCaseInfo;
+        } else {
+          this.prob.testCaseInfo.tasks.forEach(ele => {
+            ele.caseCount = Number(ele.caseCount);
+            ele.taskScore = Number(ele.taskScore);
+            ele.memoryLimit = Number(ele.memoryLimit);
+            ele.timeLimit = Number(ele.timeLimit);
+          });
+        }
+      }
+      if ( this.prob.allowedLanguage ) {
+        var temp = 0;
+        this.prob.allowedLanguage.forEach(ele => {
+          temp += ele;
+        });
+        this.prob.allowedLanguage = temp;
+      }
       if ( this.$refs.form.validate() ) {
         if ( this.creating === -1 ) {
           this.$http.post('/api/problem/manage', this.prob)
@@ -486,11 +510,13 @@ export default {
               }
               var formData = new FormData();
               formData.append('case', this.zip); 
-              return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, 
+              if ( this.prob.type !== 2 ) {
+               return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, 
                                     formData,
                                     {
                                       headers: { 'Content-Type' : 'multipart/form-data' }, 
                                     })
+              }
             })
             .then((res) => {
               // console.log(res);
@@ -500,7 +526,6 @@ export default {
               console.log(err);
             })
         } else {
-          this.prob
           this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
             .then((res) => {
               if ( !this.zip ) {
@@ -508,11 +533,13 @@ export default {
               }
               var formData = new FormData();
               formData.append('case', this.zip); 
-              return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, 
-                                    formData,
-                                    {
-                                      headers: { 'Content-Type' : 'multipart/form-data' }, 
-                                    })
+              if ( this.prob.type !== 2 ) {
+                return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, 
+                                      formData,
+                                      {
+                                        headers: { 'Content-Type' : 'multipart/form-data' }, 
+                                      })
+              }
             })
             .then((res) => {
               this.$router.go(0);
@@ -565,6 +592,26 @@ export default {
           for (const [key, value] of Object.entries(data)) {
             if ( key === 'testCase' ) {
               this.prob['testCaseInfo'] = value;
+            } else if ( key === 'allowedLanguage' ) {
+              this.prob[key] = [];
+              var temp = value;
+              if ( temp >= 4 ) {
+                this.prob[key].push(4);
+                temp -= 4;
+              }
+              if ( temp >= 2 ) {
+                this.prob[key].push(2);
+                temp -= 2;
+              }
+              if ( temp >= 4 ) {
+                this.prob[key].push(4);
+                temp -= 4;
+              }
+              if ( temp >= 1 ) {
+                this.prob[key].push(1);
+                temp -= 1;
+              }
+              this.prob[key].reverse();
             } else {
               this.prob[key] = value;
             }

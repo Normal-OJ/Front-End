@@ -70,7 +70,7 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="6" v-if="prob">
-      <Editor @getSubmission="setSubmission" :type="prob.type"></Editor>
+      <Editor @getSubmission="setSubmission" :type="prob.type" :languageItem="allowedLang"></Editor>
     </v-col>
     <v-snackbar
       v-model="snackbar" class="subtitle-1"
@@ -106,6 +106,26 @@ export default {
       snackbar: false,
       username: '',
     }
+  },
+  computed: {
+    allowedLang() {
+      var temp = [];
+      var value = this.prob.allowedLanguage;
+      console.log(value);
+      if ( value >= 4 ) {
+        temp.push({ 'text': 'Python (python3)', 'value': 2 });
+        value -= 4;
+      }
+      if ( value >= 2 ) {
+        temp.push({ 'text': 'C++ (c++11)', 'value': 1 });
+        value -= 2;
+      }
+      if ( value >= 1 ) {
+        temp.push({ 'text': 'C (c11)', 'value': 0 });
+        value -= 1;
+      }
+      return temp.reverse();
+    },
   },
   created() {
     this.getUsername();
