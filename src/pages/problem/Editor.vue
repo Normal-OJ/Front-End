@@ -134,6 +134,16 @@ export default {
       },
     }
   },
+  watch: {
+    file() {
+      // console.log(this.file);
+      if ( this.type !== 2 && this.file ) {
+        const reader = new FileReader()
+        reader.readAsText(this.file)
+        reader.onload = e => this.code = e.target.result;
+      }
+    },
+  },
   // created() {
     // document.addEventListener('beforeunload', this.setCode);
   // },

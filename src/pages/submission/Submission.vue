@@ -117,7 +117,7 @@ export default {
   data () {
     return {
       submInfo: [],
-      submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score', 'Standard Error'],//, 'Standard Output'],
+      submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score'],//, 'Standard Error'],//, 'Standard Output'],
       submData: [],
       codeShow: false,
       code: '',
