@@ -509,9 +509,9 @@ export default {
                 this.$router.go(0);
               }
               var formData = new FormData();
-              formData.append('case', this.zip); 
+              formData.append('case', this.zip);
               if ( this.prob.type !== 2 ) {
-               return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`, 
+               return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`,
                                     formData,
                                     {
                                       headers: { 'Content-Type' : 'multipart/form-data' }, 
@@ -519,7 +519,6 @@ export default {
               }
             })
             .then((res) => {
-              // console.log(res);
               this.$router.go(0);
             })
             .catch((err) => {
@@ -531,9 +530,9 @@ export default {
               if ( !this.zip ) {
                 this.$router.go(0);
               }
-              var formData = new FormData();
-              formData.append('case', this.zip); 
-              if ( this.prob.type !== 2 ) {
+              if ( this.prob.type !== 2 && this.zip ) {
+                var formData = new FormData();
+                formData.append('case', this.zip); 
                 return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, 
                                       formData,
                                       {
@@ -558,8 +557,6 @@ export default {
         this.prob.description.sampleInput.pop();
         this.prob.description.sampleOutput.pop();
       }
-      // this.sampleLength += val;
-      // this.sampleLength = Math.max(this.sampleLength, 1);
     },
     editSubtask(val) {
       if ( val > 0 )   {

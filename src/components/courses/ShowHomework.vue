@@ -72,8 +72,11 @@
           </v-simple-table>
           <div v-if="perm">
             <v-card-text>
-              <HomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds" :probsName="item.problem">
-              </HomeworkScoreboard>
+              <ui-button :to="`homework/${item.id}`" color="info">
+                <template slot="content">View Student Status</template>
+              </ui-button>
+              <!-- <HomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds" :probsName="item.problem">
+              </HomeworkScoreboard> -->
             </v-card-text>
           </div>
         </v-card-text>
