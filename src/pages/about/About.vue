@@ -1,7 +1,7 @@
 <template>
   <div class="page1" style="height: 100%;">
     <v-slide-x-transition>
-      <v-container style="height: 100vh" v-show="show">
+      <v-container style="min-height: 100vh" v-show="show">
         <v-row justify="center">
           <p class="display-3">Our Team</p>
         </v-row>
@@ -28,7 +28,7 @@
         </v-row>
       </v-container>
     </v-slide-x-transition>
-    <v-container style="height: 100vh">
+    <v-container style="min-height: 100vh">
       <v-row justify="center">
         <p class="display-3">Contributors</p>
       </v-row>
@@ -39,8 +39,8 @@
         <p class="body-2">sort by lexicographical order</p>
       </v-row>
       <v-row justify="center">
-        <v-row justify="space-between">
-          <v-col cols="1" v-for="cont in conts">
+        <v-row justify="space-around">
+          <v-col cols="3" md="1" v-for="cont in conts">
             <v-row justify="center">
               <v-avatar><v-img :src="require('@/assets/members/contributors/'+cont+'.png')"></v-img></v-avatar>
             </v-row>
