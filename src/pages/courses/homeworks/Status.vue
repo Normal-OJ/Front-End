@@ -12,10 +12,10 @@
             >#{{idx+1}} - <a :href="`/problem/${prob}`">Pid:{{prob}}</a></th>
           </tr></thead>
         <tbody v-if="items">
-          <!-- <tr>
+          <tr>
             <td>Report</td>
-            <td v-for="prob in probs"></td>
-          </tr> -->
+            <td v-for="prob in probs">{{ copycat[prob] }}</td>
+          </tr>
           <tr
             v-for="(item, idx) in Object.keys(items)"
             :key="-idx"
@@ -43,6 +43,7 @@ export default {
     return {
       items: null,
       probs: null,
+      copycat: {},
     }
   },
 
@@ -57,12 +58,61 @@ export default {
           // console.log(res.data.data);
           this.items = res.data.data.studentStatus;
           this.probs = res.data.data.problemIds;
-          
+          this.getReport();
         })
         .catch((err) => {
           console.log(err);
         })
-    }
+    },
+    getReport() {
+      this.probs.forEach(ele => {
+        this.$http.post('/api/copycat', {
+                                          'problemId': ele,
+                                          'course': this.$route.params.name,
+                                        })
+          .then((res) => {
+            // this.getUrl();
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+      })
+    },
+    getUrl() {
+      // this.copycat = {};
+      // this.probs.forEach(ele => {
+        // this.copycat[`${ele}`] = {};
+        // this.copycat[`${ele}`]['valid'] = false;
+        // while ( !this.copycat[`${ele}`]['valid'] ) {
+          // this.$http.get('/api/copycat', {
+          //                                   'problemId': ele,
+          //                                   'course': this.$route.params.name,
+          //                                })
+          //   .then(async(res) => {
+          //     var flag = false;
+          //     if ( res.data.data.cppReport ) {
+          //       flag = true;
+          //       this.copycat[`${ele}`]['cpp'] = res.data.data.cppReport;
+          //     }
+          //     if ( res.data.data.pythonReport ) {
+          //       if ( flag ) this.copycat[`${ele}`]['valid'] = true;
+          //       this.copycat[`${ele}`]['py'] = res.data.data.pythonReport;
+          //     }
+          //     await delay(1000);
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //   })
+        // }
+      // })
+    },
+    delay(delayInms) {
+      return new Promise(resolve  => {
+        setTimeout(() => {
+          resolve(2);
+        }, delayInms);
+      });
+    },
   }
 }
 </script>

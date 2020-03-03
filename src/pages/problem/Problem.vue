@@ -1,6 +1,6 @@
 <template>
   <v-row no-gutters style="height: 100%; width: 100%">
-    <v-col cols="12" md="6" style="height: 100%;">
+    <v-col cols="12" md="6" style="min-height: 100vh;">
       <v-card tile outlined height="100%" v-if="prob">
         <v-card-title class="headline font-weight-bold justify-center">
           {{ id + ' - ' + prob.problemName }}

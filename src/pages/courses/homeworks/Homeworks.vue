@@ -252,7 +252,8 @@ export default {
             })
             .catch((err) => {
               console.log(err);
-              this.errMsg = err.response.message;
+              this.errMsg = 'error';
+              // this.errMsg = err.response.message;
               this.errAlert = true;
             })
         } else {
@@ -273,7 +274,8 @@ export default {
             })
             .catch((err) => {
               console.log(err);
-              this.errMsg = err.response.message;
+              this.errMsg = 'error';
+              // this.errMsg = err.response.message;
               this.errAlert = true;
             })
         }
