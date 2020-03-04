@@ -93,7 +93,17 @@
       </template>
     </ui-dialog>
     <v-card height="100%" elevation="2" v-if="grade">
-      <v-card-title class="font-weight-bold">Manage Score: {{ grade }}</v-card-title>
+      <v-card-title class="font-weight-bold">
+        Manage Score: {{ grade }}
+        <v-spacer></v-spacer>
+        <ui-button
+          class="mx-3"
+          color="secondary"
+          @click.native="grade = ''"
+        >
+          <template slot="content"><v-icon>mdi-back</v-icon>Back</template>
+        </ui-button>
+      </v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-simple-table class="px-4">
         <template v-slot:default>
@@ -103,11 +113,12 @@
               <td class="subtitle-1 font-weight-bold text--primary">Score</td>
               <td class="subtitle-1 font-weight-bold text--primary">Description</td>
               <td class="subtitle-1 font-weight-bold text--primary">Time</td>
+              <td class="subtitle-1 font-weight-bold text--primary">Operations</td>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colspan="4" class="px-0">
+              <td colspan="5" class="px-0">
                 <v-hover v-slot:default="{ hover }">
                   <v-card
                     tile
@@ -122,16 +133,26 @@
             </tr>
             <tr 
               v-if="scores && scores.length > 0" 
-              v-for="score in scores"
-              :key="score.title"
+              v-for="(score, idx) in scores"
+              :key="idx"
             >
               <td>{{ score.title }}</td>
               <td>{{ score.score }}</td>
               <td>{{ score.content }}</td>
               <td>{{ timeFormat(score.timestamp) }}</td>
+              <td>
+                <ui-button
+                  class="mr-1"
+                  color="error"
+                  alert
+                  @alertClick="delscore(score.title)"
+                >
+                  <template slot="content"><v-icon>mdi-trash-can</v-icon></template>
+                </ui-button>
+              </td>
             </tr>
             <tr v-else>
-              <td colspan="4">🦄 No data available.</td>
+              <td colspan="5">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>
@@ -212,20 +233,22 @@ export default {
         newtitle: '',
         score: '',
         content: '',
-      }
+      },
     }
   },
 
   watch: {
     grade() {
-      this.$http.get(`/api/course/${this.$route.params.name}/grade/${this.grade}`)
-        .then((res) => {
-          this.scores = res.data.data;
-        })
-        .catch((err) => {
-          console.log(err);
-          this.scores = null;
-        })
+      if ( this.grade ) {
+        this.$http.get(`/api/course/${this.$route.params.name}/grade/${this.grade}`)
+          .then((res) => {
+            this.scores = res.data.data;
+          })
+          .catch((err) => {
+            console.log(err);
+            this.scores = null;
+          })
+      }
     }
   },
 
@@ -233,7 +256,6 @@ export default {
     cancel() {
       this.dialog = false;
       this.gradeDialog = false;
-      this.grade = '';
       this.newUsers = [];
     },
     submit() {
@@ -261,21 +283,29 @@ export default {
       this.items.splice(idx,1);
       this.submit();
     },
-    scoring() {
-      this.$http.post(`/api/course/${this.$route.params.name}/grade/${this.grade}`, this.data)
-        .then((res) => {
-          this.grade = this.grade;
-          this.cancel();
-        })
-        .catch((err) => {
-          console.log(err);
-        })
+    update(grade) {
+      this.grade = null;
+      this.$nextTick(() => {
+        this.grade = grade;
+      })
     },
-    editscore() {
-      this.$http.put(`/api/course/${this.$route.params.name}/grade/${this.grade}`, this.data)
+    scoring() {
+      if ( this.$refs.form.validate() ) {
+        this.$http.post(`/api/course/${this.$route.params.name}/grade/${this.grade}`, this.data)
+          .then((res) => {
+            this.gradeDialog = false;
+            this.$refs.form.reset();
+            this.update(this.grade);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+      }
+    },
+    delscore(title) {
+      this.$http.delete(`/api/course/${this.$route.params.name}/grade/${this.grade}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'title': title}})
         .then((res) => {
-          this.grade = this.grade;
-          this.cancel();
+          this.update(this.grade);
         })
         .catch((err) => {
           console.log(err);
