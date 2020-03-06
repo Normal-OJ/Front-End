@@ -18,13 +18,13 @@
           v-for="link in links"
           v-if="(link.title!=='Manages'||perm)
               &&(courseName!=='Public'||
-                (link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))
-              &&(courseName==='Public'||link.title!=='Problems')"
+                (link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
           :key="link.title"
           :to="link.path"
           link
           dense
         >
+              <!-- &&(courseName==='Public'||link.title!=='Problems')" -->
           <v-list-item-icon><v-icon class="mt-1">{{ link.icon }}</v-icon></v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title class="subtitle-1">{{ link.title }}</v-list-item-title>

@@ -86,7 +86,7 @@ export default {
   methods: {
     getSubmissions() {
       this.loading = true;
-      var query = `?offset=${(this.page-1)*10}&count=${10}`;
+      var query = `?offset=${(this.page-1)*10}&count=${10}&course=${this.$route.params.name}`;
       this.items = [];
       this.$http.get(`/api/submission${query}`)
         .then((res) => {
