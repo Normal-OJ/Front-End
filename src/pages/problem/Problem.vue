@@ -19,7 +19,9 @@
         </v-card-subtitle>
         <v-tabs v-model="tab" fixed-tabs >
           <v-tab class="text-none subtitle-1">Description</v-tab>
-          <v-tab class="text-none subtitle-1">Submission</v-tab>
+          <v-tab class="text-none subtitle-1">
+            Submission <v-chip v-show="cnt > 0" class="mx-3 px-2" small color="secondary">{{ cnt }}</v-chip>
+          </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" style="width: 100%">
           <v-tab-item style="height: 100%; width: 100%;">
@@ -105,13 +107,13 @@ export default {
       show: true,
       snackbar: false,
       username: '',
+      cnt: 0,
     }
   },
   computed: {
     allowedLang() {
       var temp = [];
       var value = this.prob.allowedLanguage;
-      console.log(value);
       if ( value >= 4 ) {
         temp.push({ 'text': 'Python (python3)', 'value': 2 });
         value -= 4;
@@ -178,28 +180,39 @@ export default {
         })
     },
     setSubmission() {
-      this.getSubm();
-      this.tab = 1;
+      this.$router.go(0);
+      // this.getSubm();
+      // this.tab = 1;
     },
-    updateSubm(sid) {
+    async updateSubm(sid) {
       if ( this.prob.type !== 2 ) {
-        this.$http.get(`${API_BASE_URL}/submission/${sid}`)
-          .then(async(res) => {
-            // console.log(res);
-            var data = res.data.data;
-            console.log(data);
-            if ( data.status === -1 ) {
-              this.show = false;
-              await this.delay(1000);
-              this.updateSubm(sid);
-            } else {
-              this.getSubm();
-              this.show = true;
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        // while ( !done ) {
+        var done = false;
+        this.cnt++;
+        this.tab = 1;
+        while ( done === false ) {
+          await this.delay(1000);
+          await this.$http.get(`${API_BASE_URL}/submission/${sid}`)
+            .then(async(res) => {
+              var data = res.data.data;
+              if ( data.status === -1 ) {
+                this.show = false;
+                // await this.delay(1000);
+                // this.updateSubm(sid);
+              } else {
+                done = true;
+                // done = true;
+                // this.getSubm();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        this.getSubm();
+        this.cnt--;
+        this.show = true;
+        // }
       }
     },
     delay(delayInms) {
