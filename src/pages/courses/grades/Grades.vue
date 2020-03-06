@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-simple-table class="px-3">
-      <template v-slot:default>
+      <!-- <template v-slot:default> -->
         <thead>
           <tr>
             <td class="subtitle-1 font-weight-bold text--primary">Title</td>
@@ -18,14 +18,14 @@
           >
             <td>{{ item.title }}</td>
             <td>{{ item.score }}</td>
-            <td>{{ item.content }}</td>
+            <td style="white-space: pre;">{{ item.content }}</td>
             <td>{{ timeFormat(item.timestamp) }}</td>
           </tr>
           <tr v-else>
             <td colspan="4">🦄 No data available.</td>
           </tr>
         </tbody>
-      </template>
+      <!-- </template> -->
     </v-simple-table>
   </v-container>
 </template>

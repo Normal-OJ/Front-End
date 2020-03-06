@@ -9,7 +9,7 @@
           <p class="headline">NTNU CSIE 111</p>
         </v-row>
         <v-row v-for="i in items.length/2" :key="i" justify="center">
-          <v-col cols="8" md="6" lg="4" v-for="j in 2">
+          <v-col cols="12" md="6" lg="4" v-for="j in 2">
             <v-card color="primary" dark>
               <div class="d-flex  justify-space-between">
                 <div>
@@ -33,14 +33,14 @@
         <p class="display-3">Contributors</p>
       </v-row>
       <v-row justify="center">
-        <p class="headline">members of Red Team - Software Engineering 2019 Fall</p>
+        <p class="headline text-center">members of Red Team - Software Engineering 2019 Fall</p>
       </v-row>
       <v-row justify="center">
         <p class="body-2">sort by lexicographical order</p>
       </v-row>
       <v-row justify="center">
         <v-row justify="space-around">
-          <v-col cols="3" md="1" v-for="cont in conts">
+          <v-col cols="6" sm="3" md="1" v-for="cont in conts">
             <v-row justify="center">
               <v-avatar><v-img :src="require('@/assets/members/contributors/'+cont+'.png')"></v-img></v-avatar>
             </v-row>
