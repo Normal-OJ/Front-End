@@ -16,16 +16,16 @@
               label
             ><a href="" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
           </v-row>
-        </v-card-subtitle>
+        </v-card-subtitle><!-- 
         <v-tabs v-model="tab" fixed-tabs >
           <v-tab class="text-none subtitle-1">Description</v-tab>
           <v-tab class="text-none subtitle-1">
             Submission <v-chip v-show="cnt > 0" class="mx-3 px-2" small color="secondary">{{ cnt }}</v-chip>
           </v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab" style="width: 100%">
-          <v-tab-item style="height: 100%; width: 100%;">
-            <div class="px-6" style="width: 100%" wrap>
+        </v-tabs> -->
+        <!-- <v-tabs-items v-model="tab" style="width: 100%"> -->
+          <!-- <v-tab-item style="height: 100%; width: 100%;"> -->
+            <v-card-text class="text--primary px-6" style="width: 100%">
               <h2>Description</h2>
               <vue-markdown :source="prob.description.description"></vue-markdown>
               <div v-if="prob.type!==2">
@@ -60,15 +60,15 @@
                 <vue-markdown :source="prob.description.hint"></vue-markdown>
               </div>
               <br>
-            </div>
-          </v-tab-item>
+            </v-card-text>
+          <!-- </v-tab-item>
           <v-tab-item style="height: 100%; width: 100%;">
-            <v-card class="pa-3" elevation="0" width="100%">
+            <v-card class="pa-3" elevation="0" width="100%"> -->
             <!-- Table of Submissions -->
-              <HistorySubmissions :submData.sync="submData" :show.sync="show" :type="prob.type"></HistorySubmissions>
+              <!-- <HistorySubmissions :submData.sync="submData" :show.sync="show" :type="prob.type"></HistorySubmissions>
             </v-card>
           </v-tab-item>
-        </v-tabs-items>
+        </v-tabs-items> -->
       </v-card>
     </v-col>
     <v-col cols="12" md="6" v-if="prob">
@@ -87,7 +87,7 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
-import HistorySubmissions from './HistorySubmissions'
+// import HistorySubmissions from './HistorySubmissions'
 const LANG = ['C11', 'C++11', 'Python3'];
 const API_BASE_URL = '/api';
 export default {
@@ -95,7 +95,7 @@ export default {
   components: {
     VueMarkdown,
     'Editor': Editor,
-    'HistorySubmissions': HistorySubmissions,
+    // 'HistorySubmissions': HistorySubmissions,
   },
   data () {
     return {
@@ -132,7 +132,7 @@ export default {
   created() {
     this.getUsername();
     this.getProb();
-    this.getSubm();
+    // this.getSubm();
   },
   methods: {
     getProb() {
@@ -160,7 +160,7 @@ export default {
                 'Language' : null,
                 'id' : ele.submissionId,
               })
-              this.updateSubm(ele.submissionId);
+              // this.updateSubm(ele.submissionId);
             } else {
               this.submData.push({
                 'Timestamp' : this.timeFormat(ele.timestamp),
@@ -179,8 +179,9 @@ export default {
           // console.log(err);
         })
     },
-    setSubmission() {
-      this.$router.go(0);
+    setSubmission(id) {
+      this.$router.push(`/submission/${id}`);
+      // this.$router.go(0);
       // this.getSubm();
       // this.tab = 1;
     },

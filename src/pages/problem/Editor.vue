@@ -161,10 +161,11 @@ export default {
           zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
         }
         var code = await zip.generateAsync({type:"blob"});
-        var formData = new FormData();
+        var formData = new FormData(), submId;
         formData.append('code', code); 
         this.$http.post('/api/submission', {problemId: Number(this.$route.params.id), languageType: Number(this.editorConfig.language)})
           .then((res) => {
+            submId = res.data.data.submissionId;
             return this.$http.put(`/api/submission/${res.data.data.submissionId}`, 
                                   formData,
                                   {
@@ -175,7 +176,7 @@ export default {
             this.$refs.file.reset();
             // console.log(res);
             // console.log('submissionId:'+ submissionId);
-            this.$emit('getSubmission');
+            this.$emit('getSubmission', submId);
           })
           .catch((err) => {
             console.log(err);
