@@ -26,7 +26,7 @@
           <th><p class="subtitle-1 font-weight-bold">Feedback</p></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody v-if="type === 2 && submData && submData.length > 0">
         <tr>
           <td><p class="subtitle-1" v-text="submData[0]['Timestamp']"></p></td>
           <td><p class="subtitle-1" v-text="submData[0]['Score']===-1 ? 'Pending' : submData[0]['Score']"></p></td>
