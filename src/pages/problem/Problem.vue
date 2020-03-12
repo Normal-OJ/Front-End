@@ -58,6 +58,25 @@
                 </v-row>
                 <h2 v-if="prob.description.hint">Hint</h2>
                 <vue-markdown :source="prob.description.hint"></vue-markdown>
+                <h2 class="mb-0">Subtask Information</h2>
+                <div>
+                  <v-simple-table>
+                    <thead>
+                      <tr>
+                        <th class="text--primary subtitle-1">Subtask</th>
+                        <th class="text--primary subtitle-1">Time Limit(ms)</th>
+                        <th class="text--primary subtitle-1">Memory Limit(KB)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(limit, idx) in this.prob.limit" :key="idx">
+                        <td>{{ idx+1 }}</td>
+                        <td>{{ limit[0] }}</td>
+                        <td>{{ limit[1] }}</td>
+                      </tr>
+                    </tbody>
+                  </v-simple-table>
+                </div>
               </div>
               <br>
             </v-card-text>

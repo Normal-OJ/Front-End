@@ -21,6 +21,13 @@
     <div class="px-4" style="height: 15%; width: 100%;">
       <v-form ref="form">
         <v-row>
+          <ui-alert
+            v-if="type === 2"
+            v-model="alert"
+            dense
+            type="error"
+            :alertMsg="errMsg"
+          ></ui-alert>
           <v-col :cols="type !== 2 ? 4 : 6">
             <v-file-input
               prepend-icon="mdi-upload"
@@ -43,7 +50,7 @@
           </v-col>
           <v-spacer v-if="type !== 2"></v-spacer>
           <v-col cols="auto" align-self="center">
-            <ui-button color="primary" @click.native="submit">
+            <ui-button color="primary" :loading="loading" @click.native="submit">
               <template slot="content">Submit</template>
             </ui-button>
           </v-col>
@@ -132,6 +139,9 @@ export default {
           }
         },
       },
+      loading: false,
+      alert: false,
+      errMsg: '',
     }
   },
   watch: {
@@ -153,6 +163,7 @@ export default {
   methods: {
     async submit() {
       if ( this.$refs.form.validate() ) {
+        this.loading = true;
         var zip = new JSZip();
         if ( this.type===2 ) {
           zip.file('main.pdf', this.file);
@@ -174,11 +185,16 @@ export default {
           })
           .then((res) => {
             this.$refs.file.reset();
+            this.alert = false;
+            this.loading = false;
             // console.log(res);
             // console.log('submissionId:'+ submissionId);
             this.$emit('getSubmission', submId);
           })
           .catch((err) => {
+            this.errMsg = err.response.data.message;
+            this.alert = true;
+            this.loading = false;
             console.log(err);
           });
       }

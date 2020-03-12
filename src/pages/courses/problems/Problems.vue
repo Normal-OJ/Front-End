@@ -21,7 +21,7 @@
               <th class="font-weight-bold subtitle-1 text--primary">Name</th>
               <th class="font-weight-bold subtitle-1 text--primary">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
-              <th class="font-weight-bold subtitle-1 text--primary">AC rate</th>
+              <!-- <th class="font-weight-bold subtitle-1 text--primary">AC rate</th> -->
             </tr>
           </thead>
           <tbody>
@@ -41,10 +41,10 @@
                   label small
                 >{{ tag }}</v-chip>
               </td>
-              <td>{{ item.ACUser + '/' + item.submitter }}</td>
+              <!-- <td>{{ item.ACUser + '/' + item.submitter }}</td> -->
             </tr>
             <tr v-show="loading">
-              <td colspan="6">
+              <td colspan="4">
                 <v-skeleton-loader
                   class="mx-auto"
                   type="table-row"
@@ -52,7 +52,7 @@
               </td>
             </tr>
             <tr v-if="!loading && (!items || items.length===0)">
-              <td colspan="5">🦄 No data available.</td>
+              <td colspan="4">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>
