@@ -91,7 +91,7 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="6" v-if="prob">
-      <Editor @getSubmission="setSubmission" :type="prob.type" :languageItem="allowedLang"></Editor>
+      <Editor @getSubmission="setSubmission" :type="prob.type" :languageItem="allowedLang" :submData.sync="submData"></Editor>
     </v-col>
     <v-snackbar
       v-model="snackbar" class="subtitle-1"
@@ -151,7 +151,7 @@ export default {
   created() {
     this.getUsername();
     this.getProb();
-    // this.getSubm();
+    this.getSubm();
   },
   methods: {
     getProb() {

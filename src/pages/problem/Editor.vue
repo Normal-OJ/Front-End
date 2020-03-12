@@ -18,6 +18,22 @@
       placeholder="paste or upload your code for submitting"
       :style="{ height: '80vh', width: '100%', fontSize: editorConfig.fontSize+'px' }"  
     ></codemirror>
+    <v-simple-table v-else>
+      <thead v-if="type === 2 && submData && submData.length > 0">
+        <tr>
+          <th><p class="subtitle-1 font-weight-bold">Last update</p></th>
+          <th><p class="subtitle-1 font-weight-bold">Score</p></th>
+          <th><p class="subtitle-1 font-weight-bold">Feedback</p></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p class="subtitle-1" v-text="submData[0]['Timestamp']"></p></td>
+          <td><p class="subtitle-1" v-text="submData[0]['Score']===-1 ? 'Pending' : submData[0]['Score']"></p></td>
+          <td><p class="subtitle-1" v-text=""></p></td>
+        </tr>
+      </tbody>
+    </v-simple-table>
     <div class="px-4" style="height: 15%; width: 100%;">
       <v-form ref="form">
         <v-row>
@@ -82,6 +98,10 @@ export default {
       required: true,
     },
     languageItem: {
+      type: Array,
+      required: true,
+    },
+    submData: {
       type: Array,
       required: true,
     },
@@ -167,7 +187,7 @@ export default {
         var zip = new JSZip();
         if ( this.type===2 ) {
           zip.file('main.pdf', this.file);
-          this.editorConfig.language = 2;
+          this.editorConfig.language = 3;
         } else {
           zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
         }
