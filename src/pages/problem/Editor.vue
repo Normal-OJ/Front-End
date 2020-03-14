@@ -215,7 +215,9 @@ export default {
             this.errMsg = err.response.data.message;
             this.alert = true;
             this.loading = false;
+            this.$emit('exceedRateLimit', this.errMsg);
             console.log(err);
+            console.log(this.errMsg);
           });
       }
     },

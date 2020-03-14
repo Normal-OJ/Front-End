@@ -91,13 +91,14 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="6" v-if="prob">
-      <Editor @getSubmission="setSubmission" :type="prob.type" :languageItem="allowedLang" :submData.sync="submData"></Editor>
+      <Editor @getSubmission="setSubmission" @exceedRateLimit="exceedRateLimit"
+       :type="prob.type" :languageItem="allowedLang" :submData.sync="submData"></Editor>
     </v-col>
     <v-snackbar
       v-model="snackbar" class="subtitle-1"
-      color="secondary"
+      :color="alert.color"
     >
-      The example has been copied into the clipboard!
+      {{ alert.msg }}
       <v-btn icon @click="snackbar = false"><v-icon>mdi-close-circle</v-icon></v-btn>
     </v-snackbar>
   </v-row>
@@ -127,6 +128,10 @@ export default {
       snackbar: false,
       username: '',
       cnt: 0,
+      alert: {
+        color: 'info',
+        msg: 'The example has been copied into the clipboard!',
+      },
     }
   },
   computed: {
@@ -247,11 +252,24 @@ export default {
       console.log(text);
       navigator.clipboard.writeText(text)
         .then((res) => {
+          this.snackbar = false;
+          this.alert = {
+            color: 'info',
+            msg: 'The example has been copied into the clipboard!',
+          };
           this.snackbar = true;
           console.log('Async: Copying to clipboard was successful!');
         }, function(err) {
           alert('Async: Could not copy text: ' + err);
         });
+    },
+    exceedRateLimit(resp) {
+      this.snackbar = false;
+      this.alert = {
+        color: 'secondary',
+        msg: resp,
+      }
+      this.snackbar = true;
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);
