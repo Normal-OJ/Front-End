@@ -91,7 +91,7 @@
                     v-model="newMail.message"
                   ></v-textarea>
                 </v-form>
-                {{newMail.receiver}}
+                <!-- {{newMail.receiver}} -->
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>

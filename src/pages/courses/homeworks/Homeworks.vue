@@ -196,7 +196,7 @@ export default {
         })
     },
     getProblems() {
-      this.$http.get('/api/problem?offset=0&count=-1')
+      this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
         .then((res) => {
           console.log(res);
           this.probs = res.data.data;

@@ -19,12 +19,13 @@
               <th class="font-weight-bold subtitle-1 text--primary">Status</th>
               <th class="font-weight-bold subtitle-1 text--primary">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
+              <!-- <th class="font-weight-bold subtitle-1 text--primary">Course</th> -->
               <th class="font-weight-bold subtitle-1 text--primary">Operations</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colspan="6" class="px-0">
+              <td colspan="7" class="px-0">
                 <v-hover v-slot:default="{ hover }">
                   <v-card
                     tile
@@ -50,6 +51,7 @@
                   label small
                 >{{ tag }}</v-chip>
               </td>
+              <!-- <td v-if="item.course && item.course.length > 0">{{ item.course[0] }}</td> -->
               <td>
                 <ui-button class="mr-1" color="info" @click.native="edit(idx)">
                   <template slot="content">
@@ -64,7 +66,7 @@
               </td>
             </tr>
             <tr v-if="items.length===0">
-              <td colspan="6">🦄 No data available.</td>
+              <td colspan="7">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>
@@ -463,12 +465,13 @@ export default {
     getProbs() {
       this.items = [];
       this.tags = [];
-      this.$http.get('/api/problem?offset=0&count=-1')
+      this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
         .then((res) => {
           // console.log(res);
           res.data.data.forEach(ele => {
             ele.status = ele.status===0 ? 'Online' : 'Offline';
             ele.type = ele.type===0 ? 'default' : (ele.type===1 ? 'fillInTemplate' : 'handwritten');
+            // ele.courses = ele.courses[0];
             this.items.push(ele);
             ele.tags.forEach(tag => {
               this.tags.push(tag);
