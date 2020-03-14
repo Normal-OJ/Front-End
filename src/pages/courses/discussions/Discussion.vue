@@ -52,6 +52,13 @@
       <ShowReply :items="item.reply" :focus="focus" @newComment="newComment" @editComment="editComment">
       </ShowReply>
     </div>
+    <v-snackbar
+      v-model="snackbar" class="subtitle-1"
+      :color="alert.color"
+    >
+      {{ alert.msg }}
+      <v-btn icon @click="snackbar = false"><v-icon>mdi-close-circle</v-icon></v-btn>
+    </v-snackbar>
   </div>
 </template>
 
@@ -84,6 +91,11 @@ export default {
       perm: false,
       username: null,
       focus: false,
+      snackbar: false,
+      alert: {
+        color: '',
+        msg: '',
+      },
     }
   },
   created() {
@@ -169,7 +181,12 @@ export default {
           this.$router.go(0);
         })
         .catch((err) => {
-          // console.log(err);
+          this.snackbar = false;
+          this.alert = {
+            color: 'secondary',
+            msg: err.response.data.message,
+          }
+          this.snackbar = true;
         })
     },
     editComment(id, content) {
@@ -179,7 +196,12 @@ export default {
           this.$router.go(0);
         })
         .catch((err) => {
-          // console.log(err);
+          this.snackbar = false;
+          this.alert = {
+            color: 'secondary',
+            msg: err.response.data.message,
+          }
+          this.snackbar = true;
         })
     },
     timeFormat(time) {

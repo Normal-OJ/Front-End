@@ -12,7 +12,7 @@
           <v-col cols="11">
             <v-row no-gutters>
               <v-card-subtitle class="py-0 text--primary" v-text="item.author.username"></v-card-subtitle>
-              <v-card-subtitle class="py-0" v-text="timeFormat(item.created) + (item.createdTime !== item.updated ? ' (edited)' : '')"></v-card-subtitle>
+              <v-card-subtitle class="py-0" v-text="timeFormat(item.created) + (item.created !== item.updated ? ' (edited)' : '')"></v-card-subtitle>
               <v-spacer></v-spacer>
               <!-- Menu -->
               <v-menu v-if="perm(item)" offset-x>
@@ -29,7 +29,9 @@
               </v-menu>
             </v-row>
             <!-- <v-divider class="my-0"></v-divider> -->
+            <!-- <v-card-subtitle class="subtitle-1 text--primary" style="white-space: pre" v-text="item.content"> -->
             <v-card-subtitle class="subtitle-1 text--primary">
+              <!-- {{ item.content }} -->
               <vue-markdown :source="item.content"></vue-markdown>
             </v-card-subtitle>
             <v-row>
@@ -104,7 +106,9 @@
                 </v-menu>
               </v-row>
               <!-- <v-divider class="my-0"></v-divider> -->
+              <!-- <v-card-subtitle class="subtitle-1 text--primary" style="white-space: pre" v-text="thread.content"> -->
               <v-card-subtitle class="subtitle-1 text--primary">
+                <!-- {{ thread.content }} -->
                 <vue-markdown :source="thread.content"></vue-markdown>  
               </v-card-subtitle>
             </v-col>
@@ -307,7 +311,7 @@ export default {
     perm(item) {
       let payload = this.getPayload();
       if ( payload.active === true ) {
-        if ( payload.role <= 1 || payload.username === item.author ) {
+        if ( payload.role <= 1 || payload.username === item.author.username ) {
           return true;
         }
       }
