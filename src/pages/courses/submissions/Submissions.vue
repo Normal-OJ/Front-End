@@ -2,6 +2,22 @@
   <v-container
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '50vw' : '75vw', height: '100%' }"
   >
+    <v-bottom-navigation
+      v-model="nav"
+      class="mb-3"
+      color="primary"
+      grow
+    >
+      <v-btn class="subtitle-2">
+        <span>My Submissions</span>
+        <v-icon>mdi-account</v-icon>
+      </v-btn>
+      <v-btn class="subtitle-2">
+        <span>All Submissions</span>
+        <v-icon>mdi-account-group</v-icon>
+      </v-btn>
+    </v-bottom-navigation>
+
     <v-card height="100%" elevation="2">
       <v-card-title class="font-weight-bold">
         Submissions
@@ -64,10 +80,13 @@ export default {
       loading: false,
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
+      nav: 0,
+      username: '',
     }
   },
 
   created() {
+    this.username = this.getUsername();
     this.getSubmissions();
   },
 
@@ -78,6 +97,9 @@ export default {
   },
 
   watch: {
+    nav() {
+      this.getSubmissions();
+    },
     page() {
       this.getSubmissions();
     }
@@ -87,6 +109,9 @@ export default {
     getSubmissions() {
       this.loading = true;
       var query = `?offset=${(this.page-1)*10}&count=${10}&course=${this.$route.params.name}`;
+      if ( this.nav === 0 ) {
+        query += `&username=${this.username}`;
+      }
       this.items = [];
       this.$http.get(`/api/submission${query}`)
         .then((res) => {
@@ -109,6 +134,16 @@ export default {
       const sec = '0' + tmp.getSeconds();
       const timeString = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
       return timeString;
+    },
+    getUsername() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        return payload.username;
+      }
+      return '';
+    },
+    parseJwt(token) {
+      return JSON.parse(atob(token.split('.')[1])).data;
     },
   }
 
