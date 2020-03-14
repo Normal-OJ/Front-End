@@ -52,7 +52,7 @@ export default {
         { 'title': 'Submissions', 'path': `/course/${this.$route.params.name}/submissions`, 'icon': 'mdi-history'},
         { 'title': 'Discussions', 'path': `/course/${this.$route.params.name}/discussions`, 'icon': 'mdi-comment-text'},
         { 'title': 'Grades', 'path': `/course/${this.$route.params.name}/Grades`, 'icon': 'mdi-chart-bar'},
-        { 'title': 'Manages', 'path': `/course/${this.$route.params.name}/manages`, 'icon': 'mdi-settings'},
+        { 'title': 'Manages', 'path': `/course/${this.$route.params.name}/manages`, 'icon': 'mdi-cog'},
       ],
       perm: false,
       // drawer: false,

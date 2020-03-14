@@ -19,7 +19,9 @@
       <!-- <v-divider></v-divider> -->
 
       <!-- Ann -->
-      <v-card-title class="headline font-weight-bold">System Announcement</v-card-title>
+      <v-card-title class="headline font-weight-bold">
+        <v-icon color="transparent">mdi-pin</v-icon>System Announcement
+      </v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-card-text>
         <ShowAnn 
