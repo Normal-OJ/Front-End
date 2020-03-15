@@ -23,6 +23,7 @@ export default {
 </script>
 
 <style>
+@import 'https://unpkg.com/katex@0.6.0/dist/katex.min.css';
 @import "./styles/markdownstyle.css";
 
 code::before, code::after {
