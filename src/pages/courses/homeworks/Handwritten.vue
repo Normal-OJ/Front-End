@@ -55,8 +55,7 @@
                         label="Upload Comment PDF(zip)"
                         prepend-icon="mdi-file"
                       ></v-file-input>
-
-                      <a :href="`https://noj.tw/api/submission/${item['submissionId']}/pdf/comment`" rel="noopener noreferrer" target="_blank">noj.tw/api/submission/{{item['submissionId']}}/pdf/comment (Past comment PDF)</a>
+                      <a :href="`/api/submission/${item['submissionId']}/pdf/comment`" rel="noopener noreferrer" target="_blank">/api/submission/{{item['submissionId']}}/pdf/comment (Past comment PDF)</a>
 
                     </v-card-text>
                   </template>
@@ -142,10 +141,17 @@ export default {
       this.data.file = null;
     },
     comment(sid) {
-      this.$http.put(`/api/submission/${sid}/grade`, {score: this.data.score})
+      this.$http.put(`/api/submission/${sid}/grade`, {score: Number(this.data.score)})
         .then((res) => {
           if ( this.data.file ) {
-            return this.$http.put(`/api/submission/${sid}/comment`, {comment: this.data.file})
+            var formData = new FormData();
+            formData.append('comment', this.data.file);
+            return this.$http.put(`/api/submission/${sid}/comment`,
+                                  formData,
+                                  {
+                                    headers: { 'Content-Type' : 'multipart/form-data' }, 
+                                  }
+                                ).then()
           }
           return true;
         })

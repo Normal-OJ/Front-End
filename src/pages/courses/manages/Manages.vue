@@ -10,12 +10,12 @@
         "
         grow
       >
-        <v-btn value="students">
+        <v-btn class="subtitle-2" value="students">
           <span>Students</span>
           <v-icon>mdi-account</v-icon>
         </v-btn>
 
-        <v-btn value="problems">
+        <v-btn class="subtitle-2" value="problems">
           <span>Problems</span>
           <v-icon>mdi-view-list</v-icon>
         </v-btn>
