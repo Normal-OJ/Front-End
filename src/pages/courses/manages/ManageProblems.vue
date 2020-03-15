@@ -77,11 +77,11 @@
     <v-card height="100%" elevation="2" v-else>
       <v-card-title class="font-weight-bold">
         Create Problems
-        <v-spacer></v-spacer>
+        <v-spacer/>
         Preview {{ $vuetify.breakpoint.mdAndUp ? '' : 'at bottom' }}
-        <v-spacer></v-spacer>
+        <v-spacer/>
       </v-card-title>
-      <v-divider class="mt-0"></v-divider>
+      <v-divider class="mt-0"/>
       <v-row class="px-4">
         <!-- From -->
         <v-col cols="12" md="6">
@@ -91,7 +91,7 @@
               dense
               type="error"
               :alertMsg="errMsg"
-            ></ui-alert>
+            />
             <v-container fuild>
               <v-row>
                 <v-text-field
@@ -103,7 +103,7 @@
                     v => !!v && v.length <= 64 || 'Sorry, the length is at most 64 characters.',
                   ]"
                   filled
-                ></v-text-field>
+                />
               </v-row>
               <v-row>
                 <v-col cols="auto" md="6" class="px-0">
@@ -113,7 +113,7 @@
                     :items="[{text: 'Online', value: 0}, {text: 'Offline (hidden)', value: 1}]"
                     filled
                     class="pr-1"
-                  ></v-select>
+                  />
                 </v-col>
                 <v-col cols="auto" md="6" class="px-0">
                   <v-select
@@ -122,7 +122,7 @@
                     :items="[{text: 'Defult (programming)', value: 0}, {text: 'Handwritten', value: 2}]"
                     filled
                     class="pl-1"
-                  ></v-select>
+                  />
                 </v-col>
               </v-row>
               <v-row>
@@ -133,7 +133,7 @@
                   filled
                   chips
                   multiple
-                ></v-combobox>
+                />
               </v-row>
               <v-row>
                 <v-textarea
@@ -145,18 +145,17 @@
                   ]"
                   auto-grow
                   filled
-                ></v-textarea>
+                />
               </v-row>
               <v-row v-show="prob.type != 2">
                 <v-select
                   v-model="prob.allowedLanguage"
                   label="Allowed Languages"
-                  :rules="[v => !!v || 'At least one language should be chosen.']"
+                  :rules="[v => !!v && v.length > 0 || 'At least one language should be chosen.']"
                   multiple
                   :items="[{text: 'C', value: 1}, {text: 'C++', value: 2}, {text: 'Python', value: 4}]"
                   filled
-                >
-                </v-select>
+                />
               </v-row>
               <v-row v-show="prob.type != 2">
                 <v-textarea
@@ -166,7 +165,7 @@
                   auto-grow
                   filled
                   class="pr-1"
-                ></v-textarea>
+                />
                 <v-textarea
                   v-model="prob.description.output"
                   label="Output"
@@ -174,7 +173,7 @@
                   auto-grow
                   filled
                   class="pl-1"
-                ></v-textarea>
+                />
               </v-row>
               <v-row class="pb-4" v-show="prob.type != 2">
                 <h4 class="my-0">Examples</h4>
@@ -197,7 +196,7 @@
                   auto-grow
                   filled
                   class="pr-1"
-                ></v-textarea>
+                />
                 <v-textarea
                   v-model="prob.description.sampleOutput[idx-1]"
                   :label="'Sample Output' + idx"
@@ -205,7 +204,7 @@
                   auto-grow
                   filled
                   class="pl-1"
-                ></v-textarea>
+                />
               </v-row>
               <v-row v-show="prob.type != 2">
                 <v-textarea
@@ -214,7 +213,7 @@
                   rows="2"
                   auto-grow
                   filled
-                ></v-textarea>
+                />
               </v-row>
               <v-row v-show="prob.type != 2">
                 <h4 class="my-0">Subtask</h4>
@@ -243,14 +242,14 @@
                     ]"
                     filled
                     class="pr-1"
-                  ></v-text-field>
+                  />
                   <v-text-field
                     v-model="prob.testCaseInfo.tasks[idx-1].taskScore"
                     label="Score of this subtask"
                     :rules="[v => !!v || prob.type == 2 || 'Please enter the score.']"
                     filled
                     class="pl-1"
-                  ></v-text-field>
+                  />
                 </v-row>
                 <v-row>
                   <v-text-field
@@ -259,14 +258,14 @@
                     :rules="[v => !!v || prob.type == 2 || 'Please enter the memory limit.']"
                     filled
                     class="pr-1"
-                  ></v-text-field>
+                  />
                   <v-text-field
                     v-model="prob.testCaseInfo.tasks[idx-1].timeLimit"
                     label="Time Limit(ms)"
                     :rules="[v => !!v || prob.type == 2 || 'Please enter the time limit.']"
                     filled
                     class="pl-1"
-                  ></v-text-field>
+                  />
                 </v-row>
               </div>
               <v-row v-show="prob.type != 2">
@@ -496,7 +495,7 @@ export default {
           });
         }
       }
-      if ( this.prob.allowedLanguage ) {
+      if ( this.$refs.form.validate() && this.prob.allowedLanguage ) {
         var temp = 0;
         this.prob.allowedLanguage.forEach(ele => {
           temp += ele;
