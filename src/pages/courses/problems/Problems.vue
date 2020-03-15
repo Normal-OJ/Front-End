@@ -1,7 +1,26 @@
 <template>
   <v-container
-    :style="{ width: $vuetify.breakpoint.mdAndUp ? '50vw' : '75vw', height: '100%' }"
+    :style="{ width: $vuetify.breakpoint.mdAndUp ? '75vw' : '95vw', height: '100%' }"
   >
+    <v-bottom-navigation
+      class="mb-3"
+      color="primary"
+      style="
+          -webkit-box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+          box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+        "
+    >
+      <v-card elevation="0" tile><v-card-text class="subtitle-1">Problem Filter(Coming Soon)</v-card-text></v-card>
+      <!-- <v-btn class="subtitle-2">
+        <span>My Submissions</span>
+        <v-icon>mdi-account</v-icon>
+      </v-btn>
+      <v-btn class="subtitle-2">
+        <span>All Submissions</span>
+        <v-icon>mdi-account-group</v-icon>
+      </v-btn> -->
+    </v-bottom-navigation>
+
     <v-card height="100%" elevation="2">
       <v-card-title class="font-weight-bold">
         Problems
@@ -33,7 +52,7 @@
                   {{ item.problemName }}
                 </a>
               </td>
-              <td class="subtitle-1">{{ item.type===0 ? 'Programming' : 'Handwritting' }}</td>
+              <td class="subtitle-1">{{ item.type===0 ? 'Programming' : 'Handwritten' }}</td>
               <td class="subtitle-1">
                 <v-chip 
                   class="mx-1"
@@ -42,12 +61,11 @@
                   label small
                 >{{ tag }}</v-chip>
               </td>
-              <td v-if="true" class="subtitle-1" v-text=""></td>
-              <td v-else>Not a student</td>
+              <td class="subtitle-1" v-text="item.score"></td>
               <!-- <td>{{ item.ACUser + '/' + item.submitter }}</td> -->
             </tr>
             <tr v-show="loading">
-              <td colspan="4">
+              <td colspan="5">
                 <v-skeleton-loader
                   class="mx-auto"
                   type="table-row"
@@ -104,9 +122,9 @@ export default {
           this.items = res.data.data;
         })
         .then(() => {
-          this.items.forEach(ele => {
+          this.items.forEach((ele, idx) => {
             this.$http.get(`/api/problem/${ele.problemId}/high-score`)
-              .then((res) => {ele.score = res.data.data})
+              .then((res) => {this.$set(this.items[idx], 'score', res.data.data.score)})
               .catch((err) => console.log(err))
           })
           this.loading = false;

@@ -1,6 +1,6 @@
 <template>
   <v-container
-    :style="{ width: $vuetify.breakpoint.mdAndUp ? '50vw' : '75vw', height: '100%' }"
+    :style="{ width: $vuetify.breakpoint.mdAndUp ? '75vw' : '95vw', height: '100%' }"
   >
     <v-bottom-navigation
       v-model="nav"
@@ -48,13 +48,13 @@
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.submissionId">
-              <td><a :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a></td>
-              <td><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
-              <td>{{ item.user.username }}</td>
+              <td class="subtitle-1"><a :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a></td>
+              <td class="subtitle-1"><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
+              <td class="subtitle-1">{{ item.user.username }}</td>
               <td class="subtitle-1" :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
-              <td>{{ item.score }}</td>
-              <td>{{ LANG[item.languageType] }}</td>
-              <td>{{ timeFormat(item.timestamp) }}</td>
+              <td class="subtitle-1">{{ item.score }}</td>
+              <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
+              <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
             </tr>
             <tr v-show="loading">
               <td colspan="6">
