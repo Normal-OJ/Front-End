@@ -2,38 +2,36 @@
   <div>
     <v-card class="ma-3">
       <v-simple-table class="px-3">
-        <!-- <template v-slot:default> -->
-          <thead>
-            <tr>
-              <th class="subtitle-1 font-weight-bold text--primary">Title</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Score</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Description</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr 
-              v-for="item in items"
-              :key="item.title"
-            >
-              <td class="subtitle-1">{{ item.title }}</td>
-              <td class="subtitle-1">{{ item.score }}</td>
-              <td class="subtitle-1" style="white-space: pre;">{{ item.content }}</td>
-              <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
-            </tr>
-            <tr v-show="loading">
-              <td colspan="6">
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="table-row"
-                ></v-skeleton-loader>
-              </td>
-            </tr>
-            <tr v-if="!loading && (!items || items.length===0)">
-              <td class="subtitle-1" colspan="4">🦄 No data available.</td>
-            </tr>
-          </tbody>
-        <!-- </template> -->
+        <thead>
+          <tr>
+            <th class="subtitle-1 font-weight-bold text--primary">Title</th>
+            <th class="subtitle-1 font-weight-bold text--primary">Score</th>
+            <th class="subtitle-1 font-weight-bold text--primary">Description</th>
+            <th class="subtitle-1 font-weight-bold text--primary">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            v-for="item in items"
+            :key="item.title"
+          >
+            <td class="subtitle-1">{{ item.title }}</td>
+            <td class="subtitle-1">{{ item.score }}</td>
+            <td class="subtitle-1" style="white-space: pre;">{{ item.content }}</td>
+            <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
+          </tr>
+          <tr v-show="loading">
+            <td colspan="4">
+              <v-skeleton-loader
+                class="mx-auto"
+                type="table-row"
+              ></v-skeleton-loader>
+            </td>
+          </tr>
+          <tr v-if="!loading && (!items || items.length===0)">
+            <td class="subtitle-1" colspan="4">🦄 No data available.</td>
+          </tr>
+        </tbody>
       </v-simple-table>
     </v-card>
   </div>
@@ -52,25 +50,10 @@ export default {
   },
 
   created() {
-    this.getGrade(this.getUser());
+    this.getGrade();
   },
 
   methods: {
-    getUser() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          return payload.username;
-        } else {
-          this.$router.push('/');
-        }
-      } else {
-        this.$router.push('/');
-      }
-    },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
-    },
     getGrade() {
       this.loading = true;
       this.$http.get(`/api/course/${this.$route.params.name}/grade/uier`)
