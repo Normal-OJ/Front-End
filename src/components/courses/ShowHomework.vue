@@ -54,24 +54,30 @@
                 <tr>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'#'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Problem id'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Problem Name'"></th>
-                  <!-- <th v-if="item.studentStatus" class="title text-left" v-text="'Score'"></th> -->
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Type'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Name'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Score'"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(id, idx) in item.problemIds" :key="idx">
                   <td class="subtitle-1" v-text="idx+1"></td>
                   <td class="subtitle-1" v-text="id"></td>
+                  <td class="subtitle-1" v-text="findType(id)"></td>
                   <td class="subtitle-1">
                     <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+id" v-text="findProb(id)"></a>
                   </td>
-                  <!-- <td v-if="item.studentStatus" class="title text-left" v-text="item.studentStatus ? item.studentStatus.id : ''"></td> -->
+                  <td v-if="user !== '' && item.studentStatus[`${id}`]" class="subtitle-1" v-text="item.studentStatus[`${id}`]['score']"></td>
+                  <td v-else>Not a student</td>
                 </tr>
               </tbody>
             </template>
           </v-simple-table>
           <div v-if="perm">
             <v-card-text>
+              <ui-button :to="`homework/${item.id}/handwritten`" color="info">
+                <template slot="content">Check Handwritten</template>
+              </ui-button>
               <ui-button :to="`homework/${item.id}`" color="info">
                 <template slot="content">View Student Status</template>
               </ui-button>
@@ -121,7 +127,7 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import HomeworkScoreboard from './HomeworkScoreboard'
-
+var TYPE = ['Programming', 'Template', 'Handwritten'];
 export default {
 
   name: 'ShowHomework',
@@ -147,6 +153,10 @@ export default {
       type: Array,
       default: () => ['edit', 'delete'],
     },
+    user: {
+      type: String,
+      default: '',
+    },
   },
 
   data () {
@@ -156,10 +166,18 @@ export default {
         i: null,
         id: null,
       },
+
     }
   },
 
   methods: {
+    findType(id) {
+      for ( var i=0; i<this.probs.length; i++ ) {
+        if ( this.probs[i].problemId === id ) {
+          return TYPE[this.probs[i].type];
+        }
+      }
+    },
     findProb(id) {
       for ( var i=0; i<this.probs.length; i++ ) {
         if ( this.probs[i].problemId === id ) {

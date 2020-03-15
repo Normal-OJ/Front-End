@@ -101,8 +101,8 @@
       </template>
     </Creator>
     
-    <ShowHomework :items="items" :probs="probs" :perm="perm"
-      @edit="edit" @delete="deleteHw"
+    <ShowHomework :items="items" :probs="probs" :perm="perm" :user="username"
+      @edit="edit" @delete="deleteHw" 
     ></ShowHomework>
   </div>
 </template>
@@ -203,6 +203,7 @@ export default {
           this.probs.forEach(ele => {
             ele['displayedName'] = ele.problemId + ' - ' + ele.problemName;
           })
+
         })
         .catch((err) => {
           console.log(err);
