@@ -139,11 +139,17 @@ export default {
     },
     scoring(item) {
       this.data.score = item.score;
+      this.data.file = null;
     },
     comment(sid) {
       this.$http.put(`/api/submission/${sid}/grade`, {score: this.data.score})
-        .then((res) => console.log(res))
+        .then((res) => {console.log(res); this.dialog = false;})
         .catch((err) => console.log(err))
+      if ( this.data.file ) {
+        this.$http.put(`/api/submission/${sid}/comment`, {comment: this.data.file})
+          .then((res) => {console.log(res); this.dialog = false;})
+          .catch((err) => console.log(err))
+      }
     },
     getUrl() {
       // this.copycat = {};
