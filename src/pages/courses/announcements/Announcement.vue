@@ -28,6 +28,10 @@
             no-resize
             auto-grow
           ></v-textarea>
+          <v-switch
+            label="pin at top"
+            v-model="ann.pinned"
+          ></v-switch>
         </v-form>
       </template>
     </Creator>
@@ -60,6 +64,7 @@ export default {
       ann: {
         title: '',
         content: '',
+        pinned: false,
       },
       perm: false,
     }

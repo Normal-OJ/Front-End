@@ -10,9 +10,11 @@
         </v-card-title>
         <v-divider class="mt-0"></v-divider>
         <v-card-text class="pl-10">
-          <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>How to create account?</a><br>
-          <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>Get started with Normal OJ</a><br>
-          <a class="ml-6 subtitle-1"><v-icon>mdi-file-document</v-icon>Normal OJ Problem Format</a>
+          <a
+            v-for="item in pin"
+            :key="item.annId"
+            class="ml-6 subtitle-1" target="_blank" rel="noopener noreferrer" :href="'/post/'+item.annId">
+            <v-icon>mdi-file-document</v-icon>{{ item.title }}</a><br>
         </v-card-text>
       </v-card tile>
 
@@ -52,6 +54,7 @@ export default {
   data () {
     return {
       items: null,
+      pin: null,
     }
   },
 
@@ -93,16 +96,28 @@ export default {
       this.$http.get('/api/ann/')
         .then((res) => {
           // console.log(res);
+          this.pin = [];
           this.items = [];
           res.data.data.forEach(ele => {
-            this.items.push({
-              'annId': ele.annId,
-              'title': ele.title,
-              'author': ele.creator,
-              'content': ele.markdown,
-              'createdTime': this.timeFormat(ele.createTime),
-              'lastUpdatedTime': this.timeFormat(ele.updateTime),
-              'lastUpdater': ele.updater});
+            if ( ele.pinned ) {
+              this.pin.push({
+                'annId': ele.annId,
+                'title': ele.title,
+                'author': ele.creator,
+                'content': ele.markdown,
+                'createdTime': this.timeFormat(ele.createTime),
+                'lastUpdatedTime': this.timeFormat(ele.updateTime),
+                'lastUpdater': ele.updater});
+            } else {
+              this.items.push({
+                'annId': ele.annId,
+                'title': ele.title,
+                'author': ele.creator,
+                'content': ele.markdown,
+                'createdTime': this.timeFormat(ele.createTime),
+                'lastUpdatedTime': this.timeFormat(ele.updateTime),
+                'lastUpdater': ele.updater});
+            }
           })
         })
         .catch((err) => {

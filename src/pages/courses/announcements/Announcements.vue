@@ -16,6 +16,10 @@
             no-resize
             auto-grow
           ></v-textarea>
+          <v-switch
+            label="pin at top"
+            v-model="ann.pinned"
+          ></v-switch>
         </v-form>
       </template>
     </Creator>
@@ -51,6 +55,7 @@ export default {
       ann: {
         'title': '',
         'content': '',
+        'pinned': false,
       },
       perm: false,
       editing: -1,
@@ -95,7 +100,7 @@ export default {
       if ( this.$refs.form.validate() ) {
         // console.log(this.editing);
         if ( this.editing != -1 ) {
-          this.$http.put('/api/ann', {'title': this.ann.title, 'markdown': this.ann.content, 'annId': this.editing})
+          this.$http.put('/api/ann', {'title': this.ann.title, 'markdown': this.ann.content, 'annId': this.editing, 'pinned': this.ann.pinned})
             .then((res) => {
               this.cancel();
               this.$router.go(0);
@@ -103,7 +108,7 @@ export default {
             .catch((err) => {
             });
         } else {
-          this.$http.post('/api/ann', {'courseName': this.$route.params.name, 'title': this.ann.title, 'markdown': this.ann.content})
+          this.$http.post('/api/ann', {'courseName': this.$route.params.name, 'title': this.ann.title, 'markdown': this.ann.content, 'pinned': this.ann.pinned})
             .then((res) => {
               this.cancel();
               this.$router.go(0);
