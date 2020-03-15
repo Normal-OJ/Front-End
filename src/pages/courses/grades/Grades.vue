@@ -50,13 +50,28 @@ export default {
   },
 
   created() {
-    this.getGrade();
+    this.getGrade(this.getUser());
   },
 
   methods: {
-    getGrade() {
+    getUser() {
+      if ( this.$cookies.isKey('jwt') ) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'));
+        if ( payload.active === true ) {
+          return payload.username;
+        } else {
+          this.$router.push('/');
+        }
+      } else {
+        this.$router.push('/');
+      }
+    },
+    parseJwt(token) {
+      return JSON.parse(atob(token.split('.')[1])).data;
+    },
+    getGrade(user) {
       this.loading = true;
-      this.$http.get(`/api/course/${this.$route.params.name}/grade/uier`)
+      this.$http.get(`/api/course/${this.$route.params.name}/grade/${user}`)
         .then((res) => {
           this.items = res.data.data;
           this.loading = false;
