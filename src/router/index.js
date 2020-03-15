@@ -1,25 +1,28 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/home/Home'
-import Problemset from '@/components/problemset/Problemset'
-import Problem from '@/components/problemset/Problem'
-import ProblemsManage from '@/components/problemset/ProblemsManage/'
-import Submissions from '@/components/submissions/Submissions'
-import Submission from '@/components/submissions/Submission'
-import Courses from '@/components/courses/Courses'
-import Course from '@/components/courses/Course'
-import CoursesAnnouncement from '@/components/courses/element/CoursesAnnouncement'
-import CoursesAnnouncementPost from '@/components/courses/element/CoursesAnnouncementPost'
-import CoursesHomework from '@/components/courses/element/CoursesHomework'
-import CoursesContest from '@/components/courses/element/CoursesContest'
-import CoursesDiscussion from '@/components/courses/element/CoursesDiscussion'
-import CoursesDiscussionPost from '@/components/courses/element/CoursesDiscussionPost'
-import CoursesScore from '@/components/courses/element/CoursesScore'
-import CoursesManage from '@/components/courses/element/CoursesManage'
-import Inbox from '@/components/inbox/Inbox'
-import EmailVerify from '@/components/header/EmailVerify'
-import EmailResend from '@/components/header/EmailResend'
-import Profile from '@/components/header/Profile'
+import Home from '@/pages/home/Home'
+import SysAnn from '@/pages/home/SysAnn'
+import Problem from '@/pages/problem/Problem'
+import Submission from '@/pages/submission/Submission'
+import Courses from '@/pages/courses/Courses'
+import Course from '@/pages/courses/Course'
+import CoursesAnnouncement from '@/pages/courses/announcements/Announcement'
+import CoursesAnnouncements from '@/pages/courses/announcements/Announcements'
+import CoursesHomeworks from '@/pages/courses/homeworks/Homeworks'
+import CoursesHomeworkStatus from '@/pages/courses/homeworks/Status'
+import CoursesHomeworkHandwritten from '@/pages/courses/homeworks/Handwritten'
+import CoursesProblems from '@/pages/courses/problems/Problems'
+import CoursesSubmissions from '@/pages/courses/submissions/Submissions'
+import CoursesDiscussion from '@/pages/courses/discussions/Discussion'
+import CoursesDiscussions from '@/pages/courses/discussions/Discussions'
+import CoursesGrades from '@/pages/courses/grades/Grades'
+import CoursesManages from '@/pages/courses/manages/Manages'
+import Inbox from '@/pages/inbox/Inbox'
+import About from '@/pages/about/About'
+import EmailVerify from '@/pages/help/EmailVerify'
+import EmailResend from '@/pages/help/EmailResend'
+import Profile from '@/pages/profile/Profile'
+import Demo from '@/components/Demo'
 
 Vue.use(Router)
 
@@ -32,24 +35,14 @@ export default new Router({
       component: Home
     },
     {
-      path: '/problems',
-      name: 'Problemset',
-      component: Problemset
-    },
-    {
-      path: '/problems/manage',
-      name: 'ProblemsManage',
-      component: ProblemsManage
+      path: '/post/:id',
+      name: 'SysAnn',
+      component: SysAnn
     },
     {
       path: '/problem/:id',
       name: 'Problem',
       component: Problem
-    },
-    {
-      path: '/submissions',
-      name: 'Submissions',
-      component: Submissions
     },
     {
       path: '/submission/:id',
@@ -66,21 +59,29 @@ export default new Router({
       name: 'Course',
       component: Course,
       children: [
-        { path: 'announcement', component: CoursesAnnouncement },
-        { path: 'announcement/:id', component: CoursesAnnouncementPost },
-        { path: 'homework', component: CoursesHomework },
-        { path: 'contest', component: CoursesContest },
-        { path: 'discussion', component: CoursesDiscussion },
-        { path: 'discussion/:id', component: CoursesDiscussionPost },
-        { path: 'score', component: CoursesScore },
-        { path: 'manage', component: CoursesManage},
+        { path: 'announcements', component: CoursesAnnouncements },
+        { path: 'announcement/:id', component: CoursesAnnouncement },
+        { path: 'homeworks', component: CoursesHomeworks },
+        { path: 'homework/:id', component: CoursesHomeworkStatus },
+        { path: 'homework/:id/handwritten', component: CoursesHomeworkHandwritten },
+        { path: 'problems', component: CoursesProblems },
+        { path: 'submissions', component: CoursesSubmissions },
+        { path: 'discussions', component: CoursesDiscussions },
+        { path: 'discussion/:id', component: CoursesDiscussion },
+        { path: 'grades', component: CoursesGrades },
+        { path: 'manages', component: CoursesManages },
       ],
-      redirect: '/course/:name/announcement',
+      redirect: '/course/:name/announcements',
     },
     {
       path: '/inbox',
       name: 'Inbox',
       component: Inbox
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: About
     },
     {
       path: '/email_verify',
@@ -96,6 +97,11 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: Profile
-    }
+    },
+    {
+      path: '/ui/demo',
+      name: 'Demo',
+      component: Demo
+    },
   ]
 })

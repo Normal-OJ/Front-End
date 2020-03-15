@@ -14,21 +14,17 @@ export default {
   name: 'App',
 
   components: {
-    Header,
+    Header
   },
 
   data: () => ({
-  })
+  }),
 };
 </script>
 
 <style>
+@import 'https://unpkg.com/katex@0.6.0/dist/katex.min.css';
 @import "./styles/markdownstyle.css";
-
-#app {
-  font-family: 'Lato';
-  font-size: 20px;
-}
 
 code::before, code::after {
   content: none !important;
