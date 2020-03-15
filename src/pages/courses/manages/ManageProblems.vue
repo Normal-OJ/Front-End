@@ -86,12 +86,6 @@
         <!-- From -->
         <v-col cols="12" md="6">
           <v-form ref="form" v-model="form">
-            <ui-alert
-              v-model="errAlert"
-              dense
-              type="error"
-              :alertMsg="errMsg"
-            />
             <v-container fuild>
               <v-row>
                 <v-text-field
@@ -149,7 +143,7 @@
               </v-row>
               <v-row v-show="prob.type != 2">
                 <v-select
-                  v-model="prob.allowedLanguage"
+                  v-model="allowedLangAlt"
                   label="Allowed Languages"
                   :rules="[v => !!v && v.length > 0 || 'At least one language should be chosen.']"
                   multiple
@@ -294,6 +288,15 @@
                 <v-file-input v-model="zip" show-size label="Upload Testdata(zip)"></v-file-input>
               </v-row>
               <v-row>
+                <ui-alert
+                  v-model="errAlert"
+                  dense
+                  type="error"
+                  :alertMsg="errMsg"
+                >
+                </ui-alert>
+              </v-row>
+              <v-row>
                 <v-spacer></v-spacer>
                 <ui-button color="secondary" alert @alertClick="creating = false" class="mr-3">
                   <template slot="content">Cancel</template>
@@ -398,6 +401,7 @@ export default {
       rule: false,
       zip: null,
       testdata: null,
+      allowedLangAlt: [1, 2, 4],
     }
   },
 
@@ -458,7 +462,7 @@ export default {
           }],
         },
         canViewStdout: false,
-        allowedLanguage: [1, 2, 4],
+        allowedLanguage: 7,
       };
     },
     getProbs() {
@@ -485,7 +489,7 @@ export default {
     submit() {
       if ( this.prob.testCaseInfo ) {
         if ( this.prob.type === 2 ) {
-          delete this.prob.testCaseInfo;
+          this.prob.testCaseInfo;
         } else {
           this.prob.testCaseInfo.tasks.forEach(ele => {
             ele.caseCount = Number(ele.caseCount);
@@ -495,14 +499,15 @@ export default {
           });
         }
       }
-      if ( this.$refs.form.validate() && this.prob.allowedLanguage ) {
+      if ( this.$refs.form.validate() && this.prob.allowedLangAlt ) {
         var temp = 0;
-        this.prob.allowedLanguage.forEach(ele => {
+        this.prob.allowedLangAlt.forEach(ele => {
           temp += ele;
         });
         this.prob.allowedLanguage = temp;
       }
       if ( this.$refs.form.validate() ) {
+        console.log(this.prob);
         if ( this.creating === -1 ) {
           this.$http.post('/api/problem/manage', this.prob)
             .then((res) => {
@@ -510,10 +515,10 @@ export default {
               if ( !this.zip ) {
                 this.$router.go(0);
               }
-              var formData = new FormData();
-              formData.append('case', this.zip);
               if ( this.prob.type !== 2 ) {
-               return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`,
+                var formData = new FormData();
+                formData.append('case', this.zip);
+                return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`,
                                     formData,
                                     {
                                       headers: { 'Content-Type' : 'multipart/form-data' }, 
@@ -524,6 +529,8 @@ export default {
               this.$router.go(0);
             })
             .catch((err) => {
+              this.errMsg = err.response.data.message;
+              this.errAlert = true;
               console.log(err);
             })
         } else {
@@ -546,6 +553,8 @@ export default {
               this.$router.go(0);
             })
             .catch((err) => {
+              this.errMsg = err.response.data.message;
+              this.errAlert = true;
               console.log(err);
             })
         }
@@ -582,7 +591,6 @@ export default {
     },
     edit(idx) {
       this.toCreate(idx);
-      var zip = new JSZip();
       this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
         .then(async(res) => {
           // console.log(res.data.data);
@@ -592,60 +600,71 @@ export default {
             if ( key === 'testCase' ) {
               this.prob['testCaseInfo'] = value;
             } else if ( key === 'allowedLanguage' ) {
-              this.prob[key] = [];
+              this.prob[key] = value;
+              this.allowedLangAlt = [];
               var temp = value;
               if ( temp >= 4 ) {
-                this.prob[key].push(4);
+                this.allowedLangAlt.push(4);
                 temp -= 4;
               }
               if ( temp >= 2 ) {
-                this.prob[key].push(2);
+                this.allowedLangAlt.push(2);
                 temp -= 2;
               }
               if ( temp >= 4 ) {
-                this.prob[key].push(4);
+                this.allowedLangAlt.push(4);
                 temp -= 4;
               }
               if ( temp >= 1 ) {
-                this.prob[key].push(1);
+                this.allowedLangAlt.push(1);
                 temp -= 1;
               }
-              this.prob[key].reverse();
+              this.allowedLangAlt.reverse();
             } else {
               this.prob[key] = value;
             }
           }
-          
-          var isFile = false;
-          if ( data.testCase ) {
-            data.testCase.tasks.forEach((ele, idx) => {
-              this.prob.testCaseInfo.tasks[idx]['caseCount'] = ele.input.length;
-              ele.input.forEach((file, jdx) => {
-                isFile = true;
-                zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
-              })
-              ele.output.forEach((file, jdx) => {
-                zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
-              })
-              delete this.prob.testCaseInfo.tasks[idx]['input'];
-              delete this.prob.testCaseInfo.tasks[idx]['output'];
+          console.log(this.prob);
+          // var isFile = false;
+          if ( this.prob.type !== 2 && data.testCaseInfo ) {
+            this.prob.testCaseInfo.tasks = [];
+            data.testCaseInfo.tasks.forEach((ele, idx) => {
+              this.prob.testCaseInfo.tasks.push(
+                {
+                  'caseCount': ele.input.length,
+                  'taskScore': ele.taskScore,
+                  'timeLimit': ele.timeLimit,
+                  'memoryLimit': ele.memoryLimit,
+                }
+              );
             })
           }
+          //     ele.input.forEach((file, jdx) => {
+          //       isFile = true;
+          //       zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
+          //     })
+          //     ele.output.forEach((file, jdx) => {
+          //       zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
+          //     })
+          //     delete this.prob.testCaseInfo.tasks[idx]['input'];
+          //     delete this.prob.testCaseInfo.tasks[idx]['output'];
+          //   })
 
-          console.log(this.prob);
-          if ( isFile ) {
-            await zip.generateAsync({type:"base64"})
-              .then((base64) => {
-                this.testdata = "data:application/zip;base64," + base64;
-              })
-          } else {
-            this.testdata = null;
-          }
+          // console.log(this.prob);
+          // if ( isFile ) {
+          //   await zip.generateAsync({type:"base64"})
+          //     .then((base64) => {
+          //       this.testdata = "data:application/zip;base64," + base64;
+          //     })
+          // } else {
+          //   this.testdata = null;
           this.create = true;
         })
         .catch((err) => {
           // console.log(err);
         })
+        this.$http.get(`/api/${this.items[idx].problemId}/testcase`)
+          .then((res) => {console.log(res); this.testdata = res.data.data;})
       // this.prob = this.items[idx];
       // this.create = true;
     },

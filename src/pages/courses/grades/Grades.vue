@@ -16,7 +16,7 @@
               v-for="item in items"
               :key="item.title"
             >
-               <td>{{ item.title }}</td>
+              <td>{{ item.title }}</td>
               <td>{{ item.score }}</td>
               <td style="white-space: pre;">{{ item.content }}</td>
               <td>{{ timeFormat(item.timestamp) }}</td>

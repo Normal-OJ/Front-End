@@ -37,13 +37,13 @@
     <div class="px-4" style="height: 15%; width: 100%;">
       <v-form ref="form">
         <v-row>
-          <ui-alert
+          <!-- <ui-alert
             v-if="type === 2"
             v-model="alert"
             dense
             type="error"
             :alertMsg="errMsg"
-          ></ui-alert>
+          ></ui-alert> -->
           <v-col :cols="type !== 2 ? 4 : 6">
             <v-file-input
               prepend-icon="mdi-upload"
@@ -186,7 +186,7 @@ export default {
         this.loading = true;
         var zip = new JSZip();
         if ( this.type===2 ) {
-          zip.file('main.pdf', this.file);
+          zip.file(`main.${this.file.name.split('.').pop()}`, this.file);
           this.editorConfig.language = 3;
         } else {
           zip.file(`main${LANG_EXT[this.editorConfig.language]}`, this.code);
@@ -213,7 +213,7 @@ export default {
           })
           .catch((err) => {
             this.errMsg = err.response.data.message;
-            this.alert = true;
+            // this.alert = true;
             this.loading = false;
             this.$emit('exceedRateLimit', this.errMsg);
             console.log(err);
