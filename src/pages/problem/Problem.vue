@@ -70,9 +70,9 @@
                     </thead>
                     <tbody>
                       <tr v-for="(limit, idx) in this.prob.limit" :key="idx">
-                        <td>{{ idx+1 }}</td>
-                        <td>{{ limit[0] }}</td>
-                        <td>{{ limit[1] }}</td>
+                        <td class="subtitle-1">{{ idx+1 }}</td>
+                        <td class="subtitle-1">{{ limit[0] }}</td>
+                        <td class="subtitle-1">{{ limit[1] }}</td>
                       </tr>
                     </tbody>
                   </v-simple-table>

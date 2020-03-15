@@ -16,10 +16,10 @@
               v-for="item in items"
               :key="item.title"
             >
-              <td>{{ item.title }}</td>
-              <td>{{ item.score }}</td>
-              <td style="white-space: pre;">{{ item.content }}</td>
-              <td>{{ timeFormat(item.timestamp) }}</td>
+              <td class="subtitle-1">{{ item.title }}</td>
+              <td class="subtitle-1">{{ item.score }}</td>
+              <td class="subtitle-1" style="white-space: pre;">{{ item.content }}</td>
+              <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
             </tr>
             <tr v-show="loading">
               <td colspan="6">
@@ -30,7 +30,7 @@
               </td>
             </tr>
             <tr v-if="!loading && (!items || items.length===0)">
-              <td colspan="4">🦄 No data available.</td>
+              <td class="subtitle-1" colspan="4">🦄 No data available.</td>
             </tr>
           </tbody>
         <!-- </template> -->
@@ -80,6 +80,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          this.loading = false;
         })
     },
     timeFormat(time) {

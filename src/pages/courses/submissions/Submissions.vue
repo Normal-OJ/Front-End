@@ -51,7 +51,7 @@
               <td><a :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a></td>
               <td><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
               <td>{{ item.user.username }}</td>
-              <td :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
+              <td class="subtitle-1" :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
               <td>{{ item.score }}</td>
               <td>{{ LANG[item.languageType] }}</td>
               <td>{{ timeFormat(item.timestamp) }}</td>
@@ -65,7 +65,7 @@
               </td>
             </tr>
             <tr v-if="!loading && (!items || items.length===0)">
-              <td colspan="6">🦄 No data available.</td>
+              <td class="subtitle-1" colspan="6">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>

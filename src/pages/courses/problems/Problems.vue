@@ -21,19 +21,20 @@
               <th class="font-weight-bold subtitle-1 text--primary">Name</th>
               <th class="font-weight-bold subtitle-1 text--primary">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Score</th>
               <!-- <th class="font-weight-bold subtitle-1 text--primary">AC rate</th> -->
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.submissionId">
-              <td>{{ item.problemId }}</td>
-              <td>
+              <td class="subtitle-1">{{ item.problemId }}</td>
+              <td class="subtitle-1">
                 <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+item.problemId">
                   {{ item.problemName }}
                 </a>
               </td>
-              <td>{{ item.type===0 ? 'Programming' : 'Handwritting' }}</td>
-              <td>
+              <td class="subtitle-1">{{ item.type===0 ? 'Programming' : 'Handwritting' }}</td>
+              <td class="subtitle-1">
                 <v-chip 
                   class="mx-1"
                   v-for="tag in item.tags"
@@ -41,6 +42,8 @@
                   label small
                 >{{ tag }}</v-chip>
               </td>
+              <td v-if="true" class="subtitle-1" v-text=""></td>
+              <td v-else>Not a student</td>
               <!-- <td>{{ item.ACUser + '/' + item.submitter }}</td> -->
             </tr>
             <tr v-show="loading">
@@ -52,7 +55,7 @@
               </td>
             </tr>
             <tr v-if="!loading && (!items || items.length===0)">
-              <td colspan="4">🦄 No data available.</td>
+              <td class="subtitle-1" colspan="4">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>
@@ -99,6 +102,13 @@ export default {
         .then((res) => {
           // console.log(res.data.data);
           this.items = res.data.data;
+        })
+        .then(() => {
+          this.items.forEach(ele => {
+            this.$http.get(`/api/problem/${ele.problemId}/high-score`)
+              .then((res) => {ele.score = res.data.data})
+              .catch((err) => console.log(err))
+          })
           this.loading = false;
         })
         .catch((err) => {
