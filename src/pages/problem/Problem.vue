@@ -108,7 +108,7 @@
 import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
 // import HistorySubmissions from './HistorySubmissions'
-const LANG = ['C11', 'C++11', 'Python3'];
+const LANG = ['C11', 'C++17', 'Python3'];
 const API_BASE_URL = '/api';
 export default {
   name: 'Problem',
@@ -143,7 +143,7 @@ export default {
         value -= 4;
       }
       if ( value >= 2 ) {
-        temp.push({ 'text': 'C++ (c++11)', 'value': 1 });
+        temp.push({ 'text': 'C++ (c++17)', 'value': 1 });
         value -= 2;
       }
       if ( value >= 1 ) {

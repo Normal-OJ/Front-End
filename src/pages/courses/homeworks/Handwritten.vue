@@ -143,13 +143,14 @@ export default {
     },
     comment(sid) {
       this.$http.put(`/api/submission/${sid}/grade`, {score: this.data.score})
-        .then((res) => {console.log(res); this.dialog = false;})
+        .then((res) => {
+          if ( this.data.file ) {
+            return this.$http.put(`/api/submission/${sid}/comment`, {comment: this.data.file})
+          }
+          return true;
+        })
+        .then((res) => {this.dialog = false; this.$router.go(0);})
         .catch((err) => console.log(err))
-      if ( this.data.file ) {
-        this.$http.put(`/api/submission/${sid}/comment`, {comment: this.data.file})
-          .then((res) => {console.log(res); this.dialog = false;})
-          .catch((err) => console.log(err))
-      }
     },
     getUrl() {
       // this.copycat = {};
