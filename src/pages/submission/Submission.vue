@@ -1,5 +1,12 @@
 <template>
   <v-col style="height: 100%; width: 100%">
+    <v-slide-x-transition>
+      <v-row no-gutters v-show="course!==''">
+        <ui-button small color="info" class="mt-3" :to="`/course/${course}/submissions`">
+          <template slot="content">back to submission list</template>
+        </ui-button>
+      </v-row>
+    </v-slide-x-transition>
     <v-row no-gutters class="px-6">
       <h3>Submission Information</h3>
     </v-row>
@@ -121,12 +128,13 @@ export default {
       submData: [],
       codeShow: false,
       code: '',
+      course: '',
       langMode: '', 
       darkTheme: false,
       dialog: false,
       diaTitle: '',
       diaText: '',
-      LANG: ['C (c11)', 'C++ (c++11)', 'Python (py3)'],
+      LANG: ['C (c11)', 'C++ (c++17)', 'Python (py3)'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
     }
@@ -153,7 +161,7 @@ export default {
           ];
           this.langMode = LANG_MODE[data.languageType];
           this.$http.get(`/api/problem/view/${data.problemId}`)
-            .then((resp) => {this.submInfo.splice(0,0,{'title': 'Problem', 'text': data.problemId, 'name': resp.data.data.problemName})})
+            .then((resp) => {this.course = resp.data.data.courses[0]; this.submInfo.splice(0,0,{'title': 'Problem', 'text': data.problemId, 'name': resp.data.data.problemName})})
             .catch((err) => {});
           data.tasks.forEach((ele, idx) => {
             var sub = [];
