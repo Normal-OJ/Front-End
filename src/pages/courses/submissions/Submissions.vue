@@ -38,10 +38,11 @@
           <thead>
             <tr>
               <th class="font-weight-bold subtitle-1 text--primary">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">PID</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Problem</th>
               <th class="font-weight-bold subtitle-1 text--primary">User</th>
               <th class="font-weight-bold subtitle-1 text--primary">Result</th>
               <th class="font-weight-bold subtitle-1 text--primary">Score</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Language</th>
               <th class="font-weight-bold subtitle-1 text--primary">Time</th>
             </tr>
           </thead>
@@ -52,6 +53,7 @@
               <td>{{ item.user.username }}</td>
               <td :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
               <td>{{ item.score }}</td>
+              <td>{{ LANG[item.languageType] }}</td>
               <td>{{ timeFormat(item.timestamp) }}</td>
             </tr>
             <tr v-show="loading">
@@ -82,6 +84,7 @@ export default {
       page: 1,
       items: null,
       loading: false,
+      LANG: ['C', 'C++', 'Python', 'H'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       nav: 0,

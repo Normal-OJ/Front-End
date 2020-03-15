@@ -25,7 +25,10 @@
               v-for="prob in probs"
               class="subtitle-1"
             >
-              {{ (items[item][prob].problemStatus === 0 ? 'Solved' : 'Unsolved') + ' / ' + items[item][prob].score + 'pts' + ' / ' + items[item][prob].submissionIds.length + 'tries' }}
+              <font v-if="items[item][prob].problemStatus!=null" :color="COLOR[items[item][prob].problemStatus+1]">{{ STATUS[items[item][prob].problemStatus+1] }}</font>
+              <font v-else>Unsolved</font>
+              {{ ' / ' + items[item][prob].score + 'pts' }}
+              {{ ' / ' + items[item][prob].submissionIds.length + 'tries' }}
             </td>
           </tr>
         </tbody>
@@ -44,6 +47,8 @@ export default {
       items: null,
       probs: null,
       copycat: {},
+      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
+      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
     }
   },
 

@@ -400,6 +400,7 @@ export default {
       prob: null,
       rule: false,
       zip: null,
+      existZip: null,
       testdata: null,
       allowedLangAlt: [1, 2, 4],
     }
@@ -663,8 +664,8 @@ export default {
         .catch((err) => {
           // console.log(err);
         })
-        this.$http.get(`/api/${this.items[idx].problemId}/testcase`)
-          .then((res) => {console.log(res); this.testdata = res.data.data;})
+        this.$http.get(`/api/problem/${this.items[idx].problemId}/testcase`)
+          .then((res) => {this.existZip = res.data;})
       // this.prob = this.items[idx];
       // this.create = true;
     },
