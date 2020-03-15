@@ -161,8 +161,8 @@ export default {
 
   beforeMount() {
     this.checkUser(this.getUsername());
-    this.getHomework();
     this.getProblems();
+    this.getHomework();
   },
 
   methods: {
@@ -190,10 +190,31 @@ export default {
               this.items.push(ele);
             })
           }
+          // if ( this.perm ) {
+          //   this.items.forEach(ele => {
+          //     let temp = [];
+          //     ele.problemIds.forEach(id => {
+          //       if ( this.findType(id) === 2 ) {
+          //         temp.push(id);
+          //       }
+          //     })
+          //     ele.studentStatus['handwritten'] = temp;
+          //     for ( const [key, value] of Object.entries(ele.studentStatus) ) {
+          //       ele.studentStatus[key]['handwritten']
+          //     }
+          //   })
+          // }
         })
         .catch((err) => {
           console.log(err);
         })
+    },
+    findType(id) {
+      this.probs.forEach(ele => {
+        if ( ele.problemId === id ) {
+          return ele.type;
+        }
+      })
     },
     getProblems() {
       this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)

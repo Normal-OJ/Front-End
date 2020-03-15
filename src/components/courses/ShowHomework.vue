@@ -75,7 +75,7 @@
           </v-simple-table>
           <div v-if="perm">
             <v-card-text>
-              <ui-button :to="`homework/${item.id}/handwritten`" color="info">
+              <ui-button :to="`homework/${item.id}/handwritten`" color="warning" class="mr-3">
                 <template slot="content">Check Handwritten</template>
               </ui-button>
               <ui-button :to="`homework/${item.id}`" color="info">

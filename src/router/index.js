@@ -10,6 +10,7 @@ import CoursesAnnouncement from '@/pages/courses/announcements/Announcement'
 import CoursesAnnouncements from '@/pages/courses/announcements/Announcements'
 import CoursesHomeworks from '@/pages/courses/homeworks/Homeworks'
 import CoursesHomeworkStatus from '@/pages/courses/homeworks/Status'
+import CoursesHomeworkHandwritten from '@/pages/courses/homeworks/Handwritten'
 import CoursesProblems from '@/pages/courses/problems/Problems'
 import CoursesSubmissions from '@/pages/courses/submissions/Submissions'
 import CoursesDiscussion from '@/pages/courses/discussions/Discussion'
@@ -62,6 +63,7 @@ export default new Router({
         { path: 'announcement/:id', component: CoursesAnnouncement },
         { path: 'homeworks', component: CoursesHomeworks },
         { path: 'homework/:id', component: CoursesHomeworkStatus },
+        { path: 'homework/:id/handwritten', component: CoursesHomeworkHandwritten },
         { path: 'problems', component: CoursesProblems },
         { path: 'submissions', component: CoursesSubmissions },
         { path: 'discussions', component: CoursesDiscussions },
