@@ -109,11 +109,11 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <td class="subtitle-1 font-weight-bold text--primary">Title</td>
-              <td class="subtitle-1 font-weight-bold text--primary">Score</td>
-              <td class="subtitle-1 font-weight-bold text--primary">Description</td>
-              <td class="subtitle-1 font-weight-bold text--primary">Time</td>
-              <td class="subtitle-1 font-weight-bold text--primary">Operations</td>
+              <th class="subtitle-1 font-weight-bold text--primary">Title</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Score</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Description</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Time</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Operations</th>
             </tr>
           </thead>
           <tbody>
@@ -138,7 +138,7 @@
             >
               <td>{{ score.title }}</td>
               <td>{{ score.score }}</td>
-              <td>{{ score.content }}</td>
+              <td style="white-space: pre;">{{ score.content }}</td>
               <td>{{ timeFormat(score.timestamp) }}</td>
               <td>
                 <ui-button

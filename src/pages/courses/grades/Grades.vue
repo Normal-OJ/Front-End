@@ -1,33 +1,42 @@
 <template>
-  <v-container>
-    <v-simple-table class="px-3">
-      <!-- <template v-slot:default> -->
-        <thead>
-          <tr>
-            <td class="subtitle-1 font-weight-bold text--primary">Title</td>
-            <td class="subtitle-1 font-weight-bold text--primary">Score</td>
-            <td class="subtitle-1 font-weight-bold text--primary">Description</td>
-            <td class="subtitle-1 font-weight-bold text--primary">Time</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr 
-            v-if="items && items.length > 0"
-            v-for="item in items"
-            :key="item.title"
-          >
-            <td>{{ item.title }}</td>
-            <td>{{ item.score }}</td>
-            <td style="white-space: pre;">{{ item.content }}</td>
-            <td>{{ timeFormat(item.timestamp) }}</td>
-          </tr>
-          <tr v-else>
-            <td colspan="4">🦄 No data available.</td>
-          </tr>
-        </tbody>
-      <!-- </template> -->
-    </v-simple-table>
-  </v-container>
+  <div>
+    <v-card class="ma-3">
+      <v-simple-table class="px-3">
+        <!-- <template v-slot:default> -->
+          <thead>
+            <tr>
+              <th class="subtitle-1 font-weight-bold text--primary">Title</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Score</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Description</th>
+              <th class="subtitle-1 font-weight-bold text--primary">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="item in items"
+              :key="item.title"
+            >
+               <td>{{ item.title }}</td>
+              <td>{{ item.score }}</td>
+              <td style="white-space: pre;">{{ item.content }}</td>
+              <td>{{ timeFormat(item.timestamp) }}</td>
+            </tr>
+            <tr v-show="loading">
+              <td colspan="6">
+                <v-skeleton-loader
+                  class="mx-auto"
+                  type="table-row"
+                ></v-skeleton-loader>
+              </td>
+            </tr>
+            <tr v-if="!loading && (!items || items.length===0)">
+              <td colspan="4">🦄 No data available.</td>
+            </tr>
+          </tbody>
+        <!-- </template> -->
+      </v-simple-table>
+    </v-card>
+  </div>
 </template>
 
 <script>
@@ -38,6 +47,7 @@ export default {
   data () {
     return {
       items: null,
+      loading: false,
     }
   },
 
@@ -62,9 +72,11 @@ export default {
       return JSON.parse(atob(token.split('.')[1])).data;
     },
     getGrade() {
+      this.loading = true;
       this.$http.get(`/api/course/${this.$route.params.name}/grade/uier`)
         .then((res) => {
           this.items = res.data.data;
+          this.loading = false;
         })
         .catch((err) => {
           console.log(err);
