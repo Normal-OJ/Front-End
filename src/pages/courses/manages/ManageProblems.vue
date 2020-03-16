@@ -497,15 +497,12 @@ export default {
             ele.taskScore = Number(ele.taskScore);
             ele.memoryLimit = Number(ele.memoryLimit);
             ele.timeLimit = Number(ele.timeLimit);
-            // delete io (no need for backend)
-            delete ele.input;
-            delete ele.output;
           });
         }
       }
-      if ( this.$refs.form.validate() && this.prob.allowedLangAlt ) {
+      if ( this.$refs.form.validate() && this.allowedLangAlt ) {
         var temp = 0;
-        this.prob.allowedLangAlt.forEach(ele => {
+        this.allowedLangAlt.forEach(ele => {
           temp += ele;
         });
         this.prob.allowedLanguage = temp;
