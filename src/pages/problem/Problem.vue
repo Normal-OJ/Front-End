@@ -69,7 +69,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="(limit, idx) in this.prob.limit" :key="idx">
+                      <tr v-for="(limit, idx) in problemLimit" :key="idx">
                         <td class="subtitle-1">{{ idx+1 }}</td>
                         <td class="subtitle-1">{{ limit[0] }}</td>
                         <td class="subtitle-1">{{ limit[1] }}</td>
@@ -136,21 +136,30 @@ export default {
   },
   computed: {
     allowedLang() {
-      var temp = [];
-      var value = this.prob.allowedLanguage;
-      if ( value >= 4 ) {
-        temp.push({ 'text': 'Python (python3)', 'value': 2 });
-        value -= 4;
+      let temp = [];
+      const value = this.prob.allowedLanguage;
+      const langs = [
+        { 'text': 'C (c11)', 'value': 0 },
+        { 'text': 'C++ (c++17)', 'value': 1 },
+        { 'text': 'Python (python3)', 'value': 2 },
+      ];
+      for(const [i, l] of langs.entries()) {
+        if(value & (1 << i))
+          temp.push(langs[i]);
       }
-      if ( value >= 2 ) {
-        temp.push({ 'text': 'C++ (c++17)', 'value': 1 });
-        value -= 2;
-      }
-      if ( value >= 1 ) {
-        temp.push({ 'text': 'C (c11)', 'value': 0 });
-        value -= 1;
-      }
-      return temp.reverse();
+      return temp;
+    },
+    /**  
+    * An array denote the time limit & rate limit
+    * of each test case.
+    * Each item is a one-dim array of 2 Integers
+    * consists of [time limit, memory limit]
+    * @return {number[][]}
+    */
+    problemLimit() {
+      if (this.prob)
+        var limit = this.prob.testCase.map(ele => [ele.timeLimit, ele.memoryLimit])
+      return limit
     },
   },
   created() {
@@ -217,22 +226,23 @@ export default {
         this.tab = 1;
         while ( done === false ) {
           await this.delay(1000);
-          await this.$http.get(`${API_BASE_URL}/submission/${sid}`)
-            .then(async(res) => {
-              var data = res.data.data;
-              if ( data.status === -1 ) {
-                this.show = false;
-                // await this.delay(1000);
-                // this.updateSubm(sid);
-              } else {
-                done = true;
-                // done = true;
-                // this.getSubm();
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          try {
+            // get submission data
+            var data = await this.$http.get(`${API_BASE_URL}/submission/${sid}`).data.data
+          } catch(err) {
+            console.log(err)
+          }
+          // haven't been judged
+          if ( data.status === -1 ) {
+            this.show = false;
+            // await this.delay(1000);
+            // this.updateSubm(sid);
+          // successfully get submission info
+          } else {
+            done = true;
+            // done = true;
+            // this.getSubm();
+          }
         }
         this.getSubm();
         this.cnt--;
