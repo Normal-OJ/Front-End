@@ -42,6 +42,26 @@
             elevation="0"
           >{{ 'Due Time: ' + item.end }}</v-alert>
         </v-card-text>
+        <v-card-text class="py-0 text--primary">
+          <v-row>
+            <v-col cols="6" class="pb-0">
+              <v-row justify="center">
+                <span v-if="totalScore(item) === item.problemIds.length*100" class="headline mt-4">🎉</span>
+                <span class="display-3">{{ totalScore(item) }}</span>
+                <span class="title mt-8">{{ ' / ' + item.problemIds.length*100 }}</span>
+              </v-row>
+              <v-row justify="center"><h3>Total Score</h3></v-row>
+            </v-col>
+            <v-col cols="6" class="pb-0">
+              <v-row justify="center">
+                <span v-if="totalAC(item)[0] === totalAC(item)[1]" class="headline mt-4">🎉</span>
+                <span class="display-3">{{ totalAC(item)[0] }}</span>
+                <span class="title mt-8">{{ ' / ' + totalAC(item)[1] }}</span>
+              </v-row>
+              <v-row justify="center"><h3>AC Programming Problem</h3></v-row>
+            </v-col>
+          </v-row>
+        </v-card-text>
         <v-card-title class="font-weight-bold">Description</v-card-title>
           <v-card-text class="text--primary">
             <vue-markdown :source="item.content"></vue-markdown>
@@ -171,6 +191,38 @@ export default {
   },
 
   methods: {
+    totalScore(item) {
+      let ret = 0, flag = false;
+      item.problemIds.forEach(id => {
+        if ( !(item.studentStatus.hasOwnProperty(`${id}`)) ) {
+          if ( !(item.studentStatus.hasOwnProperty(`${this.user}`)) ) flag = true;
+          else ret += Math.max(0,item.studentStatus[`${this.user}`][`${id}`]['score']);
+        } else {
+          ret += Math.max(0,item.studentStatus[`${id}`]['score']);
+        }
+      })
+      return (flag ? -1 : ret);
+    },
+    totalAC(item) {
+      let ret = 0, cnt = 0, flag = false;
+      item.problemIds.forEach(id => {
+        if ( !(item.studentStatus.hasOwnProperty(`${id}`)) ) {
+          if ( !(item.studentStatus.hasOwnProperty(`${this.user}`)) )  flag = true;
+          else {
+            if ( this.findType(id) !== TYPE[2] ) {
+              cnt++;
+              ret += Number(item.studentStatus[`${this.user}`][`${id}`]['problemStatus']===0); 
+            }
+          } 
+        } else {
+          if ( this.findType(id) !== TYPE[2] ) {
+            cnt++;
+            ret += Number(item.studentStatus[`${id}`]['problemStatus']===0);
+          }
+        }
+      })
+      return (flag ? [-1, 0] : [ret, cnt]);
+    },
     findType(id) {
       for ( var i=0; i<this.probs.length; i++ ) {
         if ( this.probs[i].problemId === id ) {

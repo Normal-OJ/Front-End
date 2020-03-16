@@ -84,10 +84,6 @@
               </v-menu>
             </v-col>
           </v-row>
-          <!-- <v-switch
-            v-model="hw.scoreboardStatus"
-            label="Show Scoreboard"
-          ></v-switch> -->
           <v-select
             v-model="hw.problemIds"
             :items="probs"
@@ -110,10 +106,9 @@
 <script>
 import Creator from '@/components/courses/Creator'
 import ShowHomework from '@/components/courses/ShowHomework'
-var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-var localISOTime = (v) => {
-  return (new Date(new Date(v) - tzoffset)).toISOString().slice(0, -1);
-}
+
+var offset = (new Date().getTimezoneOffset())*60*1000;
+
 export default {
 
   name: 'Homeworks',
@@ -179,7 +174,9 @@ export default {
               'content': ele.markdown,
               'status': status,
               'start': this.timeFormat(ele.start),
+              'stStamp': ele.start*1000,
               'end': this.timeFormat(ele.end),
+              'edStamp': ele.end*1000,
               'problemIds': ele.problemIds,
               'scoreboardStatus': ele.scoreboardStatus,
               'studentStatus': ele.studentStatus,
@@ -228,10 +225,12 @@ export default {
       this.type = 'Update';
       this.hw.title = this.items[idx].title;
       this.hw.content = this.items[idx].content;
-      this.hw.startDate = localISOTime(this.items[idx].start).substr(0,10);
-      this.hw.endDate = localISOTime(this.items[idx].end).substr(0,10);
-      this.hw.startTime = localISOTime(this.items[idx].start).substr(11,5);
-      this.hw.endTime = localISOTime(this.items[idx].end).substr(11,5);
+
+      this.hw.startDate = new Date(this.items[idx].stStamp-offset).toISOString().substr(0,10);
+      this.hw.endDate = new Date(this.items[idx].edStamp-offset).toISOString().substr(0,10);
+      this.hw.startTime = new Date(this.items[idx].stStamp-offset).toISOString().substr(11,5);
+      this.hw.endTime = new Date(this.items[idx].edStamp-offset).toISOString().substr(11,5);
+
       this.hw.problemIds = this.items[idx].problemIds;
       this.hw.scoreboardStatus = this.items[idx].scoreboardStatus;
       this.dialog = true;
@@ -240,15 +239,15 @@ export default {
       if ( this.$refs.form.validate() ) {
         var stD = this.hw.startDate.split('-');
         var edD = this.hw.endDate.split('-');
+        var data = {
+          'markdown': this.hw.content,
+          'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
+          'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
+          'problemIds': this.hw.problemIds,
+          'scordboardStatus': this.hw.scordboardStatus,
+        }
         if ( this.editing != -1 ) {
-          var data = {
-            'newName': this.hw.title,
-            'markdown': this.hw.content,
-            'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
-            'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
-            'problemIds': this.hw.problemIds,
-            'scordboardStatus': this.hw.scordboardStatus,
-          }
+          data['newName'] = this.hw.title;
           this.$http.put(`/api/homework/${this.editing}`, data)
             .then((res) => {
               console.log(res);
@@ -262,15 +261,8 @@ export default {
               this.errAlert = true;
             })
         } else {
-          var data = {
-            'courseName': this.$route.params.name,
-            'name': this.hw.title,
-            'markdown': this.hw.content,
-            'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
-            'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
-            'problemIds': this.hw.problemIds,
-            'scordboardStatus': this.hw.scordboardStatus,
-          }
+          data['courseName'] = this.$route.params.name;
+          data['name'] = this.hw.title;
           this.$http.post('/api/homework', data)
             .then((res) => {
               console.log(res);
