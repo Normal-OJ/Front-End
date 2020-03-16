@@ -58,7 +58,7 @@
                 <span class="display-3">{{ totalAC(item)[0] }}</span>
                 <span class="title mt-8">{{ ' / ' + totalAC(item)[1] }}</span>
               </v-row>
-              <v-row justify="center"><h3>AC Programming Problem</h3></v-row>
+              <v-row justify="center"><h3>Solved Programming Problem</h3></v-row>
             </v-col>
           </v-row>
         </v-card-text>
