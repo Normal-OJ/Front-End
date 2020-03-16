@@ -421,9 +421,9 @@ export default {
     zip() {
       var zip = new JSZip();
       zip.file('testdata.zip', this.zip);
-      zip.generateAsync({type:"base64"})
+      zip.generateAsync({type:'base64'})
         .then((base64) => {
-          this.testdata = "data:application/zip;base64," + base64;
+          this.testdata = 'data:application/zip;base64,' + base64;
         })
         .catch(() => {
           this.testdata = null;
@@ -497,6 +497,9 @@ export default {
             ele.taskScore = Number(ele.taskScore);
             ele.memoryLimit = Number(ele.memoryLimit);
             ele.timeLimit = Number(ele.timeLimit);
+            // delete io (no need for backend)
+            delete ele.input;
+            delete ele.output;
           });
         }
       }
@@ -594,42 +597,36 @@ export default {
       this.toCreate(idx);
       this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
         .then(async(res) => {
-          // console.log(res.data.data);
           var data = res.data.data
           console.log(data);
+          // problem data preprocess
           for (const [key, value] of Object.entries(data)) {
+            // convert field name
             if ( key === 'testCase' ) {
               this.prob['testCaseInfo'] = value;
             } else if ( key === 'allowedLanguage' ) {
               this.prob[key] = value;
               this.allowedLangAlt = [];
-              var temp = value;
-              if ( temp >= 4 ) {
-                this.allowedLangAlt.push(4);
-                temp -= 4;
+              let temp = value;
+              // allowed language range is [0, 3)
+              for(let i = 0 ; i < 3 ; i++) {
+                // check whether language id (i) is allowed
+                let d = 1 << i;
+                // if so, push it into array
+                if(temp & d) {
+                  this.allowedLangAlt.push(d);
+                }
               }
-              if ( temp >= 2 ) {
-                this.allowedLangAlt.push(2);
-                temp -= 2;
-              }
-              if ( temp >= 4 ) {
-                this.allowedLangAlt.push(4);
-                temp -= 4;
-              }
-              if ( temp >= 1 ) {
-                this.allowedLangAlt.push(1);
-                temp -= 1;
-              }
-              this.allowedLangAlt.reverse();
             } else {
               this.prob[key] = value;
             }
           }
           console.log(this.prob);
           // var isFile = false;
+          // not a handwritten problem and have testcase uploaded
           if ( this.prob.type !== 2 && data.testCaseInfo ) {
             this.prob.testCaseInfo.tasks = [];
-            data.testCaseInfo.tasks.forEach((ele, idx) => {
+            data.testCaseInfo.tasks.forEach((ele) => {
               this.prob.testCaseInfo.tasks.push(
                 {
                   'caseCount': ele.input.length,
