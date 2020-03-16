@@ -171,6 +171,7 @@ export default {
         .then((res) => {
           console.log(res);
           var temp = [[], [], []];
+          res.data.data.sort((a,b) => {return a.end - b.end});
           res.data.data.forEach(ele => {
             var status = this.getStatus(ele.start, ele.end);
             temp[status === 'Running' ? 0 : status === 'Not Started' ? 1 : 2].push({
@@ -185,25 +186,7 @@ export default {
               'id': ele.id,
             })
           })
-          for ( var i=0; i<3; ++i ) {
-            temp[i].forEach(ele => {
-              this.items.push(ele);
-            })
-          }
-          // if ( this.perm ) {
-          //   this.items.forEach(ele => {
-          //     let temp = [];
-          //     ele.problemIds.forEach(id => {
-          //       if ( this.findType(id) === 2 ) {
-          //         temp.push(id);
-          //       }
-          //     })
-          //     ele.studentStatus['handwritten'] = temp;
-          //     for ( const [key, value] of Object.entries(ele.studentStatus) ) {
-          //       ele.studentStatus[key]['handwritten']
-          //     }
-          //   })
-          // }
+          this.items = this.items.concat(temp[0].concat(temp[1].concat(temp[2])));
         })
         .catch((err) => {
           console.log(err);
