@@ -38,12 +38,14 @@
           <thead>
             <tr>
               <th class="font-weight-bold subtitle-1 text--primary">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Problem</th>
+              <th class="font-weight-bold subtitle-1 text--primary">PID</th>
               <th class="font-weight-bold subtitle-1 text--primary">User</th>
               <th class="font-weight-bold subtitle-1 text--primary">Result</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Run Time</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Memory</th>
               <th class="font-weight-bold subtitle-1 text--primary">Score</th>
               <th class="font-weight-bold subtitle-1 text--primary">Language</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Time</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Submit Time</th>
             </tr>
           </thead>
           <tbody>
@@ -52,6 +54,8 @@
               <td class="subtitle-1"><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
               <td class="subtitle-1">{{ item.user.username }}</td>
               <td class="subtitle-1" :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
+              <td class="subtitle-1">{{ item.runTime }}</td>
+              <td class="subtitle-1">{{ item.memoryUsage }}</td>
               <td class="subtitle-1">{{ item.score }}</td>
               <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
               <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
@@ -84,7 +88,7 @@ export default {
       page: 1,
       items: null,
       loading: false,
-      LANG: ['C', 'C++', 'Python', 'H'],
+      LANG: ['C', 'C++', 'Python', 'Handwritten'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       nav: 0,
@@ -122,7 +126,7 @@ export default {
       this.items = [];
       this.$http.get(`/api/submission${query}`)
         .then((res) => {
-          // console.log(res.data.data);
+          console.log(res.data.data);
           this.items = res.data.data.submissions;
           this.loading = false;
         })

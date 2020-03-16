@@ -32,6 +32,7 @@
               >
                 <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
                 <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
+                <a v-else-if="info.title==='Feedback'" :href="`/api/submission/${$route.params.id}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
                 <p v-else>{{ info.text }}</p>
               </td>
             </tr>
@@ -134,7 +135,7 @@ export default {
       dialog: false,
       diaTitle: '',
       diaText: '',
-      LANG: ['C (c11)', 'C++ (c++17)', 'Python (py3)'],
+      LANG: ['C (c11)', 'C++ (c++17)', 'Python (py3)', 'Handwritten'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
     }
@@ -153,12 +154,17 @@ export default {
           this.submInfo = [
             { 'title': 'Username', 'text': data.user.username, },
             { 'title': 'Status', 'text': data.status+1 },
-            { 'title': 'RunTime(ms)', 'text': data.runTime, },
+            { 'title': 'Run Time(ms)', 'text': data.runTime, },
             { 'title': 'Memory(KB)', 'text': data.memoryUsage, },
             { 'title': 'Score', 'text': data.score, },
             { 'title': 'Language', 'text': this.LANG[data.languageType], },
-            { 'title': 'Timestamp', 'text': this.timeFormat(data.timestamp), },
+            { 'title': 'Submit Time', 'text': this.timeFormat(data.timestamp), },
           ];
+          if ( data.languageType === 3 && data.score > -1 ) {
+            this.submInfo.push({
+              'title': 'Feedback',
+            })
+          }
           this.langMode = LANG_MODE[data.languageType];
           this.$http.get(`/api/problem/view/${data.problemId}`)
             .then((resp) => {this.course = resp.data.data.courses[0]; this.submInfo.splice(0,0,{'title': 'Problem', 'text': data.problemId, 'name': resp.data.data.problemName})})
