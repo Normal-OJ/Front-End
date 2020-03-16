@@ -53,9 +53,9 @@
               <thead>
                 <tr>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'#'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Problem id'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Type'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'PID'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Name'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Type'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Score'"></th>
                 </tr>
               </thead>
@@ -63,10 +63,10 @@
                 <tr v-for="(id, idx) in item.problemIds" :key="idx">
                   <td class="subtitle-1" v-text="idx+1"></td>
                   <td class="subtitle-1" v-text="id"></td>
-                  <td class="subtitle-1" v-text="findType(id)"></td>
                   <td class="subtitle-1">
                     <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+id" v-text="findProb(id)"></a>
                   </td>
+                  <td class="subtitle-1" v-text="findType(id)"></td>
                   <td v-if="user !== '' && item.studentStatus[`${id}`]" class="subtitle-1" v-text="item.studentStatus[`${id}`]['score']"></td>
                   <td v-else>Not a student</td>
                 </tr>
