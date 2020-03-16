@@ -21,30 +21,17 @@
     <v-simple-table v-else>
       <thead v-if="type === 2 && submData && submData.length > 0">
         <tr>
-          <th>
-            <p class="subtitle-1 font-weight-bold">Last update</p>
-          </th>
-          <th>
-            <p class="subtitle-1 font-weight-bold">Score</p>
-          </th>
-          <th>
-            <p class="subtitle-1 font-weight-bold">Feedback</p>
-          </th>
+          <th class="subtitle-1 font-weight-bold">Last update</th>
+          <th class="subtitle-1 font-weight-bold">Score</th>
+          <th class="subtitle-1 font-weight-bold">Feedback</th>
         </tr>
       </thead>
       <tbody v-if="type === 2 && submData && submData.length > 0">
         <tr>
+          <td class="subtitle-1" v-text="submData[0]['Timestamp']"></td>
+          <td class="subtitle-1" v-text="submData[0]['Score']===-1 ? 'Pending' : submData[0]['Score']"></td>
           <td>
-            <p class="subtitle-1" v-text="submData[0]['Timestamp']"></p>
-          </td>
-          <td>
-            <p
-              class="subtitle-1"
-              v-text="submData[0]['Score']===-1 ? 'Pending' : submData[0]['Score']"
-            ></p>
-          </td>
-          <td>
-            <p class="subtitle-1" v-text></p>
+            <a class="subtitle-1" v-if="submData[0]['Score'] > -1" :href="`/api/submission/${submData[0]['id']}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
           </td>
         </tr>
       </tbody>
