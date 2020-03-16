@@ -216,7 +216,7 @@ export default {
             })
           let submissionId = res.data.data.submissionId
           // upload source code
-          this.$http.put(
+          await this.$http.put(
             `/api/submission/${submissionId}`,
             formData,
             {
@@ -227,17 +227,17 @@ export default {
           this.$refs.file.reset();
           this.alert = false;
           this.loading = false;
+          this.$emit('getSubmission', submissionId);
           // console.log(res);
           // console.log('submissionId:'+ submissionId);
-          this.$emit('getSubmission', submissionId);
         } catch (err) {
           this.errMsg = err.response.data.message;
-          this.alert = true;
+          // this.alert = true;
           this.loading = false;
           // alert dialog
           this.$emit('exceedRateLimit', this.errMsg);
-          console.log(err);
-          console.log(this.errMsg);
+          // console.log(err);
+          // console.log(this.errMsg);
         }
       }
     },
