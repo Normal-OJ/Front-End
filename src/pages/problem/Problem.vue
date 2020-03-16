@@ -136,21 +136,18 @@ export default {
   },
   computed: {
     allowedLang() {
-      var temp = [];
-      var value = this.prob.allowedLanguage;
-      if ( value >= 4 ) {
-        temp.push({ 'text': 'Python (python3)', 'value': 2 });
-        value -= 4;
+      let temp = [];
+      const value = this.prob.allowedLanguage;
+      const langs = [
+        { 'text': 'C (c11)', 'value': 0 },
+        { 'text': 'C++ (c++17)', 'value': 1 },
+        { 'text': 'Python (python3)', 'value': 2 },
+      ];
+      for(const [i, l] of langs.entries()) {
+        if(value & (1 << i))
+          temp.push(langs[i]);
       }
-      if ( value >= 2 ) {
-        temp.push({ 'text': 'C++ (c++17)', 'value': 1 });
-        value -= 2;
-      }
-      if ( value >= 1 ) {
-        temp.push({ 'text': 'C (c11)', 'value': 0 });
-        value -= 1;
-      }
-      return temp.reverse();
+      return temp;
     },
     /**  
     * An array denote the time limit & rate limit
