@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400,400i,700&display=swap');
-$body-font-family: "Lato" !important;
-$heading-font-family: "Lato" !important;
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap');
+
+$body-font-family: "Lato", "Noto Sans TC", sans-serif !important;
+$heading-font-family: "Lato", "Noto Sans TC", sans-serif  !important;
 
 @import "~vuetify/src/styles/styles.sass";
