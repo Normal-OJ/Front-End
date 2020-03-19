@@ -2,26 +2,42 @@
   <div>
     <v-row justify="center">
       <v-card
-        v-if="prob != null"
         :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
         class="my-6"
       >
-        <v-card-title class="display-2 text-center">
-          Statistic
-        </v-card-title>
-        <v-card-title class="headline" style="white-space: pre;">
-          {{ 'Problem: ' }} 
-          <a :href="`/problem/${$route.params.id}`">{{ $route.params.id }} - {{ prob.problemName }}</a>
-        </v-card-title>
+        <v-row no-gutters>
+          <v-card-title class="headline text-center">
+            Statistic
+          </v-card-title>
+          <v-spacer/>
+          <v-chip v-if="prob != null" label color="primary" class="subtitle-1">
+            <a :href="`/problem/${$route.params.id}`" style="color: white;">{{ 'Problem: ' + $route.params.id }} - {{ prob.problemName }}</a>
+          </v-chip>
+        </v-row>
         <canvas 
           id="myChart"
           :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
           height="30vh"
         ></canvas>
 
-        <v-card-title class="display-2 text-center">
-          Top 10 efficient
+        <v-card-title class="headline text-center">
+          Runtime Top 10 
         </v-card-title>
+
+        <v-simple-table class="px-6">
+          <thead>
+            <tr>
+              <th class="font-weight-bold subtitle-1 text--primary">Username</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Runtime</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in subm" :key="item.submissionId">
+              <td class="subtitle-1">{{ item.user.username }}</td>
+              <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
+            </tr>
+          </tbody>
+        </v-simple-table>
 
       </v-card>
     </v-row>
@@ -36,11 +52,14 @@ export default {
   data () {
     return {
       prob: null,
+      subm: null,
+      data: [0, 0, 0, 0, 0, 0, 0, 0],
     }
   },
 
   created() {
     this.getProb();
+    this.getSubm();
   },
 
   mounted() {
@@ -53,16 +72,37 @@ export default {
     getProb() {
       this.$http.get(`/api/problem/view/${this.$route.params.id}`)
         .then((res) => {
-          // console.log('res:', res);
           this.prob = res.data.data;
         })
         .catch((err) => {
+          console.log(err);
+        })
+    },
+    getSubm() {
+      this.$http.get(`/api/submission?offset=0&count=-1&problemId=${this.$route.params.id}`)
+        .then((res) => {
+          console.log(res.data.data.submissions)
+          res.data.data.submissions.forEach(ele => {
+            if ( ele.status != -1 ) {
+              this.data[ele.status]++;
+            }
+          })
+          draw(this.data);
+          res.data.data.submissions.sort((a, b) => {
+            a.runTime - b.runTime;
+          })
+          this.subm = res.data.data.submissions.filter((value, index, self) => { 
+            for ( let i=0; i<index; i++ ) {
+              if ( self[i].user.username === value.user.username ) return false;
+            }
+            return true;
+          }).slice(0, 10);
         })
     },
   },
 }
-
-window.onload = function() {
+import Statistic from './Statistic'
+var draw = function(data) {
   var ctx = document.getElementById('myChart').getContext('2d');
   var myChart = new Chart(ctx, {
     type: 'doughnut',
@@ -70,7 +110,7 @@ window.onload = function() {
       labels: ['Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       datasets: [{
         label: '# of Votes',
-        data: [78, 111, 3, 50, 2, 19, 0, 0],
+        data: data,
         backgroundColor: [
           "#00C853CC",
           "#F44336CC",
