@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/pages/home/Home'
 import SysAnn from '@/pages/home/SysAnn'
 import Problem from '@/pages/problem/Problem'
+import Statistic from '@/pages/problem/Statistic'
 import Submission from '@/pages/submission/Submission'
 import Courses from '@/pages/courses/Courses'
 import Course from '@/pages/courses/Course'
@@ -43,6 +44,11 @@ export default new Router({
       path: '/problem/:id',
       name: 'Problem',
       component: Problem
+    },
+    {
+      path: '/problem/:id/statistic',
+      name: 'Statistic',
+      component: Statistic
     },
     {
       path: '/submission/:id',

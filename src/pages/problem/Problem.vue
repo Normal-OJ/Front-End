@@ -8,13 +8,21 @@
         <v-divider class="mt-0"></v-divider>
         <v-card-subtitle class="subtitle-1">
           <v-row class="pl-4">
-            Tags:
-            <v-chip 
-              class="mx-1"
-              v-for="tag in prob.tags"
-              :key="tag"
-              label
-            ><a href="" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
+            <v-col>
+              Tags:
+              <v-chip 
+                class="mx-1"
+                v-for="tag in prob.tags"
+                :key="tag"
+                label
+              ><a href="" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col cols="auto">
+              <ui-button :to="`${$route.params.id}/statistic`" color="info" small width="100%">
+                <template slot="content">Statistic</template>
+              </ui-button>
+            </v-col>
           </v-row>
         </v-card-subtitle><!-- 
         <v-tabs v-model="tab" fixed-tabs >
