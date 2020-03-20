@@ -82,9 +82,11 @@ export default {
       this.$http.get(`/api/submission?offset=0&count=-1&problemId=${this.$route.params.id}`)
         .then((res) => {
           console.log(res.data.data.submissions)
-          res.data.data.submissions.forEach(ele => {
+          res.data.data.submissions.forEach((ele, idx) => {
             if ( ele.status != -1 ) {
               this.data[ele.status]++;
+            } else {
+              delete res.data.data.submissions[idx];
             }
           })
           draw(this.data);
