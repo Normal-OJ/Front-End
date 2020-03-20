@@ -2,8 +2,14 @@
   <v-col style="height: 100%; width: 100%">
     <v-slide-x-transition>
       <v-row no-gutters v-show="course!==''">
-        <ui-button small color="info" class="mt-3" :to="`/course/${course}/submissions`">
+        <ui-button small color="info" class="mt-3 mr-3" :to="`/course/${course}/submissions`">
           <template slot="content">back to submission list</template>
+        </ui-button>
+        <ui-button small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}`">
+          <template slot="content">back to problem</template>
+        </ui-button>
+        <ui-button small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
+          <template slot="content">view statistic</template>
         </ui-button>
       </v-row>
     </v-slide-x-transition>
