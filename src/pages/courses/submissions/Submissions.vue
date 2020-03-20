@@ -29,7 +29,7 @@
           v-model="page"
           :page="page"
           :length="length"
-          total-visible="7"
+          total-visible="9"
         ></v-pagination>
       </v-card-title>
       <v-divider class="mt-0"></v-divider>
@@ -61,7 +61,7 @@
               <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
             </tr>
             <tr v-show="loading">
-              <td colspan="6">
+              <td colspan="9">
                 <v-skeleton-loader
                   class="mx-auto"
                   type="table-row"
@@ -69,7 +69,7 @@
               </td>
             </tr>
             <tr v-if="!loading && (!items || items.length===0)">
-              <td class="subtitle-1" colspan="6">🦄 No data available.</td>
+              <td class="subtitle-1" colspan="9">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>

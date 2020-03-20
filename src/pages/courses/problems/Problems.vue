@@ -41,6 +41,7 @@
               <th class="font-weight-bold subtitle-1 text--primary">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
               <th class="font-weight-bold subtitle-1 text--primary">Score</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Statistic</th>
               <!-- <th class="font-weight-bold subtitle-1 text--primary">AC rate</th> -->
             </tr>
           </thead>
@@ -62,10 +63,16 @@
                 >{{ tag }}</v-chip>
               </td>
               <td class="subtitle-1" v-text="item.score"></td>
+              <td class="subtitle-1" v-if="item.type===0">
+                <v-btn :to="`/problem/${item.problemId}/statistic`" class="text-none subtitle-1" color="info" small text>
+                  <v-icon>mdi-chart-arc</v-icon>
+                </v-btn>
+              </td>
+              <td v-else></td>
               <!-- <td>{{ item.ACUser + '/' + item.submitter }}</td> -->
             </tr>
             <tr v-show="loading">
-              <td colspan="5">
+              <td colspan="6">
                 <v-skeleton-loader
                   class="mx-auto"
                   type="table-row"
@@ -73,7 +80,7 @@
               </td>
             </tr>
             <tr v-if="!loading && (!items || items.length===0)">
-              <td class="subtitle-1" colspan="4">🦄 No data available.</td>
+              <td class="subtitle-1" colspan="6">🦄 No data available.</td>
             </tr>
           </tbody>
         </template>

@@ -77,6 +77,7 @@
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Name'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Type'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Score'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Statistic'"></th>
                 </tr>
               </thead>
               <tbody>
@@ -89,6 +90,12 @@
                   <td class="subtitle-1" v-text="findType(id)"></td>
                   <td v-if="user !== '' && item.studentStatus[`${id}`]" class="subtitle-1" v-text="item.studentStatus[`${id}`]['score']"></td>
                   <td v-else>Not a student</td>
+                  <td v-if="findType(id) === 'Programming'">
+                    <v-btn :to="`/problem/${id}/statistic`" class="text-none subtitle-1" color="info" small text>
+                      <v-icon>mdi-chart-arc</v-icon>
+                    </v-btn>
+                  </td>
+                  <td v-else></td>
                 </tr>
               </tbody>
             </template>
