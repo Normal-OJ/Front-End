@@ -35,21 +35,24 @@
         <v-simple-table class="px-6">
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary">Rank</th>
+              <th class="font-weight-bold subtitle-1 text--primary text-center">Rank</th>
               <th class="font-weight-bold subtitle-1 text--primary">Username</th>
               <th class="font-weight-bold subtitle-1 text--primary">Runtime</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Memory</th>
               <th class="font-weight-bold subtitle-1 text--primary">Language</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(item, idx) in subm" :key="item.submissionId">
-              <td class="subtitle-1">{{ (idx+1) + (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : (idx == 2 ? '🥉' : ''))) }}</td>
+              <td v-if="idx<3" class="headline text-center">{{ (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : '🥉')) }}</td>
+              <td v-else class="subtitle-1 text-center">{{ (idx+1) }}</td>
               <td class="subtitle-1">{{ item.user.username }}</td>
               <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
+              <td class="subtitle-1">{{ item.memoryUsage + 'KB' }}</td>
               <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
             </tr>
             <tr v-show="loading">
-              <td colspan="2">
+              <td colspan="4">
                 <v-skeleton-loader
                   class="mx-auto"
                   type="table-row"
@@ -120,6 +123,9 @@ export default {
           draw(this.data);
           this.subm = res.data.data.submissions
             .sort((a, b) => {
+              if ( a.runTime == b.runTime ) {
+                return a.memoryUsage - b.memoryUsage;
+              }
               return a.runTime - b.runTime;
             }).filter((value, index, self) => { 
               for ( let i=0; i<index; i++ ) {
@@ -127,6 +133,28 @@ export default {
               }
               return true;
             }).slice(0, 10);
+          this.subm.push(
+              {
+                'user': {'username': 'erui'},
+                'runTime': 777,
+                'languageType': 0,
+              },
+              {
+                'user': {'username': 'eeee'},
+                'runTime': 778,
+                'languageType': 0,
+              },
+              {
+                'user': {'username': 'ggg'},
+                'runTime': 779,
+                'languageType': 0,
+              },
+              {
+                'user': {'username': 'rrr'},
+                'runTime': 999,
+                'languageType': 1,
+              },
+            )
         })
         .catch((err) => {
           console.log(err);
