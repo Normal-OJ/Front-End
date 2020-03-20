@@ -112,7 +112,8 @@ export default {
             if ( this.inCourse(ele.user.username) ) {
               if ( ele.status != -1 ) {
                 this.data[ele.status]++;
-              } else {
+              }
+              if ( ele.status != 0 ) {
                 delete res.data.data.submissions[idx];
               }
             } else {
