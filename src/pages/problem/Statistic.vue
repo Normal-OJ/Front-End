@@ -133,28 +133,6 @@ export default {
               }
               return true;
             }).slice(0, 10);
-          this.subm.push(
-              {
-                'user': {'username': 'erui'},
-                'runTime': 777,
-                'languageType': 0,
-              },
-              {
-                'user': {'username': 'eeee'},
-                'runTime': 778,
-                'languageType': 0,
-              },
-              {
-                'user': {'username': 'ggg'},
-                'runTime': 779,
-                'languageType': 0,
-              },
-              {
-                'user': {'username': 'rrr'},
-                'runTime': 999,
-                'languageType': 1,
-              },
-            )
         })
         .catch((err) => {
           console.log(err);
