@@ -59,7 +59,6 @@ export default {
 
   created() {
     this.getProb();
-    this.getSubm();
   },
 
   mounted() {
@@ -73,15 +72,12 @@ export default {
       this.$http.get(`/api/problem/view/${this.$route.params.id}`)
         .then((res) => {
           this.prob = res.data.data;
+          return this.prob.courses[0];
         })
-        .catch((err) => {
-          console.log(err);
+        .then((co) => {
+          return this.$http.get(`/api/submission?offset=0&count=-1&course=${co}&problemId=${this.$route.params.id}`)
         })
-    },
-    getSubm() {
-      this.$http.get(`/api/submission?offset=0&count=-1&problemId=${this.$route.params.id}`)
         .then((res) => {
-          console.log(res.data.data.submissions)
           res.data.data.submissions.forEach((ele, idx) => {
             if ( ele.status != -1 ) {
               this.data[ele.status]++;
@@ -99,6 +95,9 @@ export default {
             }
             return true;
           }).slice(0, 10);
+        })
+        .catch((err) => {
+          console.log(err);
         })
     },
   },
