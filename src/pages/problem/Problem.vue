@@ -18,10 +18,10 @@
               ><a href="" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="auto">
-              <ui-button :to="`${$route.params.id}/statistic`" color="info" small width="100%">
-                <template slot="content">Statistic</template>
-              </ui-button>
+            <v-col cols="4" v-if="prob.type != 2">
+              <v-btn :to="`${$route.params.id}/statistic`" class="text-none subtitle-1" color="info" small width="100%">
+                <v-icon>mdi-chart-arc</v-icon>Statistic
+              </v-btn>
             </v-col>
           </v-row>
         </v-card-subtitle><!-- 
