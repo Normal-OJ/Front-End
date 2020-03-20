@@ -86,15 +86,15 @@ export default {
             }
           })
           draw(this.data);
-          res.data.data.submissions.sort((a, b) => {
-            a.runTime - b.runTime;
-          })
-          this.subm = res.data.data.submissions.filter((value, index, self) => { 
-            for ( let i=0; i<index; i++ ) {
-              if ( self[i].user.username === value.user.username ) return false;
-            }
-            return true;
-          }).slice(0, 10);
+          this.subm = res.data.data.submissions
+            .sort((a, b) => {
+              return a.runTime - b.runTime;
+            }).filter((value, index, self) => { 
+              for ( let i=0; i<index; i++ ) {
+                if ( self[i].user.username === value.user.username ) return false;
+              }
+              return true;
+            }).slice(0, 10);
         })
         .catch((err) => {
           console.log(err);
