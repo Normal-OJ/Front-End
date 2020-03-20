@@ -14,6 +14,14 @@
             <a :href="`/problem/${$route.params.id}`" style="color: white;">{{ 'Problem: ' + $route.params.id }} - {{ prob.problemName }}</a>
           </v-chip>
         </v-row>
+
+        <v-skeleton-loader
+          v-show="loading"
+          class="mx-auto"
+          width="80%"
+          type="image"
+        ></v-skeleton-loader>
+
         <canvas 
           id="myChart"
           :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
@@ -27,14 +35,26 @@
         <v-simple-table class="px-6">
           <thead>
             <tr>
+              <th class="font-weight-bold subtitle-1 text--primary">Rank</th>
               <th class="font-weight-bold subtitle-1 text--primary">Username</th>
               <th class="font-weight-bold subtitle-1 text--primary">Runtime</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Language</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in subm" :key="item.submissionId">
+            <tr v-for="(item, idx) in subm" :key="item.submissionId">
+              <td class="subtitle-1">{{ (idx+1) + (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : (idx == 2 ? '🥉' : ''))) }}</td>
               <td class="subtitle-1">{{ item.user.username }}</td>
               <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
+              <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
+            </tr>
+            <tr v-show="loading">
+              <td colspan="2">
+                <v-skeleton-loader
+                  class="mx-auto"
+                  type="table-row"
+                ></v-skeleton-loader>
+              </td>
             </tr>
           </tbody>
         </v-simple-table>
@@ -51,6 +71,8 @@ export default {
 
   data () {
     return {
+      LANG: ['C', 'C++', 'Python', 'Handwritten'],
+      loading: true,
       prob: null,
       subm: null,
       data: [0, 0, 0, 0, 0, 0, 0, 0],
@@ -94,6 +116,7 @@ export default {
               delete res.data.data.submissions[idx];
             }
           })
+          this.loading = false;
           draw(this.data);
           this.subm = res.data.data.submissions
             .sort((a, b) => {
