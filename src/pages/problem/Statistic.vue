@@ -54,6 +54,7 @@ export default {
       prob: null,
       subm: null,
       data: [0, 0, 0, 0, 0, 0, 0, 0],
+      students: null,
     }
   },
 
@@ -75,12 +76,20 @@ export default {
           return this.prob.courses[0];
         })
         .then((co) => {
-          return this.$http.get(`/api/submission?offset=0&count=-1&course=${co}&problemId=${this.$route.params.id}`)
+          return this.$http.get(`/api/course/${co}`)
+        })
+        .then((res) => {
+          this.students = res.data.data.studentNicknames;
+          return this.$http.get(`/api/submission?offset=0&count=-1&course=${this.prob.courses[0]}&problemId=${this.$route.params.id}`)
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
-            if ( ele.status != -1 ) {
-              this.data[ele.status]++;
+            if ( this.inCourse(ele.user.username) ) {
+              if ( ele.status != -1 ) {
+                this.data[ele.status]++;
+              } else {
+                delete res.data.data.submissions[idx];
+              }
             } else {
               delete res.data.data.submissions[idx];
             }
@@ -99,6 +108,12 @@ export default {
         .catch((err) => {
           console.log(err);
         })
+    },
+    inCourse(user) {
+      for ( var key in this.students ) {
+        if ( key === user ) return true;
+      }
+      return false;
     },
   },
 }
