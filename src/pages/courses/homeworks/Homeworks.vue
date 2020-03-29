@@ -97,7 +97,7 @@
       </template>
     </Creator>
     
-    <ShowHomework :items="items" :probs="probs" :perm="perm" :user="username"
+    <ShowHomework v-if="probs" :items="items" :probs="probs" :perm="perm" :user="username"
       @edit="edit" @delete="deleteHw" 
     ></ShowHomework>
   </div>
@@ -147,7 +147,7 @@ export default {
         { lower: 'start', upper: 'Start' },
         { lower: 'end', upper: 'End' },
       ],
-      probs: [],
+      probs: null,
       errAlert: false,
       errMsg: '',
       username: '',
@@ -164,7 +164,7 @@ export default {
     getHomework() {
       this.$http.get(`/api/course/${this.$route.params.name}/homework`)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           var temp = [[], [], []];
           res.data.data.sort((a,b) => {return a.end - b.end});
           res.data.data.forEach(ele => {
@@ -189,17 +189,17 @@ export default {
           console.log(err);
         })
     },
-    findType(id) {
-      this.probs.forEach(ele => {
-        if ( ele.problemId === id ) {
-          return ele.type;
-        }
-      })
-    },
+    // findType(id) {
+    //   this.probs.forEach(ele => {
+    //     if ( ele.problemId === id ) {
+    //       return ele.type;
+    //     }
+    //   })
+    // },
     getProblems() {
       this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           this.probs = res.data.data;
           this.probs.forEach(ele => {
             ele['displayedName'] = ele.problemId + ' - ' + ele.problemName;

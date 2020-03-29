@@ -24,6 +24,11 @@
               </v-btn>
             </v-col>
           </v-row>
+          <v-row class="pl-4" no-gutters>
+            <v-col>
+              <p>Quota: <v-chip class="mx-1" label>{{ this.prob.quota-this.prob.submitCount }}</v-chip></p>
+            </v-col>
+          </v-row>
         </v-card-subtitle><!-- 
         <v-tabs v-model="tab" fixed-tabs >
           <v-tab class="text-none subtitle-1">Description</v-tab>
