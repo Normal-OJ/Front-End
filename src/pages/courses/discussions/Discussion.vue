@@ -216,7 +216,7 @@ export default {
       return time;
     },
     getAvatar(payload) {
-      var d = encodeURI("noj.tw/defaultAvatar.png");
+      var d = encodeURI("https://noj.tw/defaultAvatar.png");
       return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },
     checkUser(username) {
