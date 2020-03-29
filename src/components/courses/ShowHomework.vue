@@ -89,7 +89,7 @@
                     <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+id" v-text="findProb(id)"></a>
                   </td>
                   <td class="subtitle-1" v-text="findType(id)"></td>
-                  <td class="subtitle-1" v-text="findQuota(id)==-1 ? 'inf' : findQuota(id)-findCount(id)"></td>
+                  <td class="subtitle-1" v-text="findQuota(id)==-1 ? 'unlimited' : findQuota(id)-findCount(id)"></td>
                   <td v-if="user !== '' && item.studentStatus[`${id}`]" class="subtitle-1" v-text="item.studentStatus[`${id}`]['score']"></td>
                   <td v-else>Not a student</td>
                   <td v-if="findType(id) === 'Programming'">

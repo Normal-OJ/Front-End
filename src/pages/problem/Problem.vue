@@ -26,7 +26,7 @@
           </v-row>
           <v-row class="pl-4" no-gutters>
             <v-col>
-              <p>Quota: <v-chip class="mx-1" label>{{ this.prob.quota-this.prob.submitCount }}</v-chip></p>
+              <p>Quota: <strong class="text--primary">{{ this.prob.quota==-1 ? 'unlimited' : this.prob.quota-this.prob.submitCount }}</strong></p>
             </v-col>
           </v-row>
         </v-card-subtitle><!-- 

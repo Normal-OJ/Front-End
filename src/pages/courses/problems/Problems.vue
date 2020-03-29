@@ -63,7 +63,7 @@
                   label small
                 >{{ tag }}</v-chip>
               </td>
-              <td class="subtitle-1" v-text="item.quota"></td>
+              <td class="subtitle-1" v-text="item.quota==-1 ? 'unlimited' : item.quota-item.submitCount"></td>
               <td class="subtitle-1" v-text="item.score"></td>
               <td class="subtitle-1" v-if="item.type===0">
                 <v-btn :to="`/problem/${item.problemId}/statistic`" class="text-none subtitle-1" color="info" small text>
