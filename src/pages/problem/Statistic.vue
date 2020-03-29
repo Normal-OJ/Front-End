@@ -15,6 +15,9 @@
           </v-chip>
         </v-row>
 
+        <v-row no-gutters justify="center">
+          <h3 v-if="hand">No statistic for Handwritten!</h3>
+        </v-row>
         <v-skeleton-loader
           v-show="loading"
           class="mx-auto"
@@ -80,6 +83,7 @@ export default {
       subm: null,
       data: [0, 0, 0, 0, 0, 0, 0, 0],
       students: null,
+      hand: false,
     }
   },
 
@@ -98,6 +102,11 @@ export default {
       this.$http.get(`/api/problem/view/${this.$route.params.id}`)
         .then((res) => {
           this.prob = res.data.data;
+          if ( this.prob.type === 2 ) {
+            this.loading = false;
+            this.hand = true;
+            return;
+          }
           return this.prob.courses[0];
         })
         .then((co) => {
