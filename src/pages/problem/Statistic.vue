@@ -17,6 +17,7 @@
 
         <v-row no-gutters justify="center">
           <h3 v-if="hand">No statistic for Handwritten!</h3>
+          <h3 v-if="login">Not Found, login first if you haven't</h3>
         </v-row>
         <v-skeleton-loader
           v-show="loading"
@@ -84,6 +85,7 @@ export default {
       data: [0, 0, 0, 0, 0, 0, 0, 0],
       students: null,
       hand: false,
+      login: false,
     }
   },
 
@@ -145,6 +147,8 @@ export default {
             }).slice(0, 10);
         })
         .catch((err) => {
+          this.loading = false;
+          if ( !this.hand ) this.login = true;
           console.log(err);
         })
     },
