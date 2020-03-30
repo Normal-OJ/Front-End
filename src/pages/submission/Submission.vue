@@ -8,7 +8,7 @@
         <ui-button small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}`">
           <template slot="content">back to problem</template>
         </ui-button>
-        <ui-button small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
+        <ui-button v-if="submInfo[6].text !== 'Handwritten'" small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
           <template slot="content">view statistic</template>
         </ui-button>
       </v-row>
@@ -50,7 +50,7 @@
       <h3>Subtask Information</h3>
     </v-row>
     <v-row no-gutters justify="center" style="width: 100%;">
-      <v-simple-table id="data-table" v-for="(subm, idx) in submData">
+      <v-simple-table id="data-table" v-for="(subm, idx) in submData" :key="idx">
         <template v-slot:default>
           <thead>
             <tr>
@@ -110,7 +110,8 @@
         style="width: 90%;"
       ></codemirror>
     </v-row>
-    <br v-for="i in 10">
+    <!-- just a padding -->
+    <div style="height: 20vh"></div>
   </v-col>
 </template>
 
@@ -166,6 +167,7 @@ export default {
             { 'title': 'Language', 'text': this.LANG[data.languageType], },
             { 'title': 'Submit Time', 'text': this.timeFormat(data.timestamp), },
           ];
+          // a handwritten submission with feedback
           if ( data.languageType === 3 && data.score > -1 ) {
             this.submInfo.push({
               'title': 'Feedback',
