@@ -318,7 +318,7 @@ export default {
     },
     getAvatar(payload) {
       if ( payload === 'me' ) payload = this.getPayload().md5;
-      var d = encodeURI("noj.tw/defaultAvatar.png");
+      var d = encodeURI("https://noj.tw/defaultAvatar.png");
       return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
     },
     getPayload() {

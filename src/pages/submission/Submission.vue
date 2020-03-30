@@ -1,7 +1,7 @@
 <template>
   <v-col style="height: 100%; width: 100%">
     <v-slide-x-transition>
-      <v-row no-gutters v-show="course!==''">
+      <v-row no-gutters v-if="course!==''">
         <ui-button small color="info" class="mt-3 mr-3" :to="`/course/${course}/submissions`">
           <template slot="content">back to submission list</template>
         </ui-button>
@@ -27,30 +27,27 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th v-for="info in submInfo" :key="info.title" class="subtitle-1" v-text="info.title"></th>
+              <th 
+                v-for="info in submInfo"
+                :key="info.title"
+                class="subtitle-1"
+                v-text="info.title"
+                v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
+              ></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td v-for="info in submInfo" :key="info.title" class="subtitle-1 text-left">
-                <a
-                  v-if="info.title==='Problem'"
-                  :href="'/problem/'+info.text"
-                  v-text="info.text+'. '+info.name"
-                ></a>
-                <p
-                  v-else-if="info.title==='Status'"
-                  :style="{ color:COLOR[info.text] }"
-                  v-text="STATUS[info.text]"
-                ></p>
-                <a
-                  v-else-if="info.title==='Feedback'"
-                  :href="`/api/submission/${$route.params.id}/pdf/comment`"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <v-icon color="primary">mdi-file-download</v-icon>
-                </a>
+              <td
+                v-for="info in submInfo"
+                :key="info.title"
+                class="subtitle-1 text-left"
+                v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
+              >
+                <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
+                <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
+                <a v-else-if="info.title==='Uploaded File'" :href="`/api/submission/${$route.params.id}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
+                <a v-else-if="info.title==='Feedback'" :href="`/api/submission/${$route.params.id}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
                 <p v-else>{{ info.text }}</p>
               </td>
             </tr>
@@ -194,10 +191,17 @@ export default {
             { 'title': 'Submit Time', 'text': this.timeFormat(data.timestamp), },
           ];
           // a handwritten submission with feedback
-          if (data.languageType === 3 && data.score > -1) {
-            this.submInfo.push({
-              'title': 'Feedback',
-            })
+          if ( data.languageType === 3 ) {
+            if ( data.status > -2 ) {
+              this.submInfo.push({
+                'title': 'Uploaded File',
+              })  
+            }
+            if ( data.score > -1 ) {
+              this.submInfo.push({
+                'title': 'Feedback',
+              })
+            }
           }
           this.langMode = LANG_MODE[data.languageType];
           this.$http.get(`/api/problem/view/${data.problemId}`)

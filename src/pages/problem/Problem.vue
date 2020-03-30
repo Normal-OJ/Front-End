@@ -27,9 +27,12 @@
               </v-btn>
             </v-col>
           </v-row>
-        </v-card-subtitle>
-        <!-- 
-        <v-tabs v-model="tab" fixed-tabs >
+          <v-row class="pl-4" no-gutters>
+            <v-col>
+              <p>Quota: <strong class="text--primary">{{ this.prob.quota==-1 ? 'unlimited' : this.prob.quota-this.prob.submitCount }}</strong></p>
+            </v-col>
+          </v-row>
+        </v-card-subtitle><!-- <v-tabs v-model="tab" fixed-tabs >
           <v-tab class="text-none subtitle-1">Description</v-tab>
           <v-tab class="text-none subtitle-1">
             Submission <v-chip v-show="cnt > 0" class="mx-3 px-2" small color="secondary">{{ cnt }}</v-chip>
@@ -328,6 +331,7 @@ export default {
         msg: resp,
       }
       this.snackbar = true;
+      this.getSubm();
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);

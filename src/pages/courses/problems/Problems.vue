@@ -40,6 +40,7 @@
               <th class="font-weight-bold subtitle-1 text--primary">Name</th>
               <th class="font-weight-bold subtitle-1 text--primary">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
+              <th class="font-weight-bold subtitle-1 text--primary">Quota</th>
               <th class="font-weight-bold subtitle-1 text--primary">Score</th>
               <th class="font-weight-bold subtitle-1 text--primary">Statistic</th>
               <!-- <th class="font-weight-bold subtitle-1 text--primary">AC rate</th> -->
@@ -62,6 +63,7 @@
                   label small
                 >{{ tag }}</v-chip>
               </td>
+              <td class="subtitle-1" v-text="item.quota==-1 ? 'unlimited' : item.quota-item.submitCount"></td>
               <td class="subtitle-1" v-text="item.score"></td>
               <td class="subtitle-1" v-if="item.type===0">
                 <v-btn :to="`/problem/${item.problemId}/statistic`" class="text-none subtitle-1" color="info" small text>
