@@ -24,6 +24,11 @@
               </v-btn>
             </v-col>
           </v-row>
+          <v-row class="pl-4" no-gutters>
+            <v-col>
+              <p>Quota: <strong class="text--primary">{{ this.prob.quota==-1 ? 'unlimited' : this.prob.quota-this.prob.submitCount }}</strong></p>
+            </v-col>
+          </v-row>
         </v-card-subtitle><!-- 
         <v-tabs v-model="tab" fixed-tabs >
           <v-tab class="text-none subtitle-1">Description</v-tab>

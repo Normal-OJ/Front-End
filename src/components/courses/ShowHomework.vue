@@ -76,11 +76,12 @@
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'PID'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Name'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Type'"></th>
+                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Quota'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Score'"></th>
                   <th class="font-weight-bold subtitle-1 text--primary" v-text="'Statistic'"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody v-if="ready">
                 <tr v-for="(id, idx) in item.problemIds" :key="idx">
                   <td class="subtitle-1" v-text="idx+1"></td>
                   <td class="subtitle-1" v-text="id"></td>
@@ -88,6 +89,7 @@
                     <a target="_blank" rel="noopener noreferrer" :href="'/problem/'+id" v-text="findProb(id)"></a>
                   </td>
                   <td class="subtitle-1" v-text="findType(id)"></td>
+                  <td class="subtitle-1" v-text="findQuota(id)==-1 ? 'unlimited' : findQuota(id)-findCount(id)"></td>
                   <td v-if="user !== '' && item.studentStatus[`${id}`]" class="subtitle-1" v-text="item.studentStatus[`${id}`]['score']"></td>
                   <td v-else>Not a student</td>
                   <td v-if="findType(id) === 'Programming'">
@@ -193,8 +195,18 @@ export default {
         i: null,
         id: null,
       },
-
+      ready: false,
+      prob: null,
     }
+  },
+
+  mounted() {
+    this.prob = {};
+    for ( let i=0; i<this.probs.length; i++ ) {
+      this.prob[String(this.probs[i].problemId)] = this.probs[i];
+    }
+    this.ready = true;
+    // console.log(this.prob);
   },
 
   methods: {
@@ -231,18 +243,30 @@ export default {
       return (flag ? [-1, 0] : [ret, cnt]);
     },
     findType(id) {
-      for ( var i=0; i<this.probs.length; i++ ) {
-        if ( this.probs[i].problemId === id ) {
-          return TYPE[this.probs[i].type];
-        }
-      }
+      if ( this.prob[`${id}`] )
+        return TYPE[this.prob[`${id}`].type];
+      // for ( var i=0; i<this.probs.length; i++ ) {
+      //   if ( this.probs[i].problemId === id ) {
+      //     return TYPE[this.probs[i].type];
+      //   }
+      // }
     },
     findProb(id) {
-      for ( var i=0; i<this.probs.length; i++ ) {
-        if ( this.probs[i].problemId === id ) {
-          return this.probs[i].problemName;
-        }
-      }
+      if ( this.prob[`${id}`] )
+        return this.prob[`${id}`].problemName;
+      // for ( var i=0; i<this.probs.length; i++ ) {
+      //   if ( this.probs[i].problemId === id ) {
+      //     return this.probs[i].problemName;
+      //   }
+      // }
+    },
+    findQuota(id) {
+      if ( this.prob[`${id}`] )
+        return this.prob[`${id}`].quota;
+    },
+    findCount(id) {
+      if ( this.prob[`${id}`] )
+        return this.prob[`${id}`].submitCount;
     },
     menuEmit(item, i, id) {
       this.menu.i = i;

@@ -120,14 +120,28 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-combobox
-                  label="Tags(you can create new tag)"
-                  v-model="prob.tags"
-                  :items="tags"
-                  filled
-                  chips
-                  multiple
-                />
+                <v-col cols="auto" md="6" class="px-0">
+                  <v-combobox
+                    label="Tags(you can create new tag)"
+                    v-model="prob.tags"
+                    :items="tags"
+                    filled
+                    chips
+                    multiple
+                    class="pr-1"
+                  />
+                </v-col>
+                <v-col cols="auto" md="6" class="px-0">
+                  <v-text-field
+                    v-model="prob.quota"
+                    label="Quota*"
+                    :rules="[
+                      v => !!v || 'Please enter the Quota.',
+                    ]"
+                    filled
+                    class="pl-1"
+                  />
+                </v-col>
               </v-row>
               <v-row>
                 <v-textarea
@@ -442,6 +456,7 @@ export default {
         problemName: '',
         status: 0,
         tags: [],
+        quota: 10,
         type: 0,
         courses: [this.$route.params.name],
         description: {
@@ -500,6 +515,7 @@ export default {
           });
         }
       }
+      this.prob.quota = Number(this.prob.quota);
       if ( this.$refs.form.validate() && this.allowedLangAlt ) {
         var temp = 0;
         this.allowedLangAlt.forEach(ele => {
