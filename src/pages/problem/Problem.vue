@@ -293,6 +293,7 @@ export default {
         msg: resp,
       }
       this.snackbar = true;
+      this.getSubm();
     },
     timeFormat(time) {
       var tmp = new Date(time * 1000);
