@@ -100,8 +100,13 @@
       </v-simple-table>
     </v-row>
     <v-row v-if="codeShow" no-gutters class="px-6" style="width: 100%;">
-      <h3>Source Code</h3>
-      <v-switch class="mt-10 ml-6" v-model="darkTheme" label="Dark Mode"></v-switch>
+      <v-col cols="1"  class="mr-4">
+        <h3>Source Code</h3>
+      </v-col>
+      <v-col class="pt-3" cols="1">
+        <v-switch v-model="darkTheme" label="Dark Mode"></v-switch>
+      </v-col>
+      <v-spacer></v-spacer>
     </v-row>
     <v-row v-if="codeShow" no-gutters justify="center" style="width: 100%;">
       <codemirror
