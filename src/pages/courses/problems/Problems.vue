@@ -3,6 +3,7 @@
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '75vw' : '95vw', height: '100%' }"
   >
     <v-bottom-navigation
+      v-if="0"
       class="mb-3"
       color="primary"
       style="
