@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-row justify="center">
+    <v-row justify="center"  v-if="user.role >= 2">
+      <h3>Sorry, statistic page is temporary closed due to technical issue. 😢</h3>
+    </v-row>
+    <v-row v-else justify="center">
       <v-card
         :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
         class="my-6"
@@ -72,6 +75,8 @@
 </template>
 
 <script>
+import User from '@/utils/user'
+
 export default {
 
   name: 'Statistic',
@@ -86,11 +91,15 @@ export default {
       students: null,
       hand: false,
       login: false,
+      user: new User(this.$cookies.get('jwt')),
     }
   },
 
   created() {
-    this.getProb();
+    // only teacher and admin can view statistic
+    if(user.role < 2) {
+      this.getProb();
+    }
   },
 
   mounted() {

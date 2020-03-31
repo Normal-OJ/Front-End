@@ -4,6 +4,7 @@
   >
     <v-bottom-navigation
       v-model="nav"
+      v-if="user.role < 2"
       class="mb-3"
       color="primary"
       style="
@@ -79,6 +80,8 @@
 </template>
 
 <script>
+import User from '@/utils/user'
+
 export default {
 
   name: 'Submissions',
@@ -93,6 +96,7 @@ export default {
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       nav: 0,
       username: '',
+      user: new User(this.$cookies.get('jwt')),
     }
   },
 
