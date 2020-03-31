@@ -23,6 +23,7 @@
         <tr>
           <th class="subtitle-1 font-weight-bold">Last update</th>
           <th class="subtitle-1 font-weight-bold">Score</th>
+          <th class="subtitle-1 font-weight-bold">Uploaded File</th>
           <th class="subtitle-1 font-weight-bold">Feedback</th>
         </tr>
       </thead>
@@ -30,6 +31,10 @@
         <tr>
           <td class="subtitle-1" v-text="submData[0]['Timestamp']"></td>
           <td class="subtitle-1" v-text="submData[0]['Score']===-1 ? 'Pending' : submData[0]['Score']"></td>
+          <!-- {{submData[0]['Status']}} -->
+          <td>
+            <a class="subtitle-1" v-if="submData[0]['Status'] > -1" :href="`/api/submission/${submData[0]['id']}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
+          </td>
           <td>
             <a class="subtitle-1" v-if="submData[0]['Score'] > -1" :href="`/api/submission/${submData[0]['id']}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
           </td>

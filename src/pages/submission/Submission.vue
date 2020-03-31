@@ -1,7 +1,7 @@
 <template>
   <v-col style="height: 100%; width: 100%">
     <v-slide-x-transition>
-      <v-row no-gutters v-show="course!==''">
+      <v-row no-gutters v-if="course!==''">
         <ui-button small color="info" class="mt-3 mr-3" :to="`/course/${course}/submissions`">
           <template slot="content">back to submission list</template>
         </ui-button>
@@ -26,6 +26,7 @@
                 :key="info.title"
                 class="subtitle-1"
                 v-text="info.title"
+                v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
               ></th>
             </tr>
           </thead>
@@ -35,9 +36,11 @@
                 v-for="info in submInfo"
                 :key="info.title"
                 class="subtitle-1 text-left"
+                v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
               >
                 <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
                 <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
+                <a v-else-if="info.title==='Uploaded File'" :href="`/api/submission/${$route.params.id}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
                 <a v-else-if="info.title==='Feedback'" :href="`/api/submission/${$route.params.id}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
                 <p v-else>{{ info.text }}</p>
               </td>
@@ -54,7 +57,7 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th 
+              <th
                 v-for="header in submHeader"
                 :key="header"
                 class="subtitle-1 text-left"
@@ -63,24 +66,21 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="data in subm"
-              :key="data['#']"
-            >
-              <td
-                v-for="header in submHeader"
-                :key="header"
-                class="subtitle-1 text-left"
-              >
-                <v-btn 
+            <tr v-for="data in subm" :key="data['#']">
+              <td v-for="header in submHeader" :key="header" class="subtitle-1 text-left">
+                <v-btn
                   v-if="(header==='Standard Error' || header==='Standard Output') && !!data[header]"
                   class="subtitle-1 text-none"
                   text
                   color="primary"
                   @click.stop="() => {diaTitle = header; diaText = data[header]; dialog = true;}"
                 >View</v-btn>
-                <p v-else-if="header==='Status'" :style="{ color:COLOR[data[header]] }" v-text="STATUS[data[header]]"></p>
-                <p v-else v-text="data[header]"></p> 
+                <p
+                  v-else-if="header==='Status'"
+                  :style="{ color:COLOR[data[header]] }"
+                  v-text="STATUS[data[header]]"
+                ></p>
+                <p v-else v-text="data[header]"></p>
               </td>
             </tr>
             <ui-dialog v-model="dialog" :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'">
@@ -93,15 +93,29 @@
                   ></codemirror>
                 </v-container>
               </template>
-              <template slot="action-cancel"><span></span></template>
+              <template slot="action-cancel">
+                <span></span>
+              </template>
             </ui-dialog>
           </tbody>
         </template>
       </v-simple-table>
     </v-row>
-    <v-row v-if="codeShow" no-gutters class="px-6" style="width: 100%;">
-      <h3>Source Code</h3>
-      <v-switch class="mt-10 ml-6" v-model="darkTheme" label="Dark Mode"></v-switch>
+    <v-row align="center" v-if="codeShow" no-gutters class="px-6" style="max-width: 50%;">
+      <v-col cols="2" class="mr-4">
+        <h3>Source Code</h3>
+      </v-col>
+      <v-col class="pt-2" cols="1">
+        <ui-button class="copy-code" color="gray" icon>
+          <template slot="content">
+            <v-icon>mdi-content-copy</v-icon>
+          </template>
+        </ui-button>
+      </v-col>
+      <v-col class="pt-3" cols="2">
+        <v-switch v-model="darkTheme" label="Dark Mode"></v-switch>
+      </v-col>
+      <v-spacer></v-spacer>
     </v-row>
     <v-row v-if="codeShow" no-gutters justify="center" style="width: 100%;">
       <codemirror
@@ -120,7 +134,8 @@ import { codemirror } from 'vue-codemirror';
 import 'codemirror/theme/dracula.css'
 import 'codemirror/theme/eclipse.css'
 import User from '@/utils/user';
-var LANG_MODE = ['text/x-csrc', 'text/x-c++src', {name: "python", version: 3}];
+import Clipboard from 'clipboard'
+var LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: "python", version: 3 }];
 
 export default {
 
@@ -130,7 +145,7 @@ export default {
     codemirror
   },
 
-  data () {
+  data() {
     return {
       submInfo: [],
       submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score'],//, 'Standard Error'],//, 'Standard Output'],
@@ -138,7 +153,7 @@ export default {
       codeShow: false,
       code: '',
       course: '',
-      langMode: '', 
+      langMode: '',
       darkTheme: false,
       dialog: false,
       diaTitle: '',
@@ -153,7 +168,9 @@ export default {
   beforeMount() {
     this.getSubm();
   },
-
+  mounted() {
+    const clipboard = new Clipboard('.copy-code', {text: (trigger => { return this.code; }).bind(this)});
+  },
   methods: {
     getSubm() {
       this.$http.get(`/api/submission/${this.$route.params.id}`)
@@ -162,7 +179,7 @@ export default {
           var data = res.data.data;
           this.submInfo = [
             { 'title': 'Username', 'text': data.user.username, },
-            { 'title': 'Status', 'text': data.status+1 },
+            { 'title': 'Status', 'text': data.status + 1 },
             { 'title': 'Run Time(ms)', 'text': data.runTime, },
             { 'title': 'Memory(KB)', 'text': data.memoryUsage, },
             { 'title': 'Score', 'text': data.score, },
@@ -170,22 +187,29 @@ export default {
             { 'title': 'Submit Time', 'text': this.timeFormat(data.timestamp), },
           ];
           // a handwritten submission with feedback
-          if ( data.languageType === 3 && data.score > -1 ) {
-            this.submInfo.push({
-              'title': 'Feedback',
-            })
+          if ( data.languageType === 3 ) {
+            if ( data.status > -2 ) {
+              this.submInfo.push({
+                'title': 'Uploaded File',
+              })  
+            }
+            if ( data.score > -1 ) {
+              this.submInfo.push({
+                'title': 'Feedback',
+              })
+            }
           }
           this.langMode = LANG_MODE[data.languageType];
           this.$http.get(`/api/problem/view/${data.problemId}`)
-            .then((resp) => {this.course = resp.data.data.courses[0]; this.submInfo.splice(0,0,{'title': 'Problem', 'text': data.problemId, 'name': resp.data.data.problemName})})
-            .catch((err) => {});
+            .then((resp) => { this.course = resp.data.data.courses[0]; this.submInfo.splice(0, 0, { 'title': 'Problem', 'text': data.problemId, 'name': resp.data.data.problemName }) })
+            .catch((err) => { });
           data.tasks.forEach((ele, idx) => {
             var sub = [];
             sub.push({
               '#': 'Overall',
               'RunTime(ms)': ele.execTime,
               'Memory(KB)': ele.memoryUsage,
-              'Status': ele.status+1,
+              'Status': ele.status + 1,
               'Score': ele.score,
               'Standard Error': '',
               'Standard Output': '',
@@ -195,7 +219,7 @@ export default {
                 '#': idx + '-' + (jdx),
                 'RunTime(ms)': ele.execTime,
                 'Memory(KB)': ele.memoryUsage,
-                'Status': ele.status+1,
+                'Status': ele.status + 1,
                 'Score': '-',
                 'Standard Error': ele.stderr,
                 'Standard Output': ele.stdout,
@@ -203,7 +227,7 @@ export default {
             })
             this.submData.push(sub);
           });
-          if ( this.isKey('code', data) ) {
+          if (this.isKey('code', data)) {
             this.codeShow = true;
             this.code = data.code;
           } else {
@@ -217,7 +241,7 @@ export default {
     timeFormat(time) {
       var tmp = new Date(time * 1000);
       var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
+      var month = '0' + (tmp.getMonth() + 1);
       var date = '0' + tmp.getDate();
       var hour = '0' + tmp.getHours();
       var min = '0' + tmp.getMinutes();
@@ -226,22 +250,24 @@ export default {
       return time;
     },
     isKey(key, obj) {
-      var keys = Object.keys(obj).map(function(x) {
-          return x.toLowerCase();
+      var keys = Object.keys(obj).map(function (x) {
+        return x.toLowerCase();
       });
-      return keys.indexOf( key.toLowerCase() ) !== -1;
+      return keys.indexOf(key.toLowerCase()) !== -1;
     },
   }
 }
 </script>
 
 <style lang="css" scoped>
-#info-table, #data-table {
+#info-table,
+#data-table {
   width: 90%;
   background-color: transparent;
 }
 
-#info-table th, #data-table th {
+#info-table th,
+#data-table th {
   background-color: #003865;
   color: white;
 }
