@@ -8,7 +8,7 @@
         <ui-button small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}`">
           <template slot="content">back to problem</template>
         </ui-button>
-        <ui-button v-if="submInfo[6].text !== 'Handwritten'" small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
+        <ui-button v-if="submInfo[6].text !== 'Handwritten' && user.role < 2" small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
           <template slot="content">view statistic</template>
         </ui-button>
       </v-row>
@@ -119,6 +119,7 @@
 import { codemirror } from 'vue-codemirror';
 import 'codemirror/theme/dracula.css'
 import 'codemirror/theme/eclipse.css'
+import User from '@/utils/user';
 var LANG_MODE = ['text/x-csrc', 'text/x-c++src', {name: "python", version: 3}];
 
 export default {
@@ -145,6 +146,7 @@ export default {
       LANG: ['C (c11)', 'C++ (c++17)', 'Python (py3)', 'Handwritten'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
+      user: new User(this.$cookies.get('jwt')),
     }
   },
 

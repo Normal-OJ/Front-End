@@ -18,7 +18,7 @@
               ><a href="" target="_blank" rel="noopener noreferrer">{{ tag }}</a></v-chip>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="4" v-if="prob.type != 2">
+            <v-col cols="4" v-if="prob.type != 2 && user.role < 2">
               <v-btn :to="`${$route.params.id}/statistic`" class="text-none subtitle-1" color="info" small width="100%">
                 <v-icon>mdi-chart-arc</v-icon>Statistic
               </v-btn>
@@ -115,6 +115,8 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
+import User from '@/utils/user'
+
 // import HistorySubmissions from './HistorySubmissions'
 const LANG = ['C11', 'C++17', 'Python3'];
 const API_BASE_URL = '/api';
@@ -140,6 +142,7 @@ export default {
         color: 'info',
         msg: 'The example has been copied into the clipboard!',
       },
+      user: new User(this.$cookies.get('jwt')),
     }
   },
   computed: {
