@@ -221,6 +221,7 @@ export default {
       this.dialog = false;
     },
     edit(idx, id) {
+      console.log('idx,id: ' + idx + id);
       this.editing = id;
       this.type = 'Update';
       this.hw.title = this.items[idx].title;
