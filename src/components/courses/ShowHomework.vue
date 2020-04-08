@@ -24,7 +24,7 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="menuEmit(menu,i,item.id)">
+                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="menuEmit(menu,idx,item.id)">
                   <v-list-item-title>{{ menu }}</v-list-item-title>
                 </v-list-item>
               </v-list>

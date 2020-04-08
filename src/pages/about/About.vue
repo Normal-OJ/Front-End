@@ -8,22 +8,38 @@
         <v-row justify="center">
           <p class="headline">NTNU CSIE 111</p>
         </v-row>
-        <v-row v-for="i in items.length/2" :key="i" justify="center">
-          <v-col cols="12" md="6" lg="4" v-for="j in 2">
-            <v-card color="primary" dark>
-              <div class="d-flex  justify-space-between">
-                <div>
-                  <v-card-title
-                    class="headline"
-                    v-text="items[(i-1)*2+j-1].name"
-                  ></v-card-title>
-                  <v-card-subtitle v-text="items[(i-1)*2+j-1].info"></v-card-subtitle>
-                </div>
-                <v-avatar class="ma-3" size="96" tile>
-                  <v-img :src="require('@/assets/members/'+items[(i-1)*2+j-1].name+'.png')"></v-img>
-                </v-avatar>
-              </div>
-            </v-card>
+        <v-row justify="center">
+          <v-col cols="12" lg="2" md="3" sm="12" v-for="item in items.slice(0,3)" :key="item.name">
+            <div class="d-flex justify-center">
+              <v-avatar size="128">
+                <v-img :src="require('@/assets/members/'+item.name+'.png')"></v-img>
+              </v-avatar>
+            </div>
+            <div class="d-flex justify-center">
+              <p class="headline font-weight-bold my-1">
+                <font color="#003865">{{ item.name }}</font></p>
+            </div>
+            <div class="d-flex" style="flex-direction: column; align-items: center;">
+              <p class="subtitle-1 font-weight-medium my-0">{{ item.realName }}</p>
+              <p class="subtitle-1 font-weight-medium my-0">{{ item.info }}</p>
+            </div>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="12" lg="2" md="3" sm="12" v-for="item in items.slice(3)" :key="item.name">
+            <div class="d-flex justify-center">
+              <v-avatar size="128">
+                <v-img :src="require('@/assets/members/'+item.name+'.png')"></v-img>
+              </v-avatar>
+            </div>
+            <div class="d-flex justify-center">
+              <p class="headline font-weight-bold my-1">
+                <font color="#003865">{{ item.name }}</font></p>
+            </div>
+            <div class="d-flex" style="flex-direction: column; align-items: center;">
+              <p class="subtitle-1 font-weight-medium my-0">{{ item.realName }}</p>
+              <p class="subtitle-1 font-weight-medium my-0">{{ item.info }}</p>
+            </div>
           </v-col>
         </v-row>
       </v-container>
@@ -65,27 +81,38 @@ export default {
       items: [
         {
           name: 'AlaRduTP',
-          info: '陳映達 / PM / Backend',
+          realName: '陳映達',
+          info: 'PM / Backend',
         },
         {
           name: 'as535364',
-          info: '蕭于傑 / Sandbox',
+          realName: '蕭于傑',
+          info: 'Sandbox',
         },
         {
           name: 'asef18766',
-          info: '陳兆閔 / Sandbox / Testing',
+          realName: '陳兆閔',
+          info: 'Sandbox / Testing',
         },
         {
           name: 'Bogay',
-          info: '莊博傑 / Backend / Sandbox',
+          realName: '莊博傑',
+          info: 'Backend / Sandbox',
+        },
+        {
+          name: 'fuji',
+          realName: '鐘子淳',
+          info: 'Designer',
         },
         {
           name: 'skps2010',
-          info: '盧昭華 / Backend',
+          realName: '盧昭華',
+          info: 'Backend',
         },
         {
           name: 'Uier',
-          info: '于子緯 / Frontend / Designer',
+          realName: '于子緯',
+          info: 'Frontend / Designer',
         },
       ],
       conts: ['aisu170232', 'brianchangtw', 'Dynzer', 'fuji', 'hackbabu9033', 'Ikaros1110', 'shangchiwu', 'Snowball0409'],
