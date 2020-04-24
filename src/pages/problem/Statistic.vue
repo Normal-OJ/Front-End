@@ -97,6 +97,7 @@ export default {
 
   created() {
     // only teacher and admin can view statistic
+    console.log(this.user, this.user.role)
     if(this.user.role < 2) {
       this.getProb();
     }
@@ -129,6 +130,7 @@ export default {
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
+            console.log(ele.user.username, this.inCourse(ele.user.username))
             if ( this.inCourse(ele.user.username) ) {
               if ( ele.status != -1 ) {
                 this.data[ele.status]++;
@@ -141,6 +143,7 @@ export default {
             }
           })
           this.loading = false;
+          console.log(this.data)
           draw(this.data);
           this.subm = res.data.data.submissions
             .sort((a, b) => {
@@ -163,7 +166,7 @@ export default {
     },
     inCourse(user) {
       for ( var key in this.students ) {
-        if ( key === this.user ) return true;
+        if ( key === user ) return true;
       }
       return false;
     },
