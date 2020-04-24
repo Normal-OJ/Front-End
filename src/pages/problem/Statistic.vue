@@ -97,7 +97,7 @@ export default {
 
   created() {
     // only teacher and admin can view statistic
-    if(user.role < 2) {
+    if(this.user.role < 2) {
       this.getProb();
     }
   },
@@ -163,7 +163,7 @@ export default {
     },
     inCourse(user) {
       for ( var key in this.students ) {
-        if ( key === user ) return true;
+        if ( key === this.user ) return true;
       }
       return false;
     },
