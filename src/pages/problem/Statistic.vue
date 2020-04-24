@@ -97,7 +97,7 @@ export default {
 
   created() {
     // only teacher and admin can view statistic
-    if(user.role < 2) {
+    if(this.user.role < 2) {
       this.getProb();
     }
   },
