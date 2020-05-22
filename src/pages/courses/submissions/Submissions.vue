@@ -13,6 +13,15 @@
           single-line
           hide-details
         ></v-text-field>
+        <v-spacer></v-spacer>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <v-btn icon color="error" v-on="on" @click="getSubmissions">
+              <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+          </template>
+          <span>Re-fetch Submissions</span>
+        </v-tooltip>
       </v-card-title>
       <v-card-title>
         <v-col cols="6" md="3">
