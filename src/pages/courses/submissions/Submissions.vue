@@ -157,10 +157,6 @@ export default {
   methods: {
     filterSelection() {
       this.submissions = this.items.filter(s => {
-        console.log(s)
-        console.log(this.selectedProblem)
-        console.log(this.selectedStatus)
-        console.log(this.selectedLanguage)
         if ( this.selectedProblem != 0 && s.problemId != this.selectedProblem ) return false;
         if ( this.selectedStatus.length > 0 && !this.selectedStatus.includes(s.status) ) return false;
         if ( this.selectedLanguage.length > 0 && !this.selectedLanguage.includes(s.languageType) ) return false;
