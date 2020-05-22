@@ -2,142 +2,189 @@
   <v-container
     :style="{ width: $vuetify.breakpoint.mdAndUp ? '75vw' : '95vw', height: '100%' }"
   >
-    <v-bottom-navigation
-      v-model="nav"
-      v-if="user.role < 2"
-      class="mb-3"
-      color="primary"
-      style="
-          -webkit-box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
-          box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
-        "
-      grow
-    >
-      <v-btn class="subtitle-2">
-        <span>My Submissions</span>
-        <v-icon>mdi-account</v-icon>
-      </v-btn>
-      <v-btn class="subtitle-2">
-        <span>All Submissions</span>
-        <v-icon>mdi-account-group</v-icon>
-      </v-btn>
-    </v-bottom-navigation>
-
-    <v-card height="100%" elevation="2">
-      <v-card-title class="font-weight-bold">
+    <v-card>
+      <v-card-title>
         Submissions
-        <v-pagination
-          v-model="page"
-          :page="page"
-          :length="length"
-          total-visible="9"
-        ></v-pagination>
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search User"
+          single-line
+          hide-details
+        ></v-text-field>
       </v-card-title>
-      <v-divider class="mt-0"></v-divider>
-      <v-simple-table class="px-4">
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="font-weight-bold subtitle-1 text--primary">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">PID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">User</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Result</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Run Time</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Memory</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Score</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Language</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Submit Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in items" :key="item.submissionId">
-              <td class="subtitle-1"><a :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a></td>
-              <td class="subtitle-1"><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
-              <td class="subtitle-1">{{ item.user.username }}</td>
-              <td class="subtitle-1" :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
-              <td class="subtitle-1">{{ item.runTime }}</td>
-              <td class="subtitle-1">{{ item.memoryUsage }}</td>
-              <td class="subtitle-1">{{ item.score }}</td>
-              <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
-              <td class="subtitle-1">{{ timeFormat(item.timestamp) }}</td>
-            </tr>
-            <tr v-show="loading">
-              <td colspan="9">
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="table-row"
-                ></v-skeleton-loader>
-              </td>
-            </tr>
-            <tr v-if="!loading && (!items || items.length===0)">
-              <td class="subtitle-1" colspan="9">🦄 No data available.</td>
-            </tr>
-          </tbody>
+      <v-card-title>
+        <v-col cols="6" md="4">
+          <v-select
+            v-model="whosSubm"
+            :items="['My Submissions', 'All Submissions']"
+            solo
+            hide-details
+          ></v-select>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="6" md="4">
+          <v-select
+            v-model="selectedProblem"
+            label="Problem"
+            :items="problems"
+            solo
+            hide-details
+          ></v-select>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="6" md="4">
+          <v-select
+            v-model="selectedStatus"
+            label="Status"
+            :items="submStatus"
+            solo
+            hide-details
+          ></v-select>
+        </v-col>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="submissions"
+        :search="search"
+        :loading="loading"
+      >
+        <template v-slot:item.submissionId="{ item }">
+          <a :href="'/submission/'+item.submissionId" rel="noopener noreferrer" target="_blank">{{ item.submissionId.substr(-6) }}</a>
         </template>
-      </v-simple-table>
+        <template v-slot:item.problemId="{ item }">
+          <a class="subtitle-1" :href="'/problem/'+item.problemId" rel="noopener noreferrer" target="_blank">{{ item.problemId }}</a>
+        </template>
+        <template v-slot:item.user="{ item }">
+          <span class="subtitle-1">{{ item.user }}</span>
+        </template>
+        <template v-slot:item.status="{ item }">
+          <span :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</span>
+        </template>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
 
 <script>
-import User from '@/utils/user'
-
 export default {
 
   name: 'Submissions',
-
   data () {
     return {
-      page: 1,
-      items: null,
+      search: '',
+      headers: [
+        { text: 'ID', value: 'submissionId', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
+        { text: 'PID', value: 'problemId', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
+        { text: 'User', value: 'user', class: 'font-weight-bold subtitle-1 text--primary', sortable: false },
+        { text: 'Result', value: 'status', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
+        { text: 'Run Time', value: 'runTime', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
+        { text: 'Memory', value: 'memoryUsage', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
+        { text: 'Score', value: 'score', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
+        { text: 'Language', value: 'languageType', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
+        { text: 'Submit Time', value: 'timestamp', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
+      ],
+      whosSubm: 'My Submissions',
+      items: [],
+      submissions: [],
+      problems: [],
+      selectedProblem: 0,
+      submStatus: [
+        { text: 'Select Status', value: -2 },
+        { text: 'Pending', value: -1 },
+        { text: 'AC', value: 0 },
+        { text: 'WA', value: 1 },
+        { text: 'CE', value: 2 },
+        { text: 'TLE', value: 3 },
+        { text: 'MLE', value: 4 },
+        { text: 'RE', value: 5 },
+        { text: 'JE', value: 6 },
+        { text: 'OLE', value: 7 },
+      ],
+      selectedStatus: -2,
       loading: false,
+      username: '',
       LANG: ['C', 'C++', 'Python', 'Handwritten'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
-      nav: 0,
-      username: '',
-      user: new User(this.$cookies.get('jwt')),
     }
   },
 
-  created() {
+  async beforeMount() {
     this.username = this.getUsername();
-    this.getSubmissions();
-  },
-
-  computed: {
-    length() {
-      return this.page+8;
-    }
+    await this.getProblems();
+    await this.getSubmissions();
   },
 
   watch: {
-    nav() {
+    whosSubm() {
       this.getSubmissions();
     },
-    page() {
-      this.getSubmissions();
-    }
+    selectedProblem() {
+      this.filterSelection();
+    },
+    selectedStatus() {
+      this.filterSelection();
+    },
   },
 
   methods: {
-    getSubmissions() {
+    filterSelection() {
+      this.submissions = this.items.filter(s => {
+        if ( this.selectedProblem != 0 && s.problemId != this.selectedProblem ) return false;
+        if ( this.selectedStatus != -2 && s.status != this.selectedStatus ) return false;
+        return true;
+      })
+    },
+    async getSubmissions() {
       this.loading = true;
-      var query = `?offset=${(this.page-1)*10}&count=${10}&course=${this.$route.params.name}`;
-      if ( this.nav === 0 ) {
-        query += `&username=${this.username}`;
+      let filter = {
+        offset: 0,
+        count: -1,
+        course: this.$route.params.name,
+      }
+      if ( this.whosSubm === 'My Submissions' ) {
+        filter.username = this.username;
       }
       this.items = [];
-      this.$http.get(`/api/submission${query}`)
+      this.$http.get('/api/submission', { params: filter })
         .then((res) => {
-          console.log(res.data.data);
-          this.items = res.data.data.submissions;
+          this.items = res.data.data.submissions.map(s => {
+            s.user = s.user.username
+            s.languageType = this.LANG[s.languageType];
+            s.timestamp = this.timeFormat(s.timestamp);
+            return s;
+          });
           this.loading = false;
+          this.submissions = this.items.slice();
+          this.filterSelection();
         })
         .catch((err) => {
-          // console.log(err);
           this.loading = false;
+          console.log(err);
         });
+    },
+    async getProblems() {
+      this.problems = [];
+      let filter = {
+        offset: 0,
+        count: -1,
+        course: this.$route.params.name,
+      }
+      try {
+        let res = await this.$http.get('/api/problem', { params: filter })
+        this.problems = res.data.data.map(p => {
+          return {
+            text: p.problemId + ' - ' + p.problemName,
+            value: p.problemId,
+          }
+        })
+        this.problems.splice(0,0,{ text: 'Select Problem', value: 0 })
+      }
+      catch(e) {
+        console.log(e)
+      };
     },
     timeFormat(time) {
       const tmp = new Date(time * 1000);
