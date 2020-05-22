@@ -47,6 +47,7 @@
       <v-data-table
         :headers="headers"
         :items="submissions"
+        :items-per-page="15"
         :search="search"
         :loading="loading"
       >

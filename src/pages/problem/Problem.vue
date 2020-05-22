@@ -11,7 +11,7 @@
             <v-col>
               Tags:
               <v-chip class="mx-1" v-for="tag in prob.tags" :key="tag" label>
-                <a href target="_blank" rel="noopener noreferrer">{{ tag }}</a>
+                {{ tag }}
               </v-chip>
             </v-col>
             <v-spacer></v-spacer>
