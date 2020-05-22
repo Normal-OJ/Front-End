@@ -15,7 +15,7 @@
         ></v-text-field>
       </v-card-title>
       <v-card-title>
-        <v-col cols="6" md="4">
+        <v-col cols="6" md="3">
           <v-select
             v-model="whosSubm"
             :items="['My Submissions', 'All Submissions']"
@@ -24,7 +24,7 @@
           ></v-select>
         </v-col>
         <v-spacer></v-spacer>
-        <v-col cols="6" md="4">
+        <v-col cols="6" md="3">
           <v-select
             v-model="selectedProblem"
             label="Problem"
@@ -34,13 +34,25 @@
           ></v-select>
         </v-col>
         <v-spacer></v-spacer>
-        <v-col cols="6" md="4">
+        <v-col cols="6" md="3">
           <v-select
             v-model="selectedStatus"
             label="Status"
             :items="submStatus"
             solo
             hide-details
+            multiple
+          ></v-select>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="6" md="3">
+          <v-select
+            v-model="selectedLanguage"
+            label="Language"
+            :items="LANG"
+            solo
+            hide-details
+            multiple
           ></v-select>
         </v-col>
       </v-card-title>
@@ -92,7 +104,6 @@ export default {
       problems: [],
       selectedProblem: 0,
       submStatus: [
-        { text: 'Select Status', value: -2 },
         { text: 'Pending', value: -1 },
         { text: 'AC', value: 0 },
         { text: 'WA', value: 1 },
@@ -103,7 +114,8 @@ export default {
         { text: 'JE', value: 6 },
         { text: 'OLE', value: 7 },
       ],
-      selectedStatus: -2,
+      selectedStatus: [],
+      selectedLanguage: [],
       loading: false,
       username: '',
       LANG: ['C', 'C++', 'Python', 'Handwritten'],
@@ -128,13 +140,21 @@ export default {
     selectedStatus() {
       this.filterSelection();
     },
+    selectedLanguage() {
+      this.filterSelection();
+    },
   },
 
   methods: {
     filterSelection() {
       this.submissions = this.items.filter(s => {
+        console.log(s)
+        console.log(this.selectedProblem)
+        console.log(this.selectedStatus)
+        console.log(this.selectedLanguage)
         if ( this.selectedProblem != 0 && s.problemId != this.selectedProblem ) return false;
-        if ( this.selectedStatus != -2 && s.status != this.selectedStatus ) return false;
+        if ( this.selectedStatus.length > 0 && !this.selectedStatus.includes(s.status) ) return false;
+        if ( this.selectedLanguage.length > 0 && !this.selectedLanguage.includes(s.languageType) ) return false;
         return true;
       })
     },
