@@ -51,9 +51,23 @@
           </thead>
           <tbody>
             <tr v-for="item in items" :key="item.submissionId">
-              <td class="subtitle-1"><a :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a></td>
-              <td class="subtitle-1"><a :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
-              <td class="subtitle-1">{{ item.user.username }}</td>
+              <td class="subtitle-1">
+                <a target="_blank" rel="noopener noreferrer" :href="'/submission/'+item.submissionId">{{ item.submissionId.substr(-6) }}</a>
+                <ui-button class="copy-code ml-2" :id="item.submissionId" color="gray" icon x-small>
+                  <template slot="content">
+                    <v-icon>mdi-content-copy</v-icon>
+                  </template>
+                </ui-button>
+              </td>
+              <td class="subtitle-1"><a target="_blank" rel="noopener noreferrer" :href="'/problem/'+item.problemId">{{ item.problemId }}</a></td>
+              <td class="subtitle-1">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <span v-on="on" v-bind="attrs">{{ item.user.username }}</span>
+                  </template>
+                  <span>{{ item.user.displayedName }}</span>
+                </v-tooltip>
+              </td>
               <td class="subtitle-1" :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</td>
               <td class="subtitle-1">{{ item.runTime }}</td>
               <td class="subtitle-1">{{ item.memoryUsage }}</td>
@@ -76,11 +90,13 @@
         </template>
       </v-simple-table>
     </v-card>
+    <v-snackbar v-model="snackbar" color="info">{{ alertMsg }}</v-snackbar>
   </v-container>
 </template>
 
 <script>
 import User from '@/utils/user'
+import Clipboard from 'clipboard'
 
 export default {
 
@@ -97,6 +113,8 @@ export default {
       nav: 0,
       username: '',
       user: new User(this.$cookies.get('jwt')),
+      snackbar: false,
+      alertMsg: '',
     }
   },
 
@@ -118,6 +136,19 @@ export default {
     page() {
       this.getSubmissions();
     }
+  },
+
+  mounted() {
+    const clipboard = new Clipboard('.copy-code', {text: (trigger => trigger.id).bind(this)});
+    clipboard.on('success', evt => {
+        this.snackbar = false;
+        this.alertMsg = 'submission id copied!';
+        this.snackbar = true;
+        evt.clearSelection();
+      });
+    clipboard.on('error', err => {
+      alert(`Could not copy text: ${err}`);
+    });
   },
 
   methods: {
