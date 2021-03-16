@@ -8,6 +8,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@toast-ui/vue-editor": "^2.5.1",
     "@vue/cli": "^4.1.1",
     "@vue/cli-service": "^4.1.1",
     "axios": "^0.21.1",
