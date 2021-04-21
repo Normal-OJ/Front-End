@@ -7,6 +7,6 @@ unit test:
   image: node:14.16.1-buster
   stage: test
   script:
-    - apt update && apt install -y –no-install-recommends python3
+    - apt update && apt install -y --no-install-recommends python3
     - npm install
     - npm run test
