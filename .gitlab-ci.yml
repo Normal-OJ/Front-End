@@ -4,8 +4,9 @@ stages:
   - test
 
 unit test:
-  image: node:14.16.1-alpine3.11
+  image: node:14.16.1-buster
   stage: test
   script:
-    - npm ci
+    - apt update && apt install -y –no-install-recommends python3
+    - npm install
     - npm run test
