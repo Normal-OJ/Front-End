@@ -1,0 +1,11 @@
+# TODO: build & deploy to production via Ansible
+
+stages:
+  - test
+
+unit test:
+  image: node:14.16.1-alpine3.11
+  stage: test
+  script:
+    - npm ci
+    - npm run test
