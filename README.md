@@ -1,24 +1,36 @@
-# front-end
+# Normal OJ Web Frontend
 
-## Project setup
-```
-npm install
-```
+## Contributing Guide
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Clone this project via SSH:
 
-### Compiles and minifies for production
-```
-npm run build
+```shell
+$ git clone git@gitlab.noj.tw:noj/frontend.git
+$ cd frontend
 ```
 
-### Run your unit tests
-```
-npm run test:unit
+Install node modules with npm:
+
+```shell
+$ npm install
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+`vue-cli-service` provides hot-reloads for development environment:
+
+```shell
+$ npm run serve
+```
+
+You can refer to Vue.js CLI documentation: https://cli.vuejs.org/config
+
+## Building for production
+
+```shell
+$ npm run build
+```
+
+## Testing
+
+```shell
+$ npm run test:unit
+```
