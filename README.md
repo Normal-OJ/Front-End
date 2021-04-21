@@ -32,5 +32,5 @@ $ npm run build
 ## Testing
 
 ```shell
-$ npm run test:unit
+$ npm run test
 ```
