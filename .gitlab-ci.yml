@@ -1,12 +1,41 @@
-# TODO: build & deploy to production via Ansible
-
 stages:
   - test
+  - deploy
 
-unit test:
-  image: node:14.16.1-buster
+image: node:14.16.1-buster
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - apt update && apt install -y --no-install-recommends python3
+  - npm ci
+
+test:
   stage: test
   script:
-    - apt update && apt install -y --no-install-recommends python3
-    - npm install
     - npm run test
+
+develop:
+  stage: deploy
+
+  environment:
+    name: Develop
+    url: "$CI_SERVER_URL/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html"
+
+  script: |
+    vue-cli-service build --dest public
+
+  artifacts:
+    paths:
+      - public
+
+  variables:
+    SITE_DOMAIN: "$CI_SERVER_HOST"
+    SITE_URL: "$CI_SERVER_URL/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public"
+    BASE_PATH: "/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public"
