@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+  web:
+    image: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}"
+    restart: always
+    networks:
+      - traefik
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.frontend.loadbalancer.server.port: "80"
+      traefik.http.routers.frontend.service: "frontend"
+      traefik.http.routers.frontend.entrypoints: "web"
+      traefik.http.routers.frontend.rule: "Host(`noj.tw`)"
+      traefik.http.routers.frontend.tls.certResolver: "http"
+
+networks:
+  traefik:
+    external: true
