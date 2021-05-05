@@ -5,7 +5,7 @@
 Clone this project via SSH:
 
 ```shell
-$ git clone git@gitlab.noj.tw:noj/frontend.git
+$ git clone git@gitlab.noj.tw:noj/codebase/frontend.git
 $ cd frontend
 ```
 
