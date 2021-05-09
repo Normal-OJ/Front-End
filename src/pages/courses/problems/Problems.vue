@@ -1,7 +1,5 @@
 <template>
-  <v-container
-    :style="{ width: $vuetify.breakpoint.mdAndUp ? '75vw' : '95vw', height: '100%' }"
-  >
+  <v-container :style="{ height: '100%' }">
     <v-card>
       <v-card-title>
         Problems
@@ -21,13 +19,13 @@
         :search="search"
         :loading="loading"
       >
-        <template v-slot:item.problemId="{ item }">
+        <template v-slot:[`item.problemId`]="{ item }">
           <a class="subtitle-1" :href="'/problem/'+item.problemId" rel="noopener noreferrer" target="_blank">{{ item.problemId }}</a>
         </template>
-        <template v-slot:item.problemName="{ item }">
+        <template v-slot:[`item.problemName`]="{ item }">
           <a class="subtitle-1" :href="'/problem/'+item.problemId" rel="noopener noreferrer" target="_blank">{{ item.problemName }}</a>
         </template>
-        <template v-slot:item.tags="{ item }">
+        <template v-slot:[`item.tags`]="{ item }">
           <v-chip 
             class="mx-1"
             v-for="tag in item.tags"
@@ -35,7 +33,7 @@
             label small
           >{{ tag }}</v-chip>
         </template>
-        <template v-slot:item.statistic="{ item }">
+        <template v-slot:[`item.statistic`]="{ item }">
           <v-btn :href="`/problem/${item.problemId}/statistic`" rel="noopener noreferrer" target="_blank" color="info" small text>
             <v-icon>mdi-chart-arc</v-icon>
           </v-btn>
