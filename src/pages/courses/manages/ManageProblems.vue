@@ -320,13 +320,21 @@
                 </ui-button>
               </v-row>
               <v-row v-show="prob.type != 2">
-                <h4 class="my-0 mr-3">Current Testdata</h4>
+                <h4 class="my-0 mr-3">Current uploaded testdata</h4>
               </v-row>
               <v-row v-show="prob.type != 2">
                 <ui-button v-if="testdata" color="info" @click.native="download">
                   <template slot="content"><v-icon>mdi-download</v-icon></template>
                 </ui-button>
                 <h5 v-else>No data</h5>
+              </v-row>
+              <v-row v-show="prob.type != 2">
+                <h4 class="my-0 mr-3">Last uploaded testdata on server</h4>
+              </v-row>
+              <v-row v-show="prob.type != 2">
+                <ui-button color="info" @click.native="downloadServer">
+                  <template slot="content"><v-icon>mdi-download</v-icon></template>
+                </ui-button>
               </v-row>
             </v-container>
           </v-form>
@@ -691,6 +699,9 @@ export default {
     },
     download() {
       window.location = this.testdata;
+    },
+    downloadServer() {
+      window.location = `https://noj.tw/api/problem/${this.creating}/testcase`;
     },
   }
 }
