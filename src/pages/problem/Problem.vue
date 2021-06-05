@@ -11,7 +11,7 @@
             <v-col>
               Tags:
               <v-chip class="mx-1" v-for="tag in prob.tags" :key="tag" label>
-                <a href target="_blank" rel="noopener noreferrer">{{ tag }}</a>
+                {{ tag }}
               </v-chip>
             </v-col>
             <v-spacer></v-spacer>
@@ -24,6 +24,12 @@
           <v-row class="pl-4" no-gutters>
             <v-col>
               <p>Quota: <strong class="text--primary">{{ this.prob.quota==-1 ? 'unlimited' : this.prob.quota-this.prob.submitCount }}</strong></p>
+            </v-col>
+            <v-spacer />
+            <v-col cols="4" v-if="prob.type != 2 && user.role < 2">
+              <v-btn class="text-none subtitle-1" color="info" small width="100%" @click="download">
+                <v-icon>mdi-download</v-icon>Testdata
+              </v-btn>
             </v-col>
           </v-row>
         </v-card-subtitle><!-- <v-tabs v-model="tab" fixed-tabs >
@@ -354,6 +360,9 @@ export default {
     },
     parseJwt(token) {
       return JSON.parse(atob(token.split('.')[1])).data;
+    },
+    download() {
+      window.location = `https://noj.tw/api/problem/${this.$route.params.id}/testcase`;
     },
   }
 }

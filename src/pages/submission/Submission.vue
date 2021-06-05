@@ -11,6 +11,11 @@
         <ui-button v-if="submInfo[6].text !== 'Handwritten' && user.role < 2" small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
           <template slot="content">view statistic</template>
         </ui-button>
+        <v-spacer />
+        <v-btn v-if="user.role < 2" small color="error" class="mt-3" outlined @click="rejudge" :loading="isRejudge">
+          rejudge
+        </v-btn>
+        <v-spacer />
       </v-row>
     </v-slide-x-transition>
     <v-row no-gutters class="px-6">
@@ -142,7 +147,7 @@ export default {
   name: 'Submission',
 
   components: {
-    codemirror
+    codemirror,
   },
 
   data() {
@@ -162,6 +167,7 @@ export default {
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       user: new User(this.$cookies.get('jwt')),
+      isRejudge: false,
     }
   },
 
@@ -175,7 +181,6 @@ export default {
     getSubm() {
       this.$http.get(`/api/submission/${this.$route.params.id}`)
         .then((res) => {
-          console.log(res);
           var data = res.data.data;
           this.submInfo = [
             { 'title': 'Username', 'text': data.user.username, },
@@ -254,6 +259,18 @@ export default {
         return x.toLowerCase();
       });
       return keys.indexOf(key.toLowerCase()) !== -1;
+    },
+    rejudge() {
+      this.isRejudge = true;
+      this.$http.get(`/api/submission/${this.$route.params.id}/rejudge`)
+        .then(() => {
+          this.$router.go(0);
+          this.isRejudge = false;
+        })
+        .catch(() => {
+          this.isRejudge = false;
+          alert('rejudge fail!');
+        })
     },
   }
 }
