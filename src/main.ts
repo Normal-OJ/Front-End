@@ -10,10 +10,10 @@ Vue.use(VueAxios, axios);
 Vue.use(VueCookies);
 Vue.config.productionTip = false;
 
-import UiDialog from './components/ui/UiDialog'
-import UiButton from './components/ui/UiButton'
-import UiAlert from './components/ui/UiAlert'
-import UiPost from './components/ui/UiPost'
+import UiDialog from './components/ui/UiDialog.vue'
+import UiButton from './components/ui/UiButton.vue'
+import UiAlert from './components/ui/UiAlert.vue'
+import UiPost from './components/ui/UiPost.vue'
 Vue.component('ui-dialog', UiDialog);
 Vue.component('ui-button', UiButton);
 Vue.component('ui-alert', UiAlert);

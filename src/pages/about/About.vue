@@ -56,7 +56,7 @@
       </v-row>
       <v-row justify="center">
         <v-row justify="space-around">
-          <v-col cols="6" sm="3" md="1" v-for="cont in conts">
+          <v-col cols="6" sm="3" md="1" v-for="cont in conts" :key="cont">
             <v-row justify="center">
               <v-avatar><v-img :src="require('@/assets/members/contributors/'+cont+'.png')"></v-img></v-avatar>
             </v-row>
@@ -98,11 +98,6 @@ export default {
           name: 'Bogay',
           realName: '莊博傑',
           info: 'Backend / Sandbox',
-        },
-        {
-          name: 'fuji',
-          realName: '鐘子淳',
-          info: 'Designer',
         },
         {
           name: 'skps2010',
