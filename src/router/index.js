@@ -27,87 +27,164 @@ import Demo from '@/components/Demo'
 
 Vue.use(Router)
 
-export default new Router({
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+    meta: {
+      title: () => '首頁',
+    }
+  },
+  {
+    path: '/post/:id',
+    name: 'SysAnn',
+    component: SysAnn,
+    meta: {
+      title: () => '系統公告',
+    }
+  },
+  {
+    path: '/problem/:id',
+    name: 'Problem',
+    component: Problem,
+    meta: {
+      title: () => '題目'
+    }
+  },
+  {
+    path: '/problem/:id/statistic',
+    name: 'Statistic',
+    component: Statistic,
+    meta: {
+      title: () => '解題狀態'
+    }
+  },
+  {
+    path: '/submission/:id',
+    name: 'Submission',
+    component: Submission,
+    meta: {
+      title: () => '提交'
+    }
+  },
+  {
+    path: '/courses',
+    name: 'Courses',
+    component: Courses,
+    meta: {
+      title: () => '課程',
+    }
+  },
+  {
+    path: '/course/:name',
+    name: 'Course',
+    component: Course,
+    children: [
+      {
+        path: 'announcements',
+        component: CoursesAnnouncements,
+        meta: { title: () => '課程公告欄' }
+      },
+      {
+        path: 'announcement/:id',
+        component: CoursesAnnouncement,
+        meta: { title: () => '課程公告' }
+      },
+      {
+        path: 'homeworks',
+        component: CoursesHomeworks,
+        meta: { title: () => '作業集' }
+      },
+      {
+        path: 'homework/:id',
+        component: CoursesHomeworkStatus,
+        meta: { title: () => '作業' }
+      },
+      {
+        path: 'homework/:id/handwritten',
+        component: CoursesHomeworkHandwritten,
+        meta: { title: () => '手寫' }
+      },
+      {
+        path: 'problems',
+        component: CoursesProblems,
+        meta: { title: () => '題目集' }
+      },
+      {
+        path: 'submissions',
+        component: CoursesSubmissions,
+        meta: { title: () => '提交狀態' }
+      },
+      {
+        path: 'discussions',
+        component: CoursesDiscussions,
+        meta: { title: () => '討論' }
+      },
+      {
+        path: 'discussion/:id',
+        component: CoursesDiscussion,
+        meta: { title: () => '討論區' }
+      },
+      {
+        path: 'grades',
+        component: CoursesGrades,
+        meta: { title: () => '成績' }
+      },
+      {
+        path: 'manages',
+        component: CoursesManages,
+        meta: { title: () => '課程管理' }
+      },
+    ],
+    redirect: '/course/:name/announcements',
+  },
+  {
+    path: '/inbox',
+    name: 'Inbox',
+    component: Inbox,
+    meta: { title: () => '站內信箱' }
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: About,
+    meta: { title: () => '關於' }
+  },
+  {
+    path: '/email_verify',
+    name: 'EmailVerify',
+    component: EmailVerify,
+    meta: { title: () => '信箱確認' }
+  },
+  {
+    path: '/email_resend',
+    name: 'EmailResend',
+    component: EmailResend,
+    meta: { title: () => '郵件重寄' }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
+    meta: { title: () => '個人頁面' }
+  },
+  {
+    path: '/ui/demo',
+    name: 'Demo',
+    component: Demo,
+    meta: { title: () => 'Demo' }
+  },
+]
+
+const router = new Router({
   mode: 'history',
-  routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: Home
-    },
-    {
-      path: '/post/:id',
-      name: 'SysAnn',
-      component: SysAnn
-    },
-    {
-      path: '/problem/:id',
-      name: 'Problem',
-      component: Problem
-    },
-    {
-      path: '/problem/:id/statistic',
-      name: 'Statistic',
-      component: Statistic
-    },
-    {
-      path: '/submission/:id',
-      name: 'Submission',
-      component: Submission
-    },
-    {
-      path: '/courses',
-      name: 'Courses',
-      component: Courses,
-    },
-    {
-      path: '/course/:name',
-      name: 'Course',
-      component: Course,
-      children: [
-        { path: 'announcements', component: CoursesAnnouncements },
-        { path: 'announcement/:id', component: CoursesAnnouncement },
-        { path: 'homeworks', component: CoursesHomeworks },
-        { path: 'homework/:id', component: CoursesHomeworkStatus },
-        { path: 'homework/:id/handwritten', component: CoursesHomeworkHandwritten },
-        { path: 'problems', component: CoursesProblems },
-        { path: 'submissions', component: CoursesSubmissions },
-        { path: 'discussions', component: CoursesDiscussions },
-        { path: 'discussion/:id', component: CoursesDiscussion },
-        { path: 'grades', component: CoursesGrades },
-        { path: 'manages', component: CoursesManages },
-      ],
-      redirect: '/course/:name/announcements',
-    },
-    {
-      path: '/inbox',
-      name: 'Inbox',
-      component: Inbox
-    },
-    {
-      path: '/about',
-      name: 'About',
-      component: About
-    },
-    {
-      path: '/email_verify',
-      name: 'EmailVerify',
-      component: EmailVerify
-    },
-    {
-      path: '/email_resend',
-      name: 'EmailResend',
-      component: EmailResend
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      component: Profile
-    },
-    {
-      path: '/ui/demo',
-      name: 'Demo',
-      component: Demo
-    },
-  ]
+  routes,
 })
+
+router.beforeEach((to, from, next) => {
+  document.title = `Normal-OJ | ${to.meta.title(to)}`
+  next()
+})
+
+export default router
