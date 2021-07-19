@@ -199,7 +199,7 @@ const routes = [
     path: '/email_resend',
     name: 'EmailResend',
     component: EmailResend,
-    meta: { title: () => '郵件重寄' }
+    meta: { title: () => '重寄認證信' }
   },
   {
     path: '/profile',
