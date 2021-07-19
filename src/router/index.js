@@ -41,7 +41,11 @@ const routes = [
     name: 'SysAnn',
     component: SysAnn,
     meta: {
-      title: () => '系統公告',
+      title: async (route) => {
+        const { data: rspData } = await Vue.axios.get(`/api/ann/${route.params.id}`)
+        const annTitle = rspData.data[0].title
+        return `系統公告:${annTitle}`
+      },
     }
   },
   {
@@ -49,7 +53,11 @@ const routes = [
     name: 'Problem',
     component: Problem,
     meta: {
-      title: () => '題目'
+      title: async (route) => {
+        const { data: rspData } = await Vue.axios.get(`/api/problem/view/${route.params.id}`)
+        const probTitle = rspData.data.problemName
+        return `題目:${probTitle}`
+      }
     }
   },
   {
@@ -57,7 +65,11 @@ const routes = [
     name: 'Statistic',
     component: Statistic,
     meta: {
-      title: () => '解題狀態'
+      title: async (route) => {
+        const { data: rspData } = await Vue.axios.get(`/api/problem/view/${route.params.id}`)
+        const probTitle = rspData.data.problemName
+        return `解題狀態-${probTitle}`
+      }
     }
   },
   {
@@ -65,7 +77,7 @@ const routes = [
     name: 'Submission',
     component: Submission,
     meta: {
-      title: () => '提交'
+      title: (route) => `提交:${route.params.id.slice(0, 6)}`
     }
   },
   {
@@ -84,57 +96,83 @@ const routes = [
       {
         path: 'announcements',
         component: CoursesAnnouncements,
-        meta: { title: () => '課程公告欄' }
+        meta: { title: (route) => `公告欄-${route.params.name}` }
       },
       {
         path: 'announcement/:id',
         component: CoursesAnnouncement,
-        meta: { title: () => '課程公告' }
+        meta: {
+          title: async (route) => {
+            const { data: rspData } = await Vue.axios.get(`/api/ann/${route.params.name}/${route.params.id}`)
+            const annTitle = rspData.data[0].title
+            return `課程公告:${annTitle}-${route.params.name}`
+          }
+        }
       },
       {
         path: 'homeworks',
         component: CoursesHomeworks,
-        meta: { title: () => '作業集' }
+        meta: { title: (route) => `作業集-${route.params.name}` }
       },
       {
         path: 'homework/:id',
         component: CoursesHomeworkStatus,
-        meta: { title: () => '作業' }
+        meta: {
+          title: async (route) => {
+            const { data: rspData } = await Vue.axios.get(`/api/course/${route.params.name}/homework`)
+            const currHw = rspData.data.find(ele => ele.id === route.params.id)
+            const hwTitle = currHw.name
+            return `作業:${hwTitle}-${route.params.name}`
+          }
+        }
       },
       {
         path: 'homework/:id/handwritten',
         component: CoursesHomeworkHandwritten,
-        meta: { title: () => '手寫' }
+        meta: {
+          title: async (route) => {
+            const { data: rspData } = await Vue.axios.get(`/api/course/${route.params.name}/homework`)
+            const currHw = rspData.data.find(ele => ele.id === route.params.id)
+            const hwTitle = currHw.name
+            return `手寫:${hwTitle}-${route.params.name}`
+          }
+        }
       },
       {
         path: 'problems',
         component: CoursesProblems,
-        meta: { title: () => '題目集' }
+        meta: { title: (route) => `題目集-${route.params.name}` }
       },
       {
         path: 'submissions',
         component: CoursesSubmissions,
-        meta: { title: () => '提交狀態' }
+        meta: { title: (route) => `提交狀態-${route.params.name}` }
       },
       {
         path: 'discussions',
         component: CoursesDiscussions,
-        meta: { title: () => '討論' }
+        meta: { title: (route) => `討論-${route.params.name}` }
       },
       {
         path: 'discussion/:id',
         component: CoursesDiscussion,
-        meta: { title: () => '討論區' }
+        meta: {
+          title: async (route) => {
+            const { data: rspData } = await Vue.axios.get(`/api/post/view/${route.params.name}/${route.params.id}`)
+            const discussTitle = rspData.data[0].title
+            return `討論區:${discussTitle}-${route.params.name}`
+          },
+        }
       },
       {
         path: 'grades',
         component: CoursesGrades,
-        meta: { title: () => '成績' }
+        meta: { title: (route) => `成績-${route.params.name}` }
       },
       {
         path: 'manages',
         component: CoursesManages,
-        meta: { title: () => '課程管理' }
+        meta: { title: (route) => `課程管理-${route.params.name}` }
       },
     ],
     redirect: '/course/:name/announcements',
@@ -182,8 +220,9 @@ const router = new Router({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  document.title = `Normal-OJ | ${to.meta.title(to)}`
+router.beforeEach(async (to, from, next) => {
+  const routeTitle = await to.meta.title(to)
+  document.title = `${routeTitle} | Normal-OJ`
   next()
 })
 
