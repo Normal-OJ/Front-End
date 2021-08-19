@@ -24,6 +24,16 @@
         </v-row>
       </v-container>
     </v-row>
+    <v-row justify="center">
+      <p class="display-3">Links</p>
+    </v-row>
+    <v-row class="mx-auto bottom" justify="center">
+      <a v-for="link in links" :key="link.url"  :href="link.url" class="mx-12">
+        <v-icon size="96">
+          {{ link.icon }}
+        </v-icon>
+      </a>
+    </v-row>
   </v-container>
 </template>
 
@@ -45,6 +55,16 @@ export default {
           title: 'Red Team of Software Engineering 2019 Fall',
           people: ['aisu-programming', 'AlaRduTP', 'as535364', 'asef18766', 'Bogay', 'brianchangtw', 'Dynzer', 'fuji37450', 'hackbabu9033', 'Ikaros1110', 'shangchiwu', 'skps2010', 'Snowball0409', 'Uier']
         }
+      ],
+      links: [
+        {
+          icon: 'mdi-facebook',
+          url: 'https://fb.me/noj.tw'
+        },
+        {
+          icon: 'mdi-github',
+          url: 'https://github.com/Normal-OJ/Normal-OJ'
+        }
       ]
     }
   }
@@ -54,5 +74,9 @@ export default {
 <style lang="css" scoped>
 .page1 {
   background: #fafafa;
+}
+
+.bottom {
+  padding-bottom: 128px;
 }
 </style>
