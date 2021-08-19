@@ -49,7 +49,7 @@ export default {
         },
         {
           title: 'NTNU CSIE Service Learning 2021 Spring',
-          people: ['AlaRduTP', 'as535364', 'asef18766', 'BirkhoffLee', 'Bogay', 'eoleedi', 'jw910731', 'littlepenguin89106', 'PoHsien-Liu', 'QQ1010', 'RuiRabbit', 'RUJRSJ', 'simon5955687', 'skps2010', 'sophie8909', 'toto6038', 'Uier', 'YingMuo']
+          people: ['AlaRduTP', 'Alanasdw', 'as535364', 'asef18766', 'BirkhoffLee', 'Bogay', 'eoleedi', 'jw910731', 'littlepenguin89106', 'PoHsien-Liu', 'QQ1010', 'RuiRabbit', 'RUJRSJ', 'simon5955687', 'skps2010', 'sophie8909', 'toto6038', 'Uier', 'YingMuo']
         },
         {
           title: 'Red Team of Software Engineering 2019 Fall',
