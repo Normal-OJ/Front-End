@@ -21,14 +21,15 @@
 
       <!-- Nav Bar -->
       <v-toolbar-items>
-        <ui-button
-          v-for="link in links"
-          v-if="link.show && $vuetify.breakpoint.mdAndUp"
-          :key="link.title"
-          :to="link.path"
-          color="white"
-          text
-        ><template slot="content">{{ link.title }}</template></ui-button>
+        <template v-for="link in links">
+          <ui-button
+            :key="link.title"
+            v-if="link.show && $vuetify.breakpoint.mdAndUp"
+            :to="link.path"
+            color="white"
+            text
+          ><template slot="content">{{ link.title }}</template></ui-button>
+        </template>
       </v-toolbar-items>
 
       <v-spacer></v-spacer>
@@ -86,13 +87,14 @@
       <v-divider></v-divider>
 
       <v-list dense>
-        <v-list-item
-          v-for="link in links"
-          v-if="link.show"
-          :key="link.title"
-          :to="link.path"
-          link
-        ><v-list-item-title v-text="link.title"></v-list-item-title></v-list-item>
+        <template v-for="link in links">
+          <v-list-item
+            v-if="link.show"
+            :key="link.title"
+            :to="link.path"
+            link
+          ><v-list-item-title v-text="link.title"></v-list-item-title></v-list-item>
+        </template>
         <v-divider v-if="isLogin"></v-divider>
         <v-list-item v-if="isLogin" link :to="{path: '/profile'}">
           <v-list-item-title v-text="'Profile'"></v-list-item-title>

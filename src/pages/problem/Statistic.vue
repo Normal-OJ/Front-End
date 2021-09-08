@@ -171,6 +171,7 @@ export default {
 }
 var draw = function (data) {
   var ctx = document.getElementById('myChart').getContext('2d')
+  // eslint-disable-next-line no-unused-vars, no-undef
   var myChart = new Chart(ctx, {
     type: 'doughnut',
     data: {

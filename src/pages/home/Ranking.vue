@@ -18,6 +18,7 @@
         <tbody>
           <tr v-for="(item, index) in items" :key="item.user.username">
             <td>{{
+              // eslint-disable-next-line vue/no-parsing-error
               (index < 3 ? ['🥇', '🥈', '🥉'][index] + ' ' : '') +
               item.user.username +
               (item.user.displayedName.length > 0 ? ` (${item.user.displayedName})` : '')

@@ -27,37 +27,38 @@
       </tbody>
       <tbody v-else>
         <!-- Loading -->
-        <tr
-          v-if="!show"
-          v-for="(data, idx) in submData"
-          :key="idx"
-        >
-          <td v-if="data['Status']===0" v-for="header in submHeader" :key="header">
-            <v-skeleton-loader
-              v-if="header!=='Status'"
-              class="mx-auto"
-              type="text"
-            ></v-skeleton-loader>
-            <p v-else class="subtitle-1"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
-          </td>
-        </tr>
+        <template v-if="!show">
+          <tr
+            v-for="(data, idx) in submData"
+            :key="idx"
+          >
+            <template v-if="data['Status'] === 0" >
+              <td v-for="header in submHeader" :key="header">
+                <v-skeleton-loader
+                  v-if="header!=='Status'"
+                  class="mx-auto"
+                  type="text"
+                ></v-skeleton-loader>
+                <p v-else class="subtitle-1"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
+              </td>
+            </template>
+          </tr>
+        </template>
 
-        <tr
-          v-for="(data, idx) in submData"
-          :key="-idx"
-          v-if="data['Status']"
-        >
-          <td class="subtitle-1">{{ data['Timestamp'] }}</td>
-          <td class="subtitle-1">
-            <a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id"
-              :style="{color: COLOR[data['Status']]}"
-            >{{ STATUS[data['Status']] }}</a>
-          </td>
-          <td class="subtitle-1">{{ data['Score'] }}</td>
-          <td class="subtitle-1">{{ data['Run Time'] }}</td>
-          <td class="subtitle-1">{{ data['Memory'] }}</td>
-          <td class="subtitle-1">{{ data['Language'] }}</td>
-        </tr>
+        <template v-for="(data, idx) in submData">
+          <tr :key="-idx" v-if="data['Status']">
+            <td class="subtitle-1">{{ data['Timestamp'] }}</td>
+            <td class="subtitle-1">
+              <a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id"
+                :style="{color: COLOR[data['Status']]}"
+              >{{ STATUS[data['Status']] }}</a>
+            </td>
+            <td class="subtitle-1">{{ data['Score'] }}</td>
+            <td class="subtitle-1">{{ data['Run Time'] }}</td>
+            <td class="subtitle-1">{{ data['Memory'] }}</td>
+            <td class="subtitle-1">{{ data['Language'] }}</td>
+          </tr>
+        </template>
       </tbody>
     </template>
   </v-simple-table>

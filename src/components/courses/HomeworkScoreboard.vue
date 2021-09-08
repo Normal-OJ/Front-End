@@ -30,10 +30,7 @@
               :key="-idx"
             >
               <td class="subtitle-1" v-text="item"></td>
-              <td
-                v-for="prob in probs"
-                class="subtitle-1"
-              >
+              <td v-for="prob in probs" :key="prob" class="subtitle-1">
                 {{ (items[item][prob].problemStatus === 0 ? 'Solved' : 'Unsolved') + ' / ' + items[item][prob].score + 'pts' + ' / ' + items[item][prob].submissionIds.length + 'tries' }}
               </td>
             </tr>

@@ -88,7 +88,7 @@ export default {
     findInItems (username) {
       let flag = false
       this.items.forEach(ele => {
-        if (ele.username === username) return flag = true
+        if (ele.username === username) return (flag = true)
       })
       return flag
     }
