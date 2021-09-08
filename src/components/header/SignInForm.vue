@@ -93,7 +93,7 @@ export default {
           // successful sign in
           this.$emit('signin')
         })
-        .catch((error) => {
+        .catch(() => {
           // wrong password or not active
           this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)'
           this.errAlert = true
@@ -121,7 +121,7 @@ export default {
                     this.signin()
                   }
                 })
-                .catch((error) => {
+                .catch(() => {
                   this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
                   this.errAlert = true
                 })
@@ -130,7 +130,7 @@ export default {
               this.signin()
             }
           })
-          .catch((error) => {
+          .catch(() => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
             this.errAlert = true
           })

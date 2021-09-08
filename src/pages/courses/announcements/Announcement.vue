@@ -101,7 +101,7 @@ export default {
     },
     post () {
       if (this.$refs.form.validate()) {
-        if (this.editing != -1) {
+        if (this.editing !== -1) {
           this.$http.put('/api/ann', { title: this.ann.title, markdown: this.ann.content, annId: this.editing })
             .then((res) => {
               this.cancel()
@@ -137,8 +137,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     },
     checkUser (username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)
@@ -170,4 +170,3 @@ export default {
 
 }
 </script>
-

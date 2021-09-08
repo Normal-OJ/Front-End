@@ -26,29 +26,31 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th
-                v-for="info in submInfo"
-                :key="info.title"
-                class="subtitle-1"
-                v-text="info.title"
-                v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
-              ></th>
+              <template v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'">
+                <th
+                  v-for="info in submInfo"
+                  :key="info.title"
+                  class="subtitle-1"
+                  v-text="info.title"
+                ></th>
+              </template>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td
-                v-for="info in submInfo"
-                :key="info.title"
-                class="subtitle-1 text-left"
-                v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
-              >
-                <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
-                <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
-                <a v-else-if="info.title==='Uploaded File'" :href="`/api/submission/${$route.params.id}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
-                <a v-else-if="info.title==='Feedback'" :href="`/api/submission/${$route.params.id}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
-                <p v-else>{{ info.text }}</p>
-              </td>
+              <template v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'">
+                <td
+                  v-for="info in submInfo"
+                  :key="info.title"
+                  class="subtitle-1 text-left"
+                >
+                  <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
+                  <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
+                  <a v-else-if="info.title==='Uploaded File'" :href="`/api/submission/${$route.params.id}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
+                  <a v-else-if="info.title==='Feedback'" :href="`/api/submission/${$route.params.id}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
+                  <p v-else>{{ info.text }}</p>
+                </td>
+              </template>
             </tr>
           </tbody>
         </template>
@@ -175,6 +177,7 @@ export default {
     this.getSubm()
   },
   mounted () {
+    // eslint-disable-next-line no-unused-vars
     const clipboard = new Clipboard('.copy-code', { text: trigger => { return this.code } })
   },
   methods: {
@@ -250,8 +253,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     },
     isKey (key, obj) {
       var keys = Object.keys(obj).map(function (x) {

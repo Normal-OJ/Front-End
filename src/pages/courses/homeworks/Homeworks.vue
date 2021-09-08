@@ -237,7 +237,7 @@ export default {
           problemIds: this.hw.problemIds,
           scordboardStatus: this.hw.scordboardStatus
         }
-        if (this.editing != -1) {
+        if (this.editing !== -1) {
           data.newName = this.hw.title
           this.$http.put(`/api/homework/${this.editing}`, data)
             .then((res) => {
@@ -308,8 +308,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     }
   }
 }

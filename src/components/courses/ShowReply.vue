@@ -28,10 +28,7 @@
                 </v-list>
               </v-menu>
             </v-row>
-            <!-- <v-divider class="my-0"></v-divider> -->
-            <!-- <v-card-subtitle class="subtitle-1 text--primary" style="white-space: pre" v-text="item.content"> -->
             <v-card-subtitle class="subtitle-1 text--primary">
-              <!-- {{ item.content }} -->
               <vue-markdown :source="item.content"></vue-markdown>
             </v-card-subtitle>
             <v-row>
@@ -77,7 +74,7 @@
         </div>
       </v-card>
       <!-- Reply -->
-      <v-row v-for="(thread, jdx) in item.reply" :key="thread.id" justify="center" class="mt-2">
+      <v-row v-for="thread in item.reply" :key="thread.id" justify="center" class="mt-2">
         <div style="width: 3vw;"></div>
         <v-card :width="$vuetify.breakpoint.smAndDown ? '72vw' : '47vw'">
           <v-row v-if="editing !== thread.id">
@@ -105,10 +102,7 @@
                   </v-list>
                 </v-menu>
               </v-row>
-              <!-- <v-divider class="my-0"></v-divider> -->
-              <!-- <v-card-subtitle class="subtitle-1 text--primary" style="white-space: pre" v-text="thread.content"> -->
               <v-card-subtitle class="subtitle-1 text--primary">
-                <!-- {{ thread.content }} -->
                 <vue-markdown :source="thread.content"></vue-markdown>
               </v-card-subtitle>
             </v-col>
@@ -289,11 +283,7 @@ export default {
         if (check) {
           this.$http.delete('/api/post', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
             .then((res) => {
-              // this.$router.push(`/course/${this.$route.params.name}/announcements`);
               this.$router.go(0)
-              // console.log(res);
-            })
-            .catch((err) => {
             })
         } else {
           this.deleting = id
@@ -344,8 +334,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     }
   }
 }

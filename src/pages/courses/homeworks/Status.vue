@@ -14,17 +14,14 @@
         <tbody v-if="items">
           <tr>
             <td>Report</td>
-            <td v-for="prob in probs">{{ copycat[prob] }}</td>
+            <td v-for="prob in probs" :key="prob">{{ copycat[prob] }}</td>
           </tr>
           <tr
             v-for="(item, idx) in Object.keys(items)"
             :key="-idx"
           >
             <td class="subtitle-1" v-text="item"></td>
-            <td
-              v-for="prob in probs"
-              class="subtitle-1"
-            >
+            <td v-for="prob in probs" class="subtitle-1" :key="prob">
               <font v-if="items[item][prob].problemStatus!=null" :color="COLOR[items[item][prob].problemStatus+1]">{{ STATUS[items[item][prob].problemStatus+1] }}</font>
               <font v-else>Unsolved</font>
               {{ ' / ' + items[item][prob].score + 'pts' }}

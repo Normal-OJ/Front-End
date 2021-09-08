@@ -14,22 +14,24 @@
     <v-divider></v-divider>
     <v-list nav>
       <v-list-item-group color="primary">
-        <v-list-item
-          v-for="link in links"
+        <template
           v-if="(link.title!=='Manages'||perm)
-              &&(courseName!=='Public'||
-                (link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
-          :key="link.title"
-          :to="link.path"
-          link
-          dense
+            &&(courseName!=='Public'
+            ||(link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
         >
-              <!-- &&(courseName==='Public'||link.title!=='Problems')" -->
-          <v-list-item-icon><v-icon class="mt-1">{{ link.icon }}</v-icon></v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title class="subtitle-1">{{ link.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          <v-list-item
+            v-for="link in links"
+            :key="link.title"
+            :to="link.path"
+            link
+            dense
+          >
+            <v-list-item-icon><v-icon class="mt-1">{{ link.icon }}</v-icon></v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title class="subtitle-1">{{ link.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
       </v-list-item-group>
     </v-list>
   </v-card>
@@ -55,7 +57,6 @@ export default {
         { title: 'Manages', path: `/course/${this.$route.params.name}/manages`, icon: 'mdi-cog' }
       ],
       perm: false
-      // drawer: false,
     }
   },
 
@@ -109,4 +110,3 @@ export default {
   }
 }
 </script>
-

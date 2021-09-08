@@ -174,7 +174,7 @@ export default {
         { text: 'C++ (c++17)', value: 1 },
         { text: 'Python (python3)', value: 2 }
       ]
-      for (const [i, l] of langs.entries()) {
+      for (const [i] of langs.entries()) {
         if (value & (1 << i)) { temp.push(langs[i]) }
       }
       return temp
@@ -217,7 +217,6 @@ export default {
                 Score: null,
                 'Run Time': null,
                 Memory: null,
-                Language: null,
                 id: ele.submissionId
               })
             } else {
@@ -227,7 +226,6 @@ export default {
                 Score: ele.score,
                 'Run Time': ele.runTime,
                 Memory: ele.memoryUsage,
-                Language: LANG[ele.languageType],
                 id: ele.submissionId
               })
             }
@@ -309,8 +307,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     },
     getUsername () {
       if (this.$cookies.isKey('jwt')) {

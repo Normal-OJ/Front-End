@@ -74,7 +74,7 @@
 
 <script>
 const API_BASE_URL = '/api'
-var globKey = { email: 0, username: 0 };
+var globKey = { email: 0, username: 0 }
 
 export default {
 
@@ -137,12 +137,6 @@ export default {
     this.authData.email = ''
   },
 
-  mounted () {
-    // this.$nextTick(() => {
-    //   this.$refs.email.focus();
-    // });
-  },
-
   methods: {
     submit () {
       this.btnLoading = true
@@ -152,27 +146,20 @@ export default {
             this.signup = false
             this.dialog = true
             this.$emit('signup')
-            // console.log(response.data);
           })
-          .catch((error) => {
+          .catch(() => {
             this.errMsg = 'Invalid Email'
             this.errAlert = true
           })
       }
       this.btnLoading = false
     },
-    // reset() {
-    // this.authData = Object.fromEntries(new Map(Object.keys(this.authData).map(item => [item, ''])));
-    // },
     check (type, cnt) {
       const checker = {
         email: val => /.+@.+/.test(val),
         username: val => (val && val.length <= 16)
       }
-      // if ( cnt == globKey[type] &&
-      //   ((type=='email' && this.isMailFormat(this.authData[type])) ||
-      //    (type=='username' && this.isNameFormat(this.authData[type]))) ) {
-      if (cnt == globKey[type] && checker[type] && checker[type](this.authData[type])) {
+      if (cnt === globKey[type] && checker[type] && checker[type](this.authData[type])) {
         this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData[type] })
           .then((response) => {
             if (response.data.data.valid === 0) {

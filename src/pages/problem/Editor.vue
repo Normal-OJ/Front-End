@@ -21,7 +21,6 @@
         <tr>
           <td class="subtitle-1" v-text="submData[0]['Timestamp']"></td>
           <td class="subtitle-1" v-text="submData[0]['Score']===-1 ? 'Pending' : submData[0]['Score']"></td>
-          <!-- {{submData[0]['Status']}} -->
           <td>
             <a class="subtitle-1" v-if="submData[0]['Status'] > -1" :href="`/api/submission/${submData[0]['id']}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
           </td>
@@ -153,7 +152,7 @@ export default {
         // generate zip file
         var code = await zip.generateAsync({ type: 'blob' })
         // setup form data
-        var formData = new FormData();
+        var formData = new FormData()
         formData.append('code', code)
         try {
           // create submission

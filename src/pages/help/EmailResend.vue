@@ -117,7 +117,7 @@ export default {
   methods: {
     open (idx) {
       this.diaTitle = this.items[idx].title
-      this.diaText = `Please enter email address which you registered with, we\'ll ${this.text[idx]}`
+      this.diaText = `Please enter email address which you registered with, we'll ${this.text[idx]}`
       this.dialog = true
       this.diaIdx = idx
       this.email = ''

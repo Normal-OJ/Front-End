@@ -49,7 +49,7 @@
       </v-card>
     </v-row>
     <template v-if="items">
-      <div v-for="item in items">
+      <div v-for="item in items" :key="item.postId">
         <ShowReply :items="item.reply" :focus="focus" @newComment="newComment" @editComment="editComment">
         </ShowReply>
       </div>
@@ -109,7 +109,7 @@ export default {
         .then((res) => {
           this.items = []
           res.data.data.forEach(ele => {
-            if (ele.thread.status != 1) {
+            if (ele.thread.status !== 1) {
               this.items.push({
                 postId: ele.thread.id,
                 title: ele.title,
@@ -212,8 +212,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     },
     getAvatar (payload) {
       var d = encodeURI('https://noj.tw/defaultAvatar.png')

@@ -131,26 +131,24 @@
                 </v-hover>
               </td>
             </tr>
-            <tr
-              v-if="scores && scores.length > 0"
-              v-for="(score, idx) in scores"
-              :key="idx"
-            >
-              <td>{{ score.title }}</td>
-              <td>{{ score.score }}</td>
-              <td style="white-space: pre;">{{ score.content }}</td>
-              <td>{{ timeFormat(score.timestamp) }}</td>
-              <td>
-                <ui-button
-                  class="mr-1"
-                  color="error"
-                  alert
-                  @alertClick="delscore(score.title)"
-                >
-                  <template slot="content"><v-icon>mdi-trash-can</v-icon></template>
-                </ui-button>
-              </td>
-            </tr>
+            <template v-if="scores && scores.length > 0">
+              <tr v-for="(score, idx) in scores" :key="idx">
+                <td>{{ score.title }}</td>
+                <td>{{ score.score }}</td>
+                <td style="white-space: pre;">{{ score.content }}</td>
+                <td>{{ timeFormat(score.timestamp) }}</td>
+                <td>
+                  <ui-button
+                    class="mr-1"
+                    color="error"
+                    alert
+                    @alertClick="delscore(score.title)"
+                  >
+                    <template slot="content"><v-icon>mdi-trash-can</v-icon></template>
+                  </ui-button>
+                </td>
+              </tr>
+            </template>
             <tr v-else>
               <td colspan="5">🦄 No data available.</td>
             </tr>
@@ -271,13 +269,24 @@ export default {
           TAs: [],
           studentNicknames: data
         })
-        .then((res) => {
+        .then(() => {
           this.$router.go(0)
         })
     },
     del (idx) {
-      this.items.splice(idx, 1)
-      this.submit()
+      const data = {}
+      this.items.forEach((ele, index) => {
+        if (index === idx) return
+        data[ele.username] = ele.displayName
+      })
+      this.$http.put(`/api/course/${this.$route.params.name}`,
+        {
+          TAs: [],
+          studentNicknames: data
+        })
+        .then(() => {
+          this.$router.go(0)
+        })
     },
     update (grade) {
       this.grade = null
@@ -288,7 +297,7 @@ export default {
     scoring () {
       if (this.$refs.form.validate()) {
         this.$http.post(`/api/course/${this.$route.params.name}/grade/${this.grade}`, this.data)
-          .then((res) => {
+          .then(() => {
             this.gradeDialog = false
             this.$refs.form.reset()
             this.update(this.grade)
@@ -300,7 +309,7 @@ export default {
     },
     delscore (title) {
       this.$http.delete(`/api/course/${this.$route.params.name}/grade/${this.grade}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { title: title } })
-        .then((res) => {
+        .then(() => {
           this.update(this.grade)
         })
         .catch((err) => {
@@ -315,8 +324,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
-	<v-dialog v-model="dialog" :width="width" :persistent="persistent">
-    <template v-slot:activator="{ on: { click } }" v-if="this.$slots.activator">
+  <v-dialog v-model="dialog" :width="width" :persistent="persistent">
+    <template v-slot:activator v-if="this.$slots.activator">
       <slot name="activator">
       </slot>
     </template>
@@ -94,4 +94,3 @@ export default {
   }
 }
 </script>
-

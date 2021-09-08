@@ -91,7 +91,7 @@
                   counter="64"
                   :rules="[
                     v => !!v || 'Please enter the problem name.',
-                    v => !!v && v.length <= 64 || 'Sorry, the length is at most 64 characters.',
+                    v => (!!v && v.length <= 64) || 'Sorry, the length is at most 64 characters.',
                   ]"
                   filled
                 />
@@ -427,10 +427,10 @@ export default {
 
   computed: {
     sampleLength () {
-      if (this.prob.description.sampleInput) { return this.prob.description.sampleInput.length }
+      return this.prob.description.sampleInput && this.prob.description.sampleInput.length
     },
     subtaskLength () {
-      if (this.prob.testCaseInfo.tasks) { return this.prob.testCaseInfo.tasks.length }
+      return this.prob.testCaseInfo.tasks && this.prob.testCaseInfo.tasks.length
     }
   },
 
@@ -489,11 +489,9 @@ export default {
       this.tags = []
       this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
         .then((res) => {
-          // console.log(res);
           res.data.data.forEach(ele => {
             ele.status = ele.status === 0 ? 'Online' : 'Offline'
             ele.type = ele.type === 0 ? 'default' : (ele.type === 1 ? 'fillInTemplate' : 'handwritten')
-            // ele.courses = ele.courses[0];
             this.items.push(ele)
             ele.tags.forEach(tag => {
               this.tags.push(tag)
@@ -501,22 +499,15 @@ export default {
           })
           this.tags = [...new Set(this.tags)]
         })
-        .catch((err) => {
-          // console.log(err);
-        })
     },
     submit () {
-      if (this.prob.testCaseInfo) {
-        if (this.prob.type === 2) {
-          this.prob.testCaseInfo
-        } else {
-          this.prob.testCaseInfo.tasks.forEach(ele => {
-            ele.caseCount = Number(ele.caseCount)
-            ele.taskScore = Number(ele.taskScore)
-            ele.memoryLimit = Number(ele.memoryLimit)
-            ele.timeLimit = Number(ele.timeLimit)
-          })
-        }
+      if (this.prob.testCaseInfo && this.prob.type !== 2) {
+        this.prob.testCaseInfo.tasks.forEach(ele => {
+          ele.caseCount = Number(ele.caseCount)
+          ele.taskScore = Number(ele.taskScore)
+          ele.memoryLimit = Number(ele.memoryLimit)
+          ele.timeLimit = Number(ele.timeLimit)
+        })
       }
       this.prob.quota = Number(this.prob.quota)
       if (this.$refs.form.validate() && this.allowedLangAlt) {
@@ -531,7 +522,6 @@ export default {
         if (this.creating === -1) {
           this.$http.post('/api/problem/manage', this.prob)
             .then((res) => {
-              // console.log(res);
               if (!this.zip) {
                 this.$router.go(0)
               }
@@ -600,8 +590,6 @@ export default {
       } else if (this.subtaskLength > 1) {
         this.prob.testCaseInfo.tasks.pop()
       }
-      // this.subtaskLength += val;
-      // this.subtaskLength = Math.max(this.subtaskLength, 1);
     },
     toCreate (idx) {
       this.creating = idx

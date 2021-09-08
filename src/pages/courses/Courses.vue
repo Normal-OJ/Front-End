@@ -33,7 +33,7 @@
               <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
               <td class="subtitle-1">{{ item.teacher.username }}</td>
               <td class="subtitle-1">
-                <span class="pr-1" v-for="ta in item.ta">{{ ta }}</span>
+                <span class="pr-1" v-for="ta in item.ta" :key="ta">{{ ta }}</span>
               </td>
             </tr>
             <tr v-if="items.length===0">
@@ -94,7 +94,7 @@ export default {
       courseName: '',
       courseNameRules: [
         v => !!v || 'Please enter the course name you wanna create.',
-        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters.'
+        v => (!!v && v.length <= 64) || 'Sorry, the length must be ≤ 64 characters.'
       ],
       errAlert: false,
       errMsg: '',

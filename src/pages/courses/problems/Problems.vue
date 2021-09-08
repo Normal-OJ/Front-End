@@ -91,7 +91,7 @@ export default {
         .then((r) => {
           this.items = r.map(p => {
             p.type = (p.type === 0 ? 'Programming' : 'Handwritten')
-            if (p.quota == -1) p.quota = 'unlimited'
+            if (p.quota === -1) p.quota = 'unlimited'
             return p
           })
           this.loading = false

@@ -285,7 +285,7 @@
             <!-- Reply Btn -->
             <v-tooltip bottom v-if="displayFolder === 'inbox'">
               <template v-slot:activator="{ on }">
-                <v-btn class="ml-1" icon outlined >
+                <v-btn class="ml-1" icon outlined v-on="on" >
                   <v-icon @click="reply(displayFolder,displayMail)">mdi-reply</v-icon>
                 </v-btn>
               </template>
@@ -424,8 +424,8 @@ export default {
       var hour = '0' + tmp.getHours()
       var min = '0' + tmp.getMinutes()
       var sec = '0' + tmp.getSeconds()
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return time
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     },
     getInbox () {
       this.$http.get(`${API_BASE_URL}/inbox`)
@@ -564,7 +564,6 @@ export default {
         if (this.newMail.receiver.indexOf('Select All') < 0) {
           this.userList.splice(0, 0, 'Select All')
         }
-        this.newMail.receiver.splice(this.newMail.receiver.indexOf(item), 1)
       }
       len = this.newMail.receiver.length
       if (this.newMail.receiver.indexOf('Select All') >= 0) {

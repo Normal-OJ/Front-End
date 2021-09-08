@@ -110,11 +110,8 @@
               <ui-button :to="`homework/${item.id}`" color="info">
                 <template slot="content">View Student Status</template>
               </ui-button>
-              <!-- <HomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds" :probsName="item.problem">
-              </HomeworkScoreboard> -->
             </v-card-text>
           </div>
-        </v-card-text>
       </v-card>
     </v-row>
     <v-row v-show="!items">
@@ -211,8 +208,8 @@ export default {
     totalScore (item) {
       let ret = 0; let flag = false
       item.problemIds.forEach(id => {
-        if (!(item.studentStatus.hasOwnProperty(`${id}`))) {
-          if (!(item.studentStatus.hasOwnProperty(`${this.user}`))) flag = true
+        if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${id}`)) {
+          if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${this.user}`)) flag = true
           else ret += Math.max(0, item.studentStatus[`${this.user}`][`${id}`].score)
         } else {
           ret += Math.max(0, item.studentStatus[`${id}`].score)
@@ -223,8 +220,8 @@ export default {
     totalAC (item) {
       let ret = 0; let cnt = 0; let flag = false
       item.problemIds.forEach(id => {
-        if (!(item.studentStatus.hasOwnProperty(`${id}`))) {
-          if (!(item.studentStatus.hasOwnProperty(`${this.user}`))) flag = true
+        if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${id}`)) {
+          if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${this.user}`)) flag = true
           else {
             if (this.findType(id) !== TYPE[2]) {
               cnt++
@@ -242,19 +239,9 @@ export default {
     },
     findType (id) {
       if (this.prob[`${id}`]) { return TYPE[this.prob[`${id}`].type] }
-      // for ( var i=0; i<this.probs.length; i++ ) {
-      //   if ( this.probs[i].problemId === id ) {
-      //     return TYPE[this.probs[i].type];
-      //   }
-      // }
     },
     findProb (id) {
       if (this.prob[`${id}`]) { return this.prob[`${id}`].problemName }
-      // for ( var i=0; i<this.probs.length; i++ ) {
-      //   if ( this.probs[i].problemId === id ) {
-      //     return this.probs[i].problemName;
-      //   }
-      // }
     },
     findQuota (id) {
       if (this.prob[`${id}`]) { return this.prob[`${id}`].quota }
