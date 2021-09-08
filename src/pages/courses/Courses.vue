@@ -81,8 +81,6 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api';
-
 export default {
 
   name: 'Courses',
@@ -95,67 +93,53 @@ export default {
       teacher: '',
       courseName: '',
       courseNameRules: [
-        v => !!v || 'Please enter the course name you wanna create.', 
-        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters.',
+        v => !!v || 'Please enter the course name you wanna create.',
+        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters.'
       ],
       errAlert: false,
       errMsg: '',
-      perm: -1,
+      perm: -1
     }
   },
 
   beforeMount () {
-    this.getCourses();
-    this.getProfile();
+    this.getCourses()
+    this.getProfile()
   },
 
   methods: {
-    getCourses() {
+    getCourses () {
       this.$http.get('/api/course')
         .then((res) => {
-          // console.log(res);
           res.data.data.forEach(ele => {
-            this.items.push({'title': ele.course, 'teacher': ele.teacher, 'path': `/${ele.course}`, 'ta': ele.TAs})
+            this.items.push({ title: ele.course, teacher: ele.teacher, path: `/${ele.course}`, ta: ele.TAs })
           })
         })
-        .catch((err) => {
-          // console.log(err);
-        });
     },
-    getProfile() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          this.perm = payload.role;
-        } else {
-          // this.$router.push('/');
+    getProfile () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === true) {
+          this.perm = payload.role
         }
-      } else {
-        // this.$router.push('/');
       }
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    create() {
-      if ( this.$refs.form.validate() ) {
-        this.$http.post('/api/course', {'course': this.courseName, 'teacher': this.teacher})
+    create () {
+      if (this.$refs.form.validate()) {
+        this.$http.post('/api/course', { course: this.courseName, teacher: this.teacher })
           .then((res) => {
-            this.dialog = false;
-            this.$router.go(0);
+            this.dialog = false
+            this.$router.go(0)
           })
           .catch((err) => {
-            this.errMsg = `${err.response.data.message}`;
-            this.errAlert = true;
+            this.errMsg = `${err.response.data.message}`
+            this.errAlert = true
           })
       }
-    },
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-table {
-
-}
-</style>

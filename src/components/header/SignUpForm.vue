@@ -9,7 +9,7 @@
       type="error"
       :alertMsg="errMsg"
     ></ui-alert>
-    
+
     <v-text-field
       v-model="authData.email"
       label="E-mail*"
@@ -73,8 +73,8 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api';
-var globKey = {'email': 0, 'username': 0}, typeKey = ['email', 'username'];
+const API_BASE_URL = '/api'
+var globKey = { email: 0, username: 0 };
 
 export default {
 
@@ -84,57 +84,57 @@ export default {
     return {
       validForm: false,
       authData: {
-        'email': '',
-        'username': '',
-        'password': '',
+        email: '',
+        username: '',
+        password: ''
       },
       used: {
-        'email': false, 'username': false
+        email: false, username: false
       },
       mailRule: [
         val => !!val || 'Please enter your E-mail.',
         val => /.+@.+/.test(val) || 'Please enter in format: \'example@example.com\'.',
-        () => this.used['email'] || 'Sorry, this E-mail has been used.'
+        () => this.used.email || 'Sorry, this E-mail has been used.'
       ],
       usernameRule: [
         val => !!val || 'Please enter your Username.',
         val => (val && val.length <= 16) || 'Sorry, the length must be ≤ 16 characters',
-        () => this.used['username'] || 'Sorry, this Username has been used.'
+        () => this.used.username || 'Sorry, this Username has been used.'
       ],
       passwordRule: [
-        val => !!val || 'Please enter your Password.',
+        val => !!val || 'Please enter your Password.'
       ],
       showPassword: false,
       btnLoading: false,
       errAlert: false,
       errMsg: '',
       signup: true,
-      dialog: false,
+      dialog: false
     }
   },
 
   computed: {
-    email() {
-      return this.authData.email;
+    email () {
+      return this.authData.email
     },
-    username() {
-      return this.authData.username;
-    },
-  },
-
-  watch: {
-    email() {
-      this.keying('email');
-    },
-    username() {
-      this.keying('username');
+    username () {
+      return this.authData.username
     }
   },
 
-  beforeMount() {
-    this.authData.username = '';
-    this.authData.password = '';
-    this.authData.email = '';
+  watch: {
+    email () {
+      this.keying('email')
+    },
+    username () {
+      this.keying('username')
+    }
+  },
+
+  beforeMount () {
+    this.authData.username = ''
+    this.authData.password = ''
+    this.authData.email = ''
   },
 
   mounted () {
@@ -144,58 +144,55 @@ export default {
   },
 
   methods: {
-    submit() {
-      this.btnLoading = true;
-      if ( this.$refs.form.validate() ) {
+    submit () {
+      this.btnLoading = true
+      if (this.$refs.form.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/signup`, this.authData)
           .then((response) => {
-            this.signup = false;
-            this.dialog = true;
-            this.$emit('signup');
+            this.signup = false
+            this.dialog = true
+            this.$emit('signup')
             // console.log(response.data);
           })
           .catch((error) => {
-            this.errMsg = 'Invalid Email';
-            this.errAlert = true;
-          });
+            this.errMsg = 'Invalid Email'
+            this.errAlert = true
+          })
       }
-      this.btnLoading = false;
+      this.btnLoading = false
     },
     // reset() {
-      // this.authData = Object.fromEntries(new Map(Object.keys(this.authData).map(item => [item, ''])));
+    // this.authData = Object.fromEntries(new Map(Object.keys(this.authData).map(item => [item, ''])));
     // },
-    check(type, cnt) {
-      let checker = {
+    check (type, cnt) {
+      const checker = {
         email: val => /.+@.+/.test(val),
-        username: val => (val && val.length <= 16),
+        username: val => (val && val.length <= 16)
       }
-      // if ( cnt == globKey[type] && 
-      //   ((type=='email' && this.isMailFormat(this.authData[type])) || 
+      // if ( cnt == globKey[type] &&
+      //   ((type=='email' && this.isMailFormat(this.authData[type])) ||
       //    (type=='username' && this.isNameFormat(this.authData[type]))) ) {
-      if(cnt == globKey[type] && checker[type] && checker[type](this.authData[type])) {
-        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData[type]})
+      if (cnt == globKey[type] && checker[type] && checker[type](this.authData[type])) {
+        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData[type] })
           .then((response) => {
-            if ( response.data.data.valid === 0 ) {
-              this.used[type] = false;
-              this.$refs[type].validate();
-            } else if ( response.data.data.valid === 1 ) {
-              this.used[type] = true;
+            if (response.data.data.valid === 0) {
+              this.used[type] = false
+              this.$refs[type].validate()
+            } else if (response.data.data.valid === 1) {
+              this.used[type] = true
             }
           })
-          .catch((error) => {
-            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
-            this.errAlert = true;
+          .catch(() => {
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+            this.errAlert = true
           })
       }
     },
-    keying(type) {
-      this.used[type] = true;
-      globKey[type]++;
-      setTimeout(this.check, 800, type, globKey[type]);
-    },
+    keying (type) {
+      this.used[type] = true
+      globKey[type]++
+      setTimeout(this.check, 800, type, globKey[type])
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

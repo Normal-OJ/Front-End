@@ -76,73 +76,73 @@ export default {
   props: {
     alert: {
       type: Boolean,
-      default: false,
+      default: false
     },
     color: {
       type: String,
-      default: 'primary',
+      default: 'primary'
     },
     tile: {
       type: Boolean,
-      default: false,
+      default: false
     },
     block: {
       type: Boolean,
-      default: false,
+      default: false
     },
     icon: {
       type: Boolean,
-      default: false,
+      default: false
     },
     text: {
       type: Boolean,
-      default: false,
+      default: false
     },
     outlined: {
       type: Boolean,
-      default: false,
+      default: false
     },
     to: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     loading: {
       type: Boolean,
-      default: false,
+      default: false
     },
     large: {
       type: Boolean,
-      default: false,
+      default: false
     },
     small: {
       type: Boolean,
-      default: false,
+      default: false
     },
     xLarge: {
       type: Boolean,
-      default: false,
+      default: false
     },
     xSmall: {
       type: Boolean,
-      default: false,
-    }, 
+      default: false
+    }
   },
 
   data () {
     return {
-      dialog: false,
+      dialog: false
     }
   },
 
   computed: {
-    fontSizeByProps() {
-      if ( this.xLarge )  return '2rem';
-      if ( this.large )  return '1.5rem';
-      if ( this.small )  return '0.85rem';
-      if ( this.xSmall )  return '0.65rem';
-      return '1rem';
-    },
-  },
+    fontSizeByProps () {
+      if (this.xLarge) return '2rem'
+      if (this.large) return '1.5rem'
+      if (this.small) return '0.85rem'
+      if (this.xSmall) return '0.65rem'
+      return '1rem'
+    }
+  }
 }
 </script>
 

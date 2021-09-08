@@ -66,7 +66,7 @@
         :headers="headers"
         :items="submissions"
         :items-per-page="15"
-        :loading="loading"     
+        :loading="loading"
       >
         <template v-slot:[`item.submissionId`]="{ item }">
           <a :href="'/submission/'+item.submissionId" rel="noopener noreferrer" target="_blank">{{ item.submissionId.substr(-6) }}</a>
@@ -122,7 +122,7 @@ export default {
         { text: 'MLE', value: 4 },
         { text: 'RE', value: 5 },
         { text: 'JE', value: 6 },
-        { text: 'OLE', value: 7 },
+        { text: 'OLE', value: 7 }
       ],
       selectedProblem: [],
       selectedStatus: [],
@@ -136,11 +136,11 @@ export default {
       snackbar: false,
       alertMsg: '',
       pid2Pname: {},
-      perm: false,
+      perm: false
     }
   },
   computed: {
-    headers() {
+    headers () {
       return [
         { text: 'ID', value: 'submissionId', class: 'font-weight-bold subtitle-1 text--primary', sortable: false },
         { text: 'PID', value: 'problemId', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
@@ -150,108 +150,105 @@ export default {
         { text: 'Memory', value: 'memoryUsage', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
         { text: 'Score', value: 'score', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
         { text: 'Language', value: 'languageType', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
-        { text: 'Submit Time', value: 'timestamp', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
+        { text: 'Submit Time', value: 'timestamp', class: 'font-weight-bold subtitle-1 text--primary', filterable: false }
       ]
     },
-    submissions() {
+    submissions () {
       const selectedPid = this.selectedProblem.map(sp => sp.value)
       return this.items.filter(s => {
-        if ( this.search.length > 0 && !s.submissionId.includes(this.search) && !s.user.username.includes(this.search) && !s.user.displayedName.includes(this.search)) return false;
-        if ( selectedPid.length > 0 && !selectedPid.includes(s.problemId) ) return false;
-        if ( this.selectedStatus.length > 0 && !this.selectedStatus.includes(s.status) ) return false;
-        if ( this.selectedLanguage.length > 0 && !this.selectedLanguage.includes(s.languageType) ) return false;
-        return true;
+        if (this.search.length > 0 && !s.submissionId.includes(this.search) && !s.user.username.includes(this.search) && !s.user.displayedName.includes(this.search)) return false
+        if (selectedPid.length > 0 && !selectedPid.includes(s.problemId)) return false
+        if (this.selectedStatus.length > 0 && !this.selectedStatus.includes(s.status)) return false
+        if (this.selectedLanguage.length > 0 && !this.selectedLanguage.includes(s.languageType)) return false
+        return true
       })
-    },
+    }
   },
   methods: {
-    async getSubmissions() {
-      this.loading = true;
-      let filter = {
+    async getSubmissions () {
+      this.loading = true
+      const filter = {
         offset: 0,
         count: -1,
-        course: this.$route.params.name,
+        course: this.$route.params.name
       }
-      if ( this.whosSubm === 'My Submissions' ) {
-        filter.username = this.username;
+      if (this.whosSubm === 'My Submissions') {
+        filter.username = this.username
       }
-      this.items = [];
+      this.items = []
       this.$http.get('/api/submission', { params: filter })
         .then((res) => {
           this.items = res.data.data.submissions.map(s => {
-            s.languageType = this.LANG[s.languageType];
-            s.timestamp = this.timeFormat(s.timestamp);
-            return s;
-          });
+            s.languageType = this.LANG[s.languageType]
+            s.timestamp = this.timeFormat(s.timestamp)
+            return s
+          })
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
-        .finally(() => this.loading = false);
+        .finally(() => this.loading = false)
     },
-    async getProblems() {
-      this.problems = [];
-      let filter = {
+    async getProblems () {
+      this.problems = []
+      const filter = {
         offset: 0,
         count: -1,
-        course: this.$route.params.name,
+        course: this.$route.params.name
       }
       try {
-        let res = await this.$http.get('/api/problem', { params: filter })
+        const res = await this.$http.get('/api/problem', { params: filter })
         this.problems = res.data.data.map(p => ({
           text: p.problemId + ' - ' + p.problemName,
-          value: p.problemId,
+          value: p.problemId
         }))
         this.pid2Pname = {}
         res.data.data.forEach(p => {
           this.pid2Pname[`${p.problemId}`] = p.problemName
         })
-      } catch(e) {
+      } catch (e) {
         console.log(e)
-      };
-    },
-    timeFormat(time) {
-      const tmp = new Date(time * 1000);
-      const year = tmp.getFullYear();
-      const month = '0' + (tmp.getMonth()+1);
-      const date = '0' + tmp.getDate();
-      const hour = '0' + tmp.getHours();
-      const min = '0' + tmp.getMinutes();
-      const sec = '0' + tmp.getSeconds();
-      const timeString = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return timeString;
-    },
-    getUsername() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        this.perm = payload.role <= 1
-        return payload.username;
       }
-      return '';
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
+    timeFormat (time) {
+      const tmp = new Date(time * 1000)
+      const year = tmp.getFullYear()
+      const month = '0' + (tmp.getMonth() + 1)
+      const date = '0' + tmp.getDate()
+      const hour = '0' + tmp.getHours()
+      const min = '0' + tmp.getMinutes()
+      const sec = '0' + tmp.getSeconds()
+      const timeString = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return timeString
     },
+    getUsername () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        this.perm = payload.role <= 1
+        return payload.username
+      }
+      return ''
+    },
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
+    }
   },
-  async beforeMount() {
-    this.username = this.getUsername();
-    await this.getProblems();
-    await this.getSubmissions();
+  async beforeMount () {
+    this.username = this.getUsername()
+    await this.getProblems()
+    await this.getSubmissions()
   },
-  mounted() {
-    const clipboard = new Clipboard('.copy-code', {text: (trigger => trigger.id).bind(this)});
+  mounted () {
+    const clipboard = new Clipboard('.copy-code', { text: trigger => trigger.id })
     clipboard.on('success', evt => {
-        this.snackbar = false;
-        this.alertMsg = 'submission id copied!';
-        this.snackbar = true;
-        evt.clearSelection();
-      });
+      this.snackbar = false
+      this.alertMsg = 'submission id copied!'
+      this.snackbar = true
+      evt.clearSelection()
+    })
     clipboard.on('error', err => {
-      alert(`Could not copy text: ${err}`);
-    });
-  },
+      alert(`Could not copy text: ${err}`)
+    })
+  }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

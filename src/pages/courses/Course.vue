@@ -11,24 +11,16 @@
 </template>
 
 <script>
-import CourseSidebar from './CourseSidebar';
+import CourseSidebar from './CourseSidebar'
 
 export default {
 
   name: 'Course',
 
   components: {
-    CourseSidebar,
-  },
-
-  data () {
-    return {
-
-    }
-  },
+    CourseSidebar
+  }
 
 }
 </script>
 
-<style lang="css" scoped>
-</style>

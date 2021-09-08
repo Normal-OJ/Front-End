@@ -26,7 +26,7 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th 
+              <th
                 v-for="info in submInfo"
                 :key="info.title"
                 class="subtitle-1"
@@ -135,25 +135,25 @@
 </template>
 
 <script>
-import { codemirror } from 'vue-codemirror';
+import { codemirror } from 'vue-codemirror'
 import 'codemirror/theme/dracula.css'
 import 'codemirror/theme/eclipse.css'
-import User from '@/utils/user';
+import User from '@/utils/user'
 import Clipboard from 'clipboard'
-var LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: "python", version: 3 }];
+var LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
 
 export default {
 
   name: 'Submission',
 
   components: {
-    codemirror,
+    codemirror
   },
 
-  data() {
+  data () {
     return {
       submInfo: [],
-      submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score'],//, 'Standard Error'],//, 'Standard Output'],
+      submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score'], //, 'Standard Error'],//, 'Standard Output'],
       submData: [],
       codeShow: false,
       code: '',
@@ -167,111 +167,110 @@ export default {
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       user: new User(this.$cookies.get('jwt')),
-      isRejudge: false,
+      isRejudge: false
     }
   },
 
-  beforeMount() {
-    this.getSubm();
+  beforeMount () {
+    this.getSubm()
   },
-  mounted() {
-    const clipboard = new Clipboard('.copy-code', {text: (trigger => { return this.code; }).bind(this)});
+  mounted () {
+    const clipboard = new Clipboard('.copy-code', { text: trigger => { return this.code } })
   },
   methods: {
-    getSubm() {
+    getSubm () {
       this.$http.get(`/api/submission/${this.$route.params.id}`)
         .then((res) => {
-          var data = res.data.data;
+          var data = res.data.data
           this.submInfo = [
-            { 'title': 'Username', 'text': data.user.username, },
-            { 'title': 'Status', 'text': data.status + 1 },
-            { 'title': 'Run Time(ms)', 'text': data.runTime, },
-            { 'title': 'Memory(KB)', 'text': data.memoryUsage, },
-            { 'title': 'Score', 'text': data.score, },
-            { 'title': 'Language', 'text': this.LANG[data.languageType], },
-            { 'title': 'Submit Time', 'text': this.timeFormat(data.timestamp), },
-          ];
+            { title: 'Username', text: data.user.username },
+            { title: 'Status', text: data.status + 1 },
+            { title: 'Run Time(ms)', text: data.runTime },
+            { title: 'Memory(KB)', text: data.memoryUsage },
+            { title: 'Score', text: data.score },
+            { title: 'Language', text: this.LANG[data.languageType] },
+            { title: 'Submit Time', text: this.timeFormat(data.timestamp) }
+          ]
           // a handwritten submission with feedback
-          if ( data.languageType === 3 ) {
-            if ( data.status > -2 ) {
+          if (data.languageType === 3) {
+            if (data.status > -2) {
               this.submInfo.push({
-                'title': 'Uploaded File',
-              })  
+                title: 'Uploaded File'
+              })
             }
-            if ( data.score > -1 ) {
+            if (data.score > -1) {
               this.submInfo.push({
-                'title': 'Feedback',
+                title: 'Feedback'
               })
             }
           }
-          this.langMode = LANG_MODE[data.languageType];
+          this.langMode = LANG_MODE[data.languageType]
           this.$http.get(`/api/problem/view/${data.problemId}`)
-            .then((resp) => { this.course = resp.data.data.courses[0]; this.submInfo.splice(0, 0, { 'title': 'Problem', 'text': data.problemId, 'name': resp.data.data.problemName }) })
-            .catch((err) => { });
+            .then((resp) => { this.course = resp.data.data.courses[0]; this.submInfo.splice(0, 0, { title: 'Problem', text: data.problemId, name: resp.data.data.problemName }) })
           data.tasks.forEach((ele, idx) => {
-            var sub = [];
+            var sub = []
             sub.push({
               '#': 'Overall',
               'RunTime(ms)': ele.execTime,
               'Memory(KB)': ele.memoryUsage,
-              'Status': ele.status + 1,
-              'Score': ele.score,
+              Status: ele.status + 1,
+              Score: ele.score,
               'Standard Error': '',
-              'Standard Output': '',
+              'Standard Output': ''
             })
             ele.cases.forEach((ele, jdx) => {
               sub.push({
                 '#': idx + '-' + (jdx),
                 'RunTime(ms)': ele.execTime,
                 'Memory(KB)': ele.memoryUsage,
-                'Status': ele.status + 1,
-                'Score': '-',
+                Status: ele.status + 1,
+                Score: '-',
                 'Standard Error': ele.stderr,
-                'Standard Output': ele.stdout,
+                'Standard Output': ele.stdout
               })
             })
-            this.submData.push(sub);
-          });
+            this.submData.push(sub)
+          })
           if (this.isKey('code', data)) {
-            this.codeShow = true;
-            this.code = data.code;
+            this.codeShow = true
+            this.code = data.code
           } else {
-            this.codeShow = false;
+            this.codeShow = false
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth() + 1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return time
     },
-    isKey(key, obj) {
+    isKey (key, obj) {
       var keys = Object.keys(obj).map(function (x) {
-        return x.toLowerCase();
-      });
-      return keys.indexOf(key.toLowerCase()) !== -1;
+        return x.toLowerCase()
+      })
+      return keys.indexOf(key.toLowerCase()) !== -1
     },
-    rejudge() {
-      this.isRejudge = true;
+    rejudge () {
+      this.isRejudge = true
       this.$http.get(`/api/submission/${this.$route.params.id}/rejudge`)
         .then(() => {
-          this.$router.go(0);
-          this.isRejudge = false;
+          this.$router.go(0)
+          this.isRejudge = false
         })
         .catch(() => {
-          this.isRejudge = false;
-          alert('rejudge fail!');
+          this.isRejudge = false
+          alert('rejudge fail!')
         })
-    },
+    }
   }
 }
 </script>

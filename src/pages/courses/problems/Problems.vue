@@ -26,7 +26,7 @@
           <a class="subtitle-1" :href="'/problem/'+item.problemId" rel="noopener noreferrer" target="_blank">{{ item.problemName }}</a>
         </template>
         <template v-slot:[`item.tags`]="{ item }">
-          <v-chip 
+          <v-chip
             class="mx-1"
             v-for="tag in item.tags"
             :key="tag"
@@ -58,53 +58,50 @@ export default {
         { text: 'Tags', value: 'tags', class: 'font-weight-bold subtitle-1 text--primary' },
         { text: 'Quota', value: 'quota', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
         { text: 'Score', value: 'score', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
-        { text: 'Statistic', value: 'statistic', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
+        { text: 'Statistic', value: 'statistic', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false }
       ],
       items: null,
-      loading: false,
+      loading: false
     }
   },
 
-  created() {
-    this.getProblems();
+  created () {
+    this.getProblems()
   },
 
   methods: {
-    getProblems() {
-      this.loading = true;
-      let filter = {
+    getProblems () {
+      this.loading = true
+      const filter = {
         offset: 0,
         count: -1,
-        course: this.$route.params.name,
+        course: this.$route.params.name
       }
-      this.items = [];
+      this.items = []
       this.$http.get('/api/problem', { params: filter })
         .then((res) => {
           this.items = res.data.data
           this.items.forEach((ele, idx) => {
             this.$http.get(`/api/problem/${ele.problemId}/high-score`)
-              .then(r => {this.$set(this.items[idx], 'score', r.data.data.score)})
+              .then(r => { this.$set(this.items[idx], 'score', r.data.data.score) })
               .catch(e => console.log(e))
           })
-          return this.items;
+          return this.items
         })
         .then((r) => {
           this.items = r.map(p => {
-            p.type = (p.type === 0 ? 'Programming' : 'Handwritten');
-            if ( p.quota == -1 )  p.quota = 'unlimited';
-            return p;
+            p.type = (p.type === 0 ? 'Programming' : 'Handwritten')
+            if (p.quota == -1) p.quota = 'unlimited'
+            return p
           })
-          this.loading = false;
+          this.loading = false
         })
         .catch((err) => {
-          console.log(err);
-          this.loading = false;
-        });
-    },
+          console.log(err)
+          this.loading = false
+        })
+    }
   }
 
 }
 </script>
-
-<style lang="css" scoped>
-</style>

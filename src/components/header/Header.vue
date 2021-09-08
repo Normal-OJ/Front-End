@@ -6,14 +6,14 @@
       dark
       dense
     >
-      
+
       <!-- Small Down Menu -->
       <v-app-bar-nav-icon
         app
         class="hidden-md-and-up"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
-      
+
       <!-- LOGO -->
       <a style="height: 85%; cursor: default;">
         <img :src="require('@/assets/NOJ-LOGO.png')" height="100%">
@@ -55,7 +55,7 @@
 
     </v-app-bar>
 
-    <v-navigation-drawer 
+    <v-navigation-drawer
       v-model="drawer"
       app
       disable-resize-watcher
@@ -126,28 +126,25 @@
 </template>
 
 <script>
-import Auth from './Auth';
+import Auth from './Auth'
 
-const API_BASE_URL = '/api';
-const MSG = ['Welcome! Signed in successfully!', 'Bye! Signed out successfully'];
+const API_BASE_URL = '/api'
 
 export default {
 
   name: 'Header',
 
   components: {
-    'Auth': Auth,
+    Auth: Auth
   },
 
   data () {
     return {
       links: [
-        {'title': 'Home', 'path': '/', 'show': true},
-        // {'title': 'Problems', 'path': '/problems', 'show': true},
-        // {'title': 'Submissions', 'path': '/submissions', 'show': false},
-        {'title': 'Courses', 'path': '/courses', 'show': true},
-        {'title': 'Inbox', 'path': '/inbox', 'show': false},
-        {'title': 'About', 'path': '/about', 'show': true},
+        { title: 'Home', path: '/', show: true },
+        { title: 'Courses', path: '/courses', show: true },
+        { title: 'Inbox', path: '/inbox', show: false },
+        { title: 'About', path: '/about', show: true }
       ],
       drawer: false,
       isLogin: false,
@@ -158,77 +155,51 @@ export default {
       payload: null,
       avatar: this.setAvatar(''),
       username: '',
-      displayedName: '',
+      displayedName: ''
     }
   },
 
   beforeMount () {
-    this.setProfile();
+    this.setProfile()
   },
 
   methods: {
-    async showAlert() {
-      this.drawer = false;
-      this.$router.go(0);
-      // this.$forceUpdate();
-      // this.setProfile();
-      // this.alertBar = true;
-      // this.alertText = MSG[type];
-      // this.progress = 100;
-      // for ( let i=0; i<40; ++i ) {
-      //   this.progress -= 2.5;
-      //   await this.delay(100);
-      // }
+    async showAlert () {
+      this.drawer = false
+      this.$router.go(0)
     },
-    // delay(delayInms) {
-    //   return new Promise(resolve  => {
-    //     setTimeout(() => {
-    //       resolve(2);
-    //     }, delayInms);
-    //   });
-    // },
-    setProfile() {
-      if ( this.$cookies.isKey('jwt') ) {
-        this.payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( this.payload.active === true ) {
-          this.isLogin = true;
+    setProfile () {
+      if (this.$cookies.isKey('jwt')) {
+        this.payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (this.payload.active === true) {
+          this.isLogin = true
           this.links.forEach((obj) => {
-            obj.show = true;
+            obj.show = true
           })
-          this.username = this.payload.username;
-          this.displayedName = this.payload.profile.displayedName;
-          this.avatar = this.setAvatar(this.payload.md5);
+          this.username = this.payload.username
+          this.displayedName = this.payload.profile.displayedName
+          this.avatar = this.setAvatar(this.payload.md5)
         }
       }
     },
-    setAvatar(payload) {
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
+    setAvatar (payload) {
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
     },
-    parseJwt(token) {
-      console.log(atob(token.split('.')[1]));
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    signout() {
+    signout () {
       this.$http.get(`${API_BASE_URL}/auth/session`)
         .then((res) => {
-          console.log(res);
-          this.isLogin = false;
-          // this.links.forEach((obj) => {
-          //   if ( obj.title != 'Home' && obj.title != 'Problems' )
-          //     obj.show = false;
-          // })
-          this.$router.push('/');
-          this.showAlert();
-          // this.$forceUpdate();
+          this.isLogin = false
+          this.$router.push('/')
+          this.showAlert()
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

@@ -10,7 +10,7 @@
       </thead>
       <thead v-else>
         <tr>
-          <th 
+          <th
             v-for="header in submHeader" :key="header"
           ><p class="subtitle-1 font-weight-bold" v-text="header"></p></th>
         </tr>
@@ -22,12 +22,12 @@
         >
           <td><p class="subtitle-1" v-text="data['Timestamp']"></p></td>
           <td><p class="subtitle-1" v-text="data['Score']===-1 ? 'Pending' : data['Score']"></p></td>
-          <td><p class="subtitle-1" v-text=""></p></td>
+          <td></td>
         </tr>
       </tbody>
       <tbody v-else>
         <!-- Loading -->
-        <tr 
+        <tr
           v-if="!show"
           v-for="(data, idx) in submData"
           :key="idx"
@@ -42,7 +42,7 @@
           </td>
         </tr>
 
-        <tr 
+        <tr
           v-for="(data, idx) in submData"
           :key="-idx"
           v-if="data['Status']"
@@ -74,11 +74,8 @@ export default {
     return {
       submHeader: ['Timestamp', 'Status', 'Score', 'RunTime(ms)', 'Memory(KB)', 'Language'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
+      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C']
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

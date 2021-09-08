@@ -42,7 +42,7 @@
               ></ui-alert>
               <p class="subtitle-1 text--primary">{{ diaText }}</p>
               <v-row justify="center">
-                <v-form 
+                <v-form
                   v-model="form"
                   lazy-validation
                   ref="form"
@@ -96,62 +96,59 @@ export default {
       email: null,
       text: ['verify that account by sending email.', 'send email to recovery your password.'],
       items: [
-        { 'title': 'Verify Email Address', 'text': ['Did not receive verification email?','Click here to resend.'] },
-        { 'title': 'Reset Password', 'text': ['Forget your password?','Click here to reset.'] },
+        { title: 'Verify Email Address', text: ['Did not receive verification email?', 'Click here to resend.'] },
+        { title: 'Reset Password', text: ['Forget your password?', 'Click here to reset.'] }
       ],
-      rule: [ 
+      rule: [
         v => !!v || 'Please enter Email address!',
-        v => /.+@.+/.test(v) || 'Not a valid Email address!',
+        v => /.+@.+/.test(v) || 'Not a valid Email address!'
       ],
       errAlert: false,
-      errMsg: '',
+      errMsg: ''
     }
   },
 
-  beforeMount() {
-    if ( this.$cookies.isKey('jwt') ) {
-      this.$router.push('/');
+  beforeMount () {
+    if (this.$cookies.isKey('jwt')) {
+      this.$router.push('/')
     }
   },
 
   methods: {
-    open(idx) {
-      this.diaTitle = this.items[idx].title;
-      this.diaText = `Please enter email address which you registered with, we\'ll ${this.text[idx]}`;
-      this.dialog = true;
-      this.diaIdx = idx;
-      this.email = '';
-      this.errAlert = false;
+    open (idx) {
+      this.diaTitle = this.items[idx].title
+      this.diaText = `Please enter email address which you registered with, we\'ll ${this.text[idx]}`
+      this.dialog = true
+      this.diaIdx = idx
+      this.email = ''
+      this.errAlert = false
     },
-    submit() {
-      if ( this.$refs.form.validate() ) {
-        this.$http.post('/api/auth/check/email', {'email': this.email})
+    submit () {
+      if (this.$refs.form.validate()) {
+        this.$http.post('/api/auth/check/email', { email: this.email })
           .then((res) => {
-            if ( res.data.data.valid === 1 ) {
-              this.errMsg = 'Sorry, we couldn\'t find any account with this E-mail.';
-              this.errAlert = true;
+            if (res.data.data.valid === 1) {
+              this.errMsg = 'Sorry, we couldn\'t find any account with this E-mail.'
+              this.errAlert = true
             } else {
-              this.$http.post(`/api/auth/${this.diaIdx ? 'password-recovery' : 'resend-email'}`, {'email': this.email})
+              this.$http.post(`/api/auth/${this.diaIdx ? 'password-recovery' : 'resend-email'}`, { email: this.email })
                 .then(res => {
                   // Nothing to do
-                  console.log(res.data);
+                  console.log(res.data)
                 })
                 .catch(err => {
                   // Something to do
-                  console.log(err.response.data);
+                  console.log(err.response.data)
                 })
-              this.show = false;
+              this.show = false
             }
           })
-          .catch((err) => {
-            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
-            this.errAlert = true;
+          .catch(() => {
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+            this.errAlert = true
           })
       }
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

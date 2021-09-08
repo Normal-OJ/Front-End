@@ -14,7 +14,7 @@
     <v-divider></v-divider>
     <v-list nav>
       <v-list-item-group color="primary">
-        <v-list-item 
+        <v-list-item
           v-for="link in links"
           v-if="(link.title!=='Manages'||perm)
               &&(courseName!=='Public'||
@@ -46,70 +46,67 @@ export default {
       teacherName: 'teacherName',
       avatar: this.setAvatar(''),
       links: [
-        { 'title': 'Announcements', 'path': `/course/${this.$route.params.name}/announcements`, 'icon': 'mdi-bulletin-board'},
-        { 'title': 'Homeworks', 'path': `/course/${this.$route.params.name}/homeworks`, 'icon': 'mdi-book-multiple'},
-        { 'title': 'Problems', 'path': `/course/${this.$route.params.name}/problems`, 'icon': 'mdi-view-list'},
-        { 'title': 'Submissions', 'path': `/course/${this.$route.params.name}/submissions`, 'icon': 'mdi-history'},
-        { 'title': 'Discussions', 'path': `/course/${this.$route.params.name}/discussions`, 'icon': 'mdi-comment-text'},
-        { 'title': 'Grades', 'path': `/course/${this.$route.params.name}/Grades`, 'icon': 'mdi-chart-bar'},
-        { 'title': 'Manages', 'path': `/course/${this.$route.params.name}/manages`, 'icon': 'mdi-cog'},
+        { title: 'Announcements', path: `/course/${this.$route.params.name}/announcements`, icon: 'mdi-bulletin-board' },
+        { title: 'Homeworks', path: `/course/${this.$route.params.name}/homeworks`, icon: 'mdi-book-multiple' },
+        { title: 'Problems', path: `/course/${this.$route.params.name}/problems`, icon: 'mdi-view-list' },
+        { title: 'Submissions', path: `/course/${this.$route.params.name}/submissions`, icon: 'mdi-history' },
+        { title: 'Discussions', path: `/course/${this.$route.params.name}/discussions`, icon: 'mdi-comment-text' },
+        { title: 'Grades', path: `/course/${this.$route.params.name}/Grades`, icon: 'mdi-chart-bar' },
+        { title: 'Manages', path: `/course/${this.$route.params.name}/manages`, icon: 'mdi-cog' }
       ],
-      perm: false,
+      perm: false
       // drawer: false,
     }
   },
 
-  beforeMount() {
-    this.getInfo();
-    this.checkUser(this.getUsername());
+  beforeMount () {
+    this.getInfo()
+    this.checkUser(this.getUsername())
   },
 
   methods: {
-    getInfo() {
+    getInfo () {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
-          var data = res.data.data;
-          this.teacherName = data.teacher.username;
-          this.avatar = this.setAvatar(data.teacher.md5);
+          var data = res.data.data
+          this.teacherName = data.teacher.username
+          this.avatar = this.setAvatar(data.teacher.md5)
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     },
-    getUsername() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          if ( payload.role <= 1 ) this.perm = true;
-          return payload.username;
+    getUsername () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === true) {
+          if (payload.role <= 1) this.perm = true
+          return payload.username
         }
       }
     },
-    checkUser(username) {
+    checkUser (username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
-          var data = res.data.data;
+          var data = res.data.data
           data.TAs.forEach(ele => {
-            if ( ele.username === username ) {
-              this.perm = true;
-              return;
+            if (ele.username === username) {
+              this.perm = true
             }
           })
         })
         .catch((err) => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    setAvatar(payload) {
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
-    },
+    setAvatar (payload) {
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
+    }
   }
 }
 </script>
 
-<style lang="css" scoped>
-</style>

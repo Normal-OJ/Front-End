@@ -29,14 +29,14 @@
           type="image"
         ></v-skeleton-loader>
 
-        <canvas 
+        <canvas
           id="myChart"
           :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
           height="30vh"
         ></canvas>
 
         <v-card-title class="headline text-center">
-          Runtime Top 10 
+          Runtime Top 10
         </v-card-title>
 
         <v-simple-table class="px-6">
@@ -91,87 +91,86 @@ export default {
       students: null,
       hand: false,
       login: false,
-      user: new User(this.$cookies.get('jwt')),
+      user: new User(this.$cookies.get('jwt'))
     }
   },
 
-  created() {
+  created () {
     // only teacher and admin can view statistic
-    if(this.user.role < 2) {
-      this.getProb();
+    if (this.user.role < 2) {
+      this.getProb()
     }
   },
 
-  mounted() {
-    let canvasScript = document.createElement('script')
+  mounted () {
+    const canvasScript = document.createElement('script')
     canvasScript.setAttribute('src', 'https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js')
     document.head.appendChild(canvasScript)
   },
 
   methods: {
-    getProb() {
+    getProb () {
       this.$http.get(`/api/problem/view/${this.$route.params.id}`)
         .then((res) => {
-          this.prob = res.data.data;
-          if ( this.prob.type === 2 ) {
-            this.loading = false;
-            this.hand = true;
-            return;
+          this.prob = res.data.data
+          if (this.prob.type === 2) {
+            this.loading = false
+            this.hand = true
+            return
           }
-          return this.prob.courses[0];
+          return this.prob.courses[0]
         })
         .then((co) => {
           return this.$http.get(`/api/course/${co}`)
         })
         .then((res) => {
-          this.students = res.data.data.studentNicknames;
+          this.students = res.data.data.studentNicknames
           return this.$http.get(`/api/submission?offset=0&count=-1&course=${this.prob.courses[0]}&problemId=${this.$route.params.id}`)
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
-            if ( this.inCourse(ele.user.username) ) {
-              if ( ele.status != -1 ) {
-                this.data[ele.status]++;
+            if (this.inCourse(ele.user.username)) {
+              if (ele.status !== -1) {
+                this.data[ele.status]++
               }
-              if ( ele.status != 0 ) {
-                delete res.data.data.submissions[idx];
+              if (ele.status !== 0) {
+                delete res.data.data.submissions[idx]
               }
             } else {
-              delete res.data.data.submissions[idx];
+              delete res.data.data.submissions[idx]
             }
           })
-          this.loading = false;
-          draw(this.data);
+          this.loading = false
+          draw(this.data)
           this.subm = res.data.data.submissions
             .sort((a, b) => {
-              if ( a.runTime == b.runTime ) {
-                return a.memoryUsage - b.memoryUsage;
+              if (a.runTime === b.runTime) {
+                return a.memoryUsage - b.memoryUsage
               }
-              return a.runTime - b.runTime;
-            }).filter((value, index, self) => { 
-              for ( let i=0; i<index; i++ ) {
-                if ( self[i].user.username === value.user.username ) return false;
+              return a.runTime - b.runTime
+            }).filter((value, index, self) => {
+              for (let i = 0; i < index; i++) {
+                if (self[i].user.username === value.user.username) return false
               }
-              return true;
-            }).slice(0, 10);
+              return true
+            }).slice(0, 10)
         })
         .catch((err) => {
-          this.loading = false;
-          if ( !this.hand ) this.login = true;
-          console.log(err);
+          this.loading = false
+          if (!this.hand) this.login = true
+          console.log(err)
         })
     },
-    inCourse(user) {
-      for ( var key in this.students ) {
-        if ( key === user ) return true;
+    inCourse (user) {
+      for (var key in this.students) {
+        if (key === user) return true
       }
-      return false;
-    },
-  },
+      return false
+    }
+  }
 }
-import Statistic from './Statistic'
-var draw = function(data) {
-  var ctx = document.getElementById('myChart').getContext('2d');
+var draw = function (data) {
+  var ctx = document.getElementById('myChart').getContext('2d')
   var myChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -180,32 +179,29 @@ var draw = function(data) {
         label: '# of Votes',
         data: data,
         backgroundColor: [
-          "#00C853CC",
-          "#F44336CC",
-          "#DD2C00CC",
-          "#9C27B0CC",
-          "#FF9800CC",
-          "#2196F3CC",
-          "#93282CCC",
-          "#BF360CCC",
-        ],
+          '#00C853CC',
+          '#F44336CC',
+          '#DD2C00CC',
+          '#9C27B0CC',
+          '#FF9800CC',
+          '#2196F3CC',
+          '#93282CCC',
+          '#BF360CCC'
+        ]
       }]
     },
     options: {
       tooltips: {
         titleFontSize: 18,
-        bodyFontSize: 16,
+        bodyFontSize: 16
       },
       legend: {
         labels: {
           fontColor: 'black',
-          fontSize: 16,
+          fontSize: 16
         }
       }
     }
-  });
+  })
 }
 </script>
-
-<style lang="css" scoped>
-</style>

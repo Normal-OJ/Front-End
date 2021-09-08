@@ -109,7 +109,7 @@
               <!-- <v-card-subtitle class="subtitle-1 text--primary" style="white-space: pre" v-text="thread.content"> -->
               <v-card-subtitle class="subtitle-1 text--primary">
                 <!-- {{ thread.content }} -->
-                <vue-markdown :source="thread.content"></vue-markdown>  
+                <vue-markdown :source="thread.content"></vue-markdown>
               </v-card-subtitle>
             </v-col>
           </v-row>
@@ -242,30 +242,30 @@
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown';
+import VueMarkdown from 'vue-markdown'
 export default {
 
   name: 'ShowReply',
 
   components: {
-    VueMarkdown,
+    VueMarkdown
   },
 
   props: {
     items: {
       type: Array,
-      required: true,
+      required: true
     },
     focus: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   watch: {
-    focus() {
-      this.$refs.comment.focus();
-    },
+    focus () {
+      this.$refs.comment.focus()
+    }
   },
 
   data () {
@@ -279,77 +279,74 @@ export default {
       ],
       editingReply: '',
       editing: -1,
-      deleting: -1,
+      deleting: -1
     }
   },
 
   methods: {
-    operation(op, id, content, check) {
-      if ( op === 'delete' ) {
-        if ( check ) {
-          this.$http.delete('/api/post', {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {targetThreadId: id}})
+    operation (op, id, content, check) {
+      if (op === 'delete') {
+        if (check) {
+          this.$http.delete('/api/post', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
             .then((res) => {
               // this.$router.push(`/course/${this.$route.params.name}/announcements`);
-              this.$router.go(0);
+              this.$router.go(0)
               // console.log(res);
             })
             .catch((err) => {
-            });
+            })
         } else {
-          this.deleting = id;
-          this.dialog = true;
+          this.deleting = id
+          this.dialog = true
         }
       } else {
-        if ( this.editing === -1 ) {
-          this.editingReply = content;
-          this.editing = id;
+        if (this.editing === -1) {
+          this.editingReply = content
+          this.editing = id
         } else {
-          this.$refs.editingReply[0].focus();
+          this.$refs.editingReply[0].focus()
         }
       }
     },
-    perm(item) {
-      let payload = this.getPayload();
-      if ( payload.active === true ) {
-        if ( payload.role <= 1 || payload.username === item.author.username ) {
-          return true;
+    perm (item) {
+      const payload = this.getPayload()
+      if (payload.active === true) {
+        if (payload.role <= 1 || payload.username === item.author.username) {
+          return true
         }
       }
     },
-    getAvatar(payload) {
-      if ( payload === 'me' ) payload = this.getPayload().md5;
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
+    getAvatar (payload) {
+      if (payload === 'me') payload = this.getPayload().md5
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
     },
-    getPayload() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === false ) {
-          this.$router.push('/');
+    getPayload () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === false) {
+          this.$router.push('/')
         } else {
-          return payload;
+          return payload
         }
       } else {
-        this.$router.push('/');
+        this.$router.push('/')
       }
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return time
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

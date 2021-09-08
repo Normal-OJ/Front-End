@@ -23,62 +23,60 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: false,
+      default: false
     },
     alertMsg: {
       type: String,
-      required: true,
+      required: true
     },
     type: {
       type: String,
-      default: 'info', // info, success, warning, error
+      default: 'info' // info, success, warning, error
     },
     icon: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     color: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     width: {
       type: String,
-      default: '100%',
+      default: '100%'
     },
     dense: {
       type: Boolean,
-      default: false,
+      default: false
     },
     transition: {
       type: String,
-      default: 'scroll-y-transition',
+      default: 'scroll-y-transition'
     },
     elevation: {
       type: String,
-      default: '2',
+      default: '2'
     },
     dismissible: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
 
   watch: {
-    value() {
-      this.alert = this.value;
+    value () {
+      this.alert = this.value
     },
-    alert() {
-      this.$emit('input', this.alert);
-    },
+    alert () {
+      this.$emit('input', this.alert)
+    }
   },
 
   data () {
     return {
-      alert: this.value,
+      alert: this.value
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
-</style>

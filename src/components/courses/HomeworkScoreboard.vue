@@ -53,22 +53,19 @@ export default {
   props: {
     items: {
       type: Object,
-      required: true,
+      required: true
     },
     probs: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
 
   data () {
     return {
-      statusDialog: false,
+      statusDialog: false
     }
-  },
+  }
 
 }
 </script>
-
-<style lang="css" scoped>
-</style>

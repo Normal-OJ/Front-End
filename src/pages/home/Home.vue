@@ -16,7 +16,7 @@
             class="ml-6 subtitle-1" target="_blank" rel="noopener noreferrer" :href="'/post/'+item.annId">
             <v-icon>mdi-file-document</v-icon>{{ item.title }}</a><br>
         </v-card-text>
-      </v-card tile>
+      </v-card>
 
       <!-- <v-divider></v-divider> -->
 
@@ -26,9 +26,9 @@
       </v-card-title>
       <v-divider class="mt-0"></v-divider>
       <v-card-text>
-        <ShowAnn 
-          v-if="items" 
-          :items="items" 
+        <ShowAnn
+          v-if="items"
+          :items="items"
           :width="$vuetify.breakpoint.mdAndUp ? '50vw': '90vw'"
           :readmore="`/post`"
           mask
@@ -40,104 +40,68 @@
 
 <script>
 import ShowAnn from '@/components/courses/ShowAnn'
-// import Ranking from './Ranking'
 
 export default {
 
   name: 'Home',
 
   components: {
-    ShowAnn,
-    // Ranking
+    ShowAnn
   },
 
   data () {
     return {
       items: null,
-      pin: null,
+      pin: null
     }
   },
 
-  created() {
-    // window.onload = () => {
-    //   for ( var i=0; i<100; ++i ) {
-    //     var unicorn = document.createElement('span');
-    //     unicorn.style.fontSize = '20px';
-    //     unicorn.style.position = 'absolute';
-    //     unicorn.innerText = '🦄';
-    //     document.body.appendChild(unicorn);
-    //     this.move(unicorn);
-    //   }
-    // }
-    this.getAnn();
+  created () {
+    this.getAnn()
   },
 
   methods: {
-    // move(obj) {
-    //   var W = window.innerWidth - obj.offsetWidth;
-    //   var H = window.innerHeight - obj.offsetHeight;
-    //   // console.log(W);
-    //   // console.log(H);
-    //   var objTop = Math.random() * W;
-    //   var objLeft = Math.random() * H;
-    //   obj.style.top = String(objTop) + 'px';
-    //   obj.style.left = String(objLeft) + 'px';
-    //   setInterval(() => {
-    //     objTop++;
-    //     objLeft++;
-    //     obj.style.top = String(objTop) + 'px';;
-    //     obj.style.left = String(objLeft) + 'px';
-    //     console.log(obj.style.posTop);
-    //     if ( objTop > H ) objTop = 0;
-    //     if ( objLeft > W )  objLeft = 0;
-    //   }, 10);
-    // }
-    getAnn() {
+    getAnn () {
       this.$http.get('/api/ann/')
         .then((res) => {
-          // console.log(res);
-          this.pin = [];
-          this.items = [];
+          this.pin = []
+          this.items = []
           res.data.data.forEach(ele => {
-            if ( ele.pinned ) {
+            if (ele.pinned) {
               this.pin.push({
-                'annId': ele.annId,
-                'title': ele.title,
-                'author': ele.creator,
-                'content': ele.markdown,
-                'createdTime': this.timeFormat(ele.createTime),
-                'lastUpdatedTime': this.timeFormat(ele.updateTime),
-                'lastUpdater': ele.updater});
+                annId: ele.annId,
+                title: ele.title,
+                author: ele.creator,
+                content: ele.markdown,
+                createdTime: this.timeFormat(ele.createTime),
+                lastUpdatedTime: this.timeFormat(ele.updateTime),
+                lastUpdater: ele.updater
+              })
             } else {
               this.items.push({
-                'annId': ele.annId,
-                'title': ele.title,
-                'author': ele.creator,
-                'content': ele.markdown,
-                'createdTime': this.timeFormat(ele.createTime),
-                'lastUpdatedTime': this.timeFormat(ele.updateTime),
-                'lastUpdater': ele.updater});
+                annId: ele.annId,
+                title: ele.title,
+                author: ele.creator,
+                content: ele.markdown,
+                createdTime: this.timeFormat(ele.createTime),
+                lastUpdatedTime: this.timeFormat(ele.updateTime),
+                lastUpdater: ele.updater
+              })
             }
           })
         })
-        .catch((err) => {
-          // console.log(err);
-        });
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return time
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

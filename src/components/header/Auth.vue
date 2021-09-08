@@ -54,31 +54,28 @@ export default {
 
   components: {
     SignInForm,
-    SignUpForm,
+    SignUpForm
   },
 
   data () {
     return {
       signs: [
-        {'title': 'Sign in', 'outline': false, 'text': true, 'entry': 0},
-        {'title': 'Sign up', 'outline': true, 'text': false, 'entry': 1},
+        { title: 'Sign in', outline: false, text: true, entry: 0 },
+        { title: 'Sign up', outline: true, text: false, entry: 1 }
       ],
       authDialog: false,
-      tabEntry: 0,
+      tabEntry: 0
     }
   },
 
   methods: {
-    signin() {
-      this.authDialog = false;
-      this.$emit('signin');
+    signin () {
+      this.authDialog = false
+      this.$emit('signin')
     },
-    signup() {
-      this.authDialog = false;
+    signup () {
+      this.authDialog = false
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

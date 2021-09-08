@@ -59,7 +59,7 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/api'
 
 export default {
 
@@ -69,93 +69,78 @@ export default {
     return {
       validForm: false,
       authData: {
-        'username': '',
-        'password': ''
+        username: '',
+        password: ''
       },
       usernameRule: [val => !!val || 'Please enter your Username.'],
       passwordRule: [val => !!val || 'Please enter your Password.'],
       showPassword: false,
       btnLoading: false,
       errAlert: false,
-      errMsg: '',
+      errMsg: ''
     }
   },
 
-  beforeMount() {
-    this.authData.username = '';
-    this.authData.password = '';
-  },
-
-  mounted () {
-    // this.$nextTick(() => {
-    //   this.$refs.username.focus();
-    // });
+  beforeMount () {
+    this.authData.username = ''
+    this.authData.password = ''
   },
 
   methods: {
-    signin() {
+    signin () {
       this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
         .then((response) => {
           // successful sign in
-          // console.log(response);
-          this.$emit('signin');
+          this.$emit('signin')
         })
         .catch((error) => {
           // wrong password or not active
-          // console.log(error);
-          this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)';
-          this.errAlert = true;
-        });
+          this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)'
+          this.errAlert = true
+        })
     },
-    submit() {
-      this.btnLoading = true;
-      if ( this.$refs.form.validate() ) {
-        var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username';
-        console.log('type: ' + type);
-        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData.username})
+    submit () {
+      this.btnLoading = true
+      if (this.$refs.form.validate()) {
+        var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username'
+        console.log('type: ' + type)
+        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData.username })
           .then((response) => {
             // console.log(response.data);
-            if ( response.data.data.valid === 1 ) {
+            if (response.data.data.valid === 1) {
               // this user is not exist
-              type = (type==='email') ? 'username' : 'email';
+              type = (type === 'email') ? 'username' : 'email'
 
-              this.$http.post(`${API_BASE_URL}/auth/check/${type}`, {[type]: this.authData.username})
+              this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData.username })
                 .then((response) => {
                   // console.log(response.data);
-                  if ( response.data.data.valid === 1 ) {
-                    this.errMsg = 'Sorry, we couldn\'t find an account with that E-mail/Username.';
-                    this.errAlert = true;
-                  } else if ( response.data.data.valid === 0 ) {
-                    this.signin();
+                  if (response.data.data.valid === 1) {
+                    this.errMsg = 'Sorry, we couldn\'t find an account with that E-mail/Username.'
+                    this.errAlert = true
+                  } else if (response.data.data.valid === 0) {
+                    this.signin()
                   }
                 })
                 .catch((error) => {
-                  this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
-                  this.errAlert = true;
-                  // console.log(error);      
+                  this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+                  this.errAlert = true
                 })
-
-            } else if ( response.data.data.valid === 0 ) {
+            } else if (response.data.data.valid === 0) {
               // this uesr is exist
-              this.signin();
+              this.signin()
             }
           })
           .catch((error) => {
-            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.';
-            this.errAlert = true;
-            // console.log(error);
-          });
-
+            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+            this.errAlert = true
+          })
       }
-      this.btnLoading = false;
+      this.btnLoading = false
     },
-    emailResend() {
-      let routeData = this.$router.resolve({name: 'EmailResend'});
-      window.open(routeData.href, '_blank');
+    emailResend () {
+      const routeData = this.$router.resolve({ name: 'EmailResend' })
+      window.open(routeData.href, '_blank')
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

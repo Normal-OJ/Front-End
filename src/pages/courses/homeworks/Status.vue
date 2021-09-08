@@ -48,79 +48,48 @@ export default {
       probs: null,
       copycat: {},
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
+      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C']
     }
   },
 
-  created() {
-    this.getHW();
+  created () {
+    this.getHW()
   },
 
   methods: {
-    getHW() {
+    getHW () {
       this.$http.get(`/api/homework/${this.$route.params.id}`)
         .then((res) => {
           // console.log(res.data.data);
-          this.items = res.data.data.studentStatus;
-          this.probs = res.data.data.problemIds;
-          this.getReport();
+          this.items = res.data.data.studentStatus
+          this.probs = res.data.data.problemIds
+          this.getReport()
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     },
-    getReport() {
+    getReport () {
       this.probs.forEach(ele => {
         this.$http.post('/api/copycat', {
-                                          'problemId': ele,
-                                          'course': this.$route.params.name,
-                                        })
+          problemId: ele,
+          course: this.$route.params.name
+        })
           .then((res) => {
             // this.getUrl();
           })
           .catch((err) => {
-            console.log(err);
+            console.log(err)
           })
       })
     },
-    getUrl() {
-      // this.copycat = {};
-      // this.probs.forEach(ele => {
-        // this.copycat[`${ele}`] = {};
-        // this.copycat[`${ele}`]['valid'] = false;
-        // while ( !this.copycat[`${ele}`]['valid'] ) {
-          // this.$http.get('/api/copycat', {
-          //                                   'problemId': ele,
-          //                                   'course': this.$route.params.name,
-          //                                })
-          //   .then(async(res) => {
-          //     var flag = false;
-          //     if ( res.data.data.cppReport ) {
-          //       flag = true;
-          //       this.copycat[`${ele}`]['cpp'] = res.data.data.cppReport;
-          //     }
-          //     if ( res.data.data.pythonReport ) {
-          //       if ( flag ) this.copycat[`${ele}`]['valid'] = true;
-          //       this.copycat[`${ele}`]['py'] = res.data.data.pythonReport;
-          //     }
-          //     await delay(1000);
-          //   })
-          //   .catch((err) => {
-          //     console.log(err);
-          //   })
-        // }
-      // })
-    },
-    delay(delayInms) {
-      return new Promise(resolve  => {
+    delay (delayInms) {
+      return new Promise(resolve => {
         setTimeout(() => {
-          resolve(2);
-        }, delayInms);
-      });
-    },
+          resolve(2)
+        }, delayInms)
+      })
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

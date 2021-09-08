@@ -18,7 +18,7 @@
           <v-text-field
             label="Discussion Title"
             counter="64"
-            :rules="[v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters']" 
+            :rules="[v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters']"
             v-model="post.title"
           ></v-text-field>
           <v-textarea
@@ -31,11 +31,11 @@
         </v-form>
       </template>
     </Creator>
-    <ShowPost 
-      v-if="items" 
+    <ShowPost
+      v-if="items"
       :items="items"
       :menu="perm"
-      @edit="edit" @delete="deletePost" 
+      @edit="edit" @delete="deletePost"
     ></ShowPost>
     <v-row justify="center">
       <v-card :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" elevation="0" style="background: transparent;">
@@ -48,10 +48,12 @@
         </ui-button>
       </v-card>
     </v-row>
-    <div v-if="items" v-for="item in items">
-      <ShowReply :items="item.reply" :focus="focus" @newComment="newComment" @editComment="editComment">
-      </ShowReply>
-    </div>
+    <template v-if="items">
+      <div v-for="item in items">
+        <ShowReply :items="item.reply" :focus="focus" @newComment="newComment" @editComment="editComment">
+        </ShowReply>
+      </div>
+    </template>
     <v-snackbar
       v-model="snackbar" class="subtitle-1"
       :color="alert.color"
@@ -63,22 +65,21 @@
 </template>
 
 <script>
-import Creator from '@/components/courses/Creator';
-import ShowPost from '@/components/courses/ShowPost';
-import ShowReply from '@/components/courses/ShowReply';
-const API_BASE_URL = '/api';
+import Creator from '@/components/courses/Creator'
+import ShowPost from '@/components/courses/ShowPost'
+import ShowReply from '@/components/courses/ShowReply'
+const API_BASE_URL = '/api'
 
 export default {
 
   name: 'Discussion',
 
   components: {
-    Creator, ShowPost, ShowReply,
+    Creator, ShowPost, ShowReply
   },
 
   data () {
     return {
-      // postDialog: false,
       dialog: false,
       type: 'New',
       validForm: false,
@@ -86,7 +87,7 @@ export default {
       post: {
         title: '',
         content: '',
-        targetThreadId: null,
+        targetThreadId: null
       },
       perm: false,
       username: null,
@@ -94,162 +95,157 @@ export default {
       snackbar: false,
       alert: {
         color: '',
-        msg: '',
-      },
+        msg: ''
+      }
     }
   },
-  created() {
-    // this.init();
-    this.getPost();
-    this.checkUser(this.getUsername());
+  created () {
+    this.getPost()
+    this.checkUser(this.getUsername())
   },
   methods: {
-    getPost() {
+    getPost () {
       this.$http.get(`${API_BASE_URL}/post/view/${this.$route.params.name}/${this.$route.params.id}`)
         .then((res) => {
-          this.items = [];
+          this.items = []
           res.data.data.forEach(ele => {
-            if ( ele.thread.status != 1 ) {
+            if (ele.thread.status != 1) {
               this.items.push({
-                'postId': ele.thread.id,
-                'title': ele.title,
-                'status': ele.status,
-                'author': ele.thread.author,
-                'content': ele.thread.content,
-                'createdTime': this.timeFormat(ele.thread.created),
-                'updated': this.timeFormat(ele.thread.updated),
-                'reply': ele.thread.reply,
-              });
-            } 
+                postId: ele.thread.id,
+                title: ele.title,
+                status: ele.status,
+                author: ele.thread.author,
+                content: ele.thread.content,
+                createdTime: this.timeFormat(ele.thread.created),
+                updated: this.timeFormat(ele.thread.updated),
+                reply: ele.thread.reply
+              })
+            }
           })
-          this.items.reverse();
+          this.items.reverse()
         })
         .catch((err) => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    cancel() {
-      this.post.targetThreadId = null;
-      this.dialog = false;
+    cancel () {
+      this.post.targetThreadId = null
+      this.dialog = false
     },
-    submit() {
-      if(this.$refs.form.validate()) {
-        if ( this.post.targetThreadId ) {
+    submit () {
+      if (this.$refs.form.validate()) {
+        if (this.post.targetThreadId) {
           this.$http.put(`${API_BASE_URL}/post`, this.post)
             .then((res) => {
               this.cancel()
-              this.$router.go(0);
+              this.$router.go(0)
             })
             .catch((err) => {
-              console.log(err);
-            });
+              console.log(err)
+            })
         } else {
           this.$http.post(`${API_BASE_URL}/post`, this.post)
             .then((res) => {
               this.cancel()
-              this.$router.go(0);
+              this.$router.go(0)
             })
             .catch((err) => {
-              console.log(err);
-            });
+              console.log(err)
+            })
         }
       }
     },
-    edit(idx, id) {
-      this.type = 'Update';
-      this.post.title = this.items[idx].title;
-      this.post.content = this.items[idx].content;
-      this.post.targetThreadId = id;
-      this.dialog = true;
+    edit (idx, id) {
+      this.type = 'Update'
+      this.post.title = this.items[idx].title
+      this.post.content = this.items[idx].content
+      this.post.targetThreadId = id
+      this.dialog = true
     },
-    deletePost(idx,id) {
-      console.log(id);
-      this.post.targetThreadId = id;
-      this.$http.delete(`${API_BASE_URL}/post`, {headers: {'Content-Type': 'application/json'}, data: {targetThreadId: id}})
+    deletePost (idx, id) {
+      console.log(id)
+      this.post.targetThreadId = id
+      this.$http.delete(`${API_BASE_URL}/post`, { headers: { 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
         .then((res) => {
-          this.$router.push(`/course/${this.$route.params.name}/discussions`);
+          this.$router.push(`/course/${this.$route.params.name}/discussions`)
           // console.log(res);
         })
         .catch((err) => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    newComment(id, content) {
-      this.$http.post(`${API_BASE_URL}/post`, {targetThreadId: id, content: content})
+    newComment (id, content) {
+      this.$http.post(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
         .then((res) => {
           // console.log(res);
-          this.$router.go(0);
+          this.$router.go(0)
         })
         .catch((err) => {
-          this.snackbar = false;
+          this.snackbar = false
           this.alert = {
             color: 'secondary',
-            msg: err.response.data.message,
+            msg: err.response.data.message
           }
-          this.snackbar = true;
+          this.snackbar = true
         })
     },
-    editComment(id, content) {
-      this.$http.put(`${API_BASE_URL}/post`, {targetThreadId: id, content: content})
+    editComment (id, content) {
+      this.$http.put(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
         .then((res) => {
           // console.log(res);
-          this.$router.go(0);
+          this.$router.go(0)
         })
         .catch((err) => {
-          this.snackbar = false;
+          this.snackbar = false
           this.alert = {
             color: 'secondary',
-            msg: err.response.data.message,
+            msg: err.response.data.message
           }
-          this.snackbar = true;
+          this.snackbar = true
         })
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return time
     },
-    getAvatar(payload) {
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
+    getAvatar (payload) {
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
     },
-    checkUser(username) {
+    checkUser (username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
-          var data = res.data.data;
+          var data = res.data.data
           data.TAs.forEach(ele => {
-            if ( ele.username === username ) {
-              this.perm = true;
-              return;
+            if (ele.username === username) {
+              this.perm = true
             }
           })
         })
         .catch((err) => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    getUsername() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          if ( payload.role <= 1 ) this.perm = true;
-          this.username = payload.username;
-          return payload.username;
+    getUsername () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === true) {
+          if (payload.role <= 1) this.perm = true
+          this.username = payload.username
+          return payload.username
         }
       }
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
-    },
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

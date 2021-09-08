@@ -27,7 +27,7 @@
       <v-skeleton-loader
         class="mx-auto"
         type="image"
-        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" 
+        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'"
       ></v-skeleton-loader>
     </v-row>
     <v-row v-if="items && items.length === 0" justify="center">
@@ -44,7 +44,7 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true,
+      required: true
     },
     width: {
       type: String,
@@ -52,25 +52,16 @@ export default {
     },
     menu: {
       type: Boolean,
-      default: false,
+      default: false
     },
     readmore: {
       type: String,
-      default: null,
+      default: null
     },
     content: {
       type: Boolean,
-      default: true,
-    }
-  },
-
-  data () {
-    return {
-
+      default: true
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

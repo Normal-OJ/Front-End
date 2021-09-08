@@ -19,10 +19,11 @@
             <td class="subtitle-1" v-text="username"></td>
             <td
               v-for="prob in probs"
+              :key="prob"
               class="subtitle-1"
             >
               <div>
-                
+
                 <font v-if="item[prob].problemStatus!=null" :color="COLOR[item[prob].problemStatus+1]">{{ STATUS[item[prob].problemStatus+1] }}</font>
                 <font v-else>Unsolved</font>
 
@@ -46,7 +47,7 @@
                       <v-text-field
                         label="Score"
                         v-model="data.score"
-                        :rules="[v => !!v && 0 <= v && v <= 100 || 'Score must be in range: 0 to 100']" 
+                        :rules="[v => !!v && 0 <= v && v <= 100 || 'Score must be in range: 0 to 100']"
                         prepend-icon="mdi-check-bold"
                       ></v-text-field>
                       <v-file-input
@@ -87,115 +88,113 @@ export default {
       dialog: false,
       data: {
         score: null,
-        file: null,
+        file: null
       },
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
+      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C']
     }
   },
 
-  created() {
-    this.getData();
+  created () {
+    this.getData()
   },
 
   methods: {
-    async getData() {
+    async getData () {
       try {
         this.items = null
-        let res = await this.$http.get(`/api/homework/${this.$route.params.id}`)
+        const res = await this.$http.get(`/api/homework/${this.$route.params.id}`)
         // stash student status
-        let items = res.data.data.studentStatus;
+        const items = res.data.data.studentStatus
         // get handwritten problem ids
-        let pids = res.data.data.problemIds
-        let handwrittens = await Promise.all(pids.map(async pid => {
+        const pids = res.data.data.problemIds
+        const handwrittens = await Promise.all(pids.map(async pid => {
           return ((await this.$http.get(`/api/problem/view/${pid}`)).data.data.type === 2)
         }))
         this.probs = pids.filter((pid, idx) => handwrittens[idx])
         // get submission ids
         await Promise.all(this.probs.map(async pid => {
           // query submission ids by pid
-          let sRes = await this.$http.get(
-          '/api/submission',
-          {
-            params: {
-              course: this.$route.params.name,
-              problemId: pid,
-              offset: 0,
-              count: -1,
-            }
-          })
+          const sRes = await this.$http.get(
+            '/api/submission',
+            {
+              params: {
+                course: this.$route.params.name,
+                problemId: pid,
+                offset: 0,
+                count: -1
+              }
+            })
           // update student status
-          for ( let subm of sRes.data.data.submissions ) {
-            if ( items[subm.user.username] ) {
-              items[subm.user.username]['submissionId'] = subm.submissionId;
+          for (const subm of sRes.data.data.submissions) {
+            if (items[subm.user.username]) {
+              items[subm.user.username].submissionId = subm.submissionId
             }
           }
         }))
         this.items = items
-      } catch(err) {
+      } catch (err) {
         console.log(err)
       }
     },
-    scoring(item) {
-      this.data.score = item.score;
-      this.data.file = null;
+    scoring (item) {
+      this.data.score = item.score
+      this.data.file = null
     },
-    comment(sid) {
-      this.$http.put(`/api/submission/${sid}/grade`, {score: Number(this.data.score)})
+    comment (sid) {
+      this.$http.put(`/api/submission/${sid}/grade`, { score: Number(this.data.score) })
         .then((res) => {
-          if ( this.data.file ) {
-            var formData = new FormData();
-            formData.append('comment', this.data.file);
+          if (this.data.file) {
+            var formData = new FormData()
+            formData.append('comment', this.data.file)
             return this.$http.put(`/api/submission/${sid}/comment`,
-                                  formData,
-                                  {
-                                    headers: { 'Content-Type' : 'multipart/form-data' }, 
-                                  }
-                                ).then()
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' }
+              }
+            ).then()
           }
-          return true;
+          return true
         })
-        .then((res) => {this.dialog = false; this.$router.go(0);})
+        .then((res) => { this.dialog = false; this.$router.go(0) })
         .catch((err) => console.log(err))
     },
-    getUrl() {
+    getUrl () {
       // this.copycat = {};
       // this.probs.forEach(ele => {
-        // this.copycat[`${ele}`] = {};
-        // this.copycat[`${ele}`]['valid'] = false;
-        // while ( !this.copycat[`${ele}`]['valid'] ) {
-          // this.$http.get('/api/copycat', {
-          //                                   'problemId': ele,
-          //                                   'course': this.$route.params.name,
-          //                                })
-          //   .then(async(res) => {
-          //     var flag = false;
-          //     if ( res.data.data.cppReport ) {
-          //       flag = true;
-          //       this.copycat[`${ele}`]['cpp'] = res.data.data.cppReport;
-          //     }
-          //     if ( res.data.data.pythonReport ) {
-          //       if ( flag ) this.copycat[`${ele}`]['valid'] = true;
-          //       this.copycat[`${ele}`]['py'] = res.data.data.pythonReport;
-          //     }
-          //     await delay(1000);
-          //   })
-          //   .catch((err) => {
-          //     console.log(err);
-          //   })
-        // }
+      // this.copycat[`${ele}`] = {};
+      // this.copycat[`${ele}`]['valid'] = false;
+      // while ( !this.copycat[`${ele}`]['valid'] ) {
+      // this.$http.get('/api/copycat', {
+      //                                   'problemId': ele,
+      //                                   'course': this.$route.params.name,
+      //                                })
+      //   .then(async(res) => {
+      //     var flag = false;
+      //     if ( res.data.data.cppReport ) {
+      //       flag = true;
+      //       this.copycat[`${ele}`]['cpp'] = res.data.data.cppReport;
+      //     }
+      //     if ( res.data.data.pythonReport ) {
+      //       if ( flag ) this.copycat[`${ele}`]['valid'] = true;
+      //       this.copycat[`${ele}`]['py'] = res.data.data.pythonReport;
+      //     }
+      //     await delay(1000);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   })
+      // }
       // })
     },
-    delay(delayInms) {
-      return new Promise(resolve  => {
+    delay (delayInms) {
+      return new Promise(resolve => {
         setTimeout(() => {
-          resolve(2);
-        }, delayInms);
-      });
-    },
+          resolve(2)
+        }, delayInms)
+      })
+    }
   }
 }
 </script>
 
-<style lang="css" scoped>
-</style>
