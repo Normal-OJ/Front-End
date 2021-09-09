@@ -33,7 +33,7 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      title: () => '首頁',
+      title: () => '首頁'
     }
   },
   {
@@ -45,7 +45,7 @@ const routes = [
         const { data: rspData } = await Vue.axios.get(`/api/ann/${route.params.id}`)
         const annTitle = rspData.data[0].title
         return `系統公告:${annTitle}`
-      },
+      }
     }
   },
   {
@@ -85,7 +85,7 @@ const routes = [
     name: 'Courses',
     component: Courses,
     meta: {
-      title: () => '課程',
+      title: () => '課程'
     }
   },
   {
@@ -161,7 +161,7 @@ const routes = [
             const { data: rspData } = await Vue.axios.get(`/api/post/view/${route.params.name}/${route.params.id}`)
             const discussTitle = rspData.data[0].title
             return `討論區:${discussTitle}-${route.params.name}`
-          },
+          }
         }
       },
       {
@@ -173,9 +173,9 @@ const routes = [
         path: 'manages',
         component: CoursesManages,
         meta: { title: (route) => `課程管理-${route.params.name}` }
-      },
+      }
     ],
-    redirect: '/course/:name/announcements',
+    redirect: '/course/:name/announcements'
   },
   {
     path: '/inbox',
@@ -212,12 +212,12 @@ const routes = [
     name: 'Demo',
     component: Demo,
     meta: { title: () => 'Demo' }
-  },
+  }
 ]
 
 const router = new Router({
   mode: 'history',
-  routes,
+  routes
 })
 
 router.beforeEach(async (to, from, next) => {

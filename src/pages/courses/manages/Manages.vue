@@ -22,7 +22,7 @@
       </v-bottom-navigation>
     </div>
 
-    <ManageStudents 
+    <ManageStudents
       v-show="activeBtn==='students'"
       :items="items"
       :users="users"
@@ -34,15 +34,15 @@
 </template>
 
 <script>
-import ManageStudents from './ManageStudents';
-import ManageProblems from './ManageProblems';
+import ManageStudents from './ManageStudents'
+import ManageProblems from './ManageProblems'
 
 export default {
 
   name: 'Manages',
 
   components: {
-    ManageStudents, ManageProblems,
+    ManageStudents, ManageProblems
   },
 
   data () {
@@ -53,82 +53,45 @@ export default {
       items: [],
       errAlert: false,
       errMsg: '',
-      newUsers: [],
+      newUsers: []
     }
   },
 
-  created() {
-    this.getStudents();
+  created () {
+    this.getStudents()
   },
 
   methods: {
-    getStudents() {
+    getStudents () {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
-          var data = res.data.data;
-          this.items = [];
-          // data.TAs.forEach(ele => {
-          //   this.items.push(ele);
-          // })
-          for ( var key in data.studentNicknames ) {
-            this.items.push({'username': key, 'displayName': data.studentNicknames[key]});
+          var data = res.data.data
+          this.items = []
+          for (var key in data.studentNicknames) {
+            this.items.push({ username: key, displayName: data.studentNicknames[key] })
           }
-          this.getUsers();
-        })
-        .catch((err) => {
-
+          this.getUsers()
         })
     },
-    getUsers() {
+    getUsers () {
       this.$http.get('/api/course/Public')
         .then((res) => {
-          var data = res.data.data;
-          this.users = [];
-          for ( var key in data.studentNicknames ) {
-            if ( !this.findInItems(key) ) {
-              this.users.push({'username': key, 'displayName': data.studentNicknames[key]});
+          var data = res.data.data
+          this.users = []
+          for (var key in data.studentNicknames) {
+            if (!this.findInItems(key)) {
+              this.users.push({ username: key, displayName: data.studentNicknames[key] })
             }
           }
         })
-        .catch((err) => {
-
-        })
     },
-    findInItems(username) {
-      let flag = false;
+    findInItems (username) {
+      let flag = false
       this.items.forEach(ele => {
-        if ( ele.username === username )  return flag = true;
-      });
-      return flag;
-    },
-    // check(idx) {
-    //   this.editing = idx;
-    //   if ( editing >= this.TAs.length ) {
-
-    //   } else {
-    //     if ( this.oldUsers[editing-this.TAs.length].role === 'Remove from course' ) {
-    //       this.remove = true;
-    //     }
-    //   }
-    // },
-    // submit() {
-      
-    // },
-    // del() {
-    //   if ( editing >= this.TAs.length ) {
-    //     this.TAs.splice(editing,1);
-    //   } else {
-    //     this.oldUsers.splice(editing-this.TAs.length,1);
-    //   }
-    //   var studentNicknames = {};
-    //   this.oldUsers.forEach(ele => {
-    //     studentNicknames[ele.username] = ele.displayName;
-    //   })
-    //   this.$http.delete(`/api/course/${this.$route.params.name}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'TAs': TAs, 'studentNicknames': studentNicknames}})
-    // },
-  },
+        if (ele.username === username) return (flag = true)
+      })
+      return flag
+    }
+  }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

@@ -70,28 +70,23 @@
                       ><span v-text="item"></span></v-chip>
                     </template>
                     <template v-slot:item="{ item }">
-                      <!-- <v-list-item-avatar>
-                        <v-img :src="item."></v-img>
-                      </v-list-item-avatar> -->
                       <v-list-item-content>
                         <v-list-item-title v-text="item"></v-list-item-title>
-                        <!-- <v-list-item-subtitle v-text="item.displayedName"></v-list-item-subtitle> -->
                       </v-list-item-content>
                     </template>
                   </v-autocomplete>
-                  <v-text-field 
-                    label="Title" 
-                    counter="32" 
-                    :rules="[v => !!v && v.length <= 32 || 'Sorry, the length must be ≤ 32 characters']" 
+                  <v-text-field
+                    label="Title"
+                    counter="32"
+                    :rules="[v => !!v && v.length <= 32 || 'Sorry, the length must be ≤ 32 characters']"
                     v-model="newMail.title"
                   ></v-text-field>
-                  <v-textarea 
-                    label="Message" 
+                  <v-textarea
+                    label="Message"
                     :rules="[v => !!v || 'Sorry, cannot send empty message']"
                     v-model="newMail.message"
                   ></v-textarea>
                 </v-form>
-                <!-- {{newMail.receiver}} -->
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -108,7 +103,7 @@
         <!-- Nav Bar -->
         <v-list nav>
           <v-list-item-group color="primary">
-            <v-list-item 
+            <v-list-item
               v-for="(item, i) in navbar"
               :key="i"
               @click="clear(i)"
@@ -121,16 +116,16 @@
       </v-card>
     </v-col>
     <!-- Side Bar End -->
-    <!-- Middle Area --> 
+    <!-- Middle Area -->
     <v-col cols="12" md="3" style="height: 100%; overflow-y: hidden;">
       <!-- Mobile: Display Mail Begin -->
       <v-slide-x-reverse-transition>
         <v-card
           v-if="showMail && (displayMail !== -1)"
           tile
-          elevation="0" 
+          elevation="0"
           outlined
-          height="100%" 
+          height="100%"
           class="hidden-md-and-up"
         >
           <v-card tile elevation="0" height="100%" class="pt-3 px-3">
@@ -210,7 +205,7 @@
                 <v-list-item-subtitle class="text-center subtitle-1">Empty</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item 
+            <v-list-item
               two-line
               v-for="(item, i) in mail[displayFolder]"
               :key="i"
@@ -290,7 +285,7 @@
             <!-- Reply Btn -->
             <v-tooltip bottom v-if="displayFolder === 'inbox'">
               <template v-slot:activator="{ on }">
-                <v-btn class="ml-1" icon outlined >
+                <v-btn class="ml-1" icon outlined v-on="on" >
                   <v-icon @click="reply(displayFolder,displayMail)">mdi-reply</v-icon>
                 </v-btn>
               </template>
@@ -332,23 +327,23 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
-const API_BASE_URL = '/api';
-var len=0;
+const API_BASE_URL = '/api'
+var len = 0
 
 export default {
 
   name: 'Inbox',
 
   components: {
-    VueMarkdown,
+    VueMarkdown
   },
 
   data () {
     return {
       newMail: {
-        'receiver': '',
-        'title': '',
-        'message': ''
+        receiver: '',
+        title: '',
+        message: ''
       },
       validForm: false,
       errAlert: false,
@@ -358,16 +353,16 @@ export default {
       displayFolder: 'inbox',
       displayMail: -1,
       speedDial: false,
-    	navbar: [
-    		{ icon: 'mdi-inbox', title: 'Inbox'},
-    		{ icon: 'mdi-send', title: 'Sent'},
-    	],
+      navbar: [
+        { icon: 'mdi-inbox', title: 'Inbox' },
+        { icon: 'mdi-send', title: 'Sent' }
+      ],
       folder: [
-        'inbox', 'sent',
+        'inbox', 'sent'
       ],
       mail: {
-        'inbox': [],
-        'sent': [],
+        inbox: [],
+        sent: []
       },
       mailRender: true,
       isLoading: false,
@@ -378,255 +373,210 @@ export default {
       userSearchValue: '',
       selectedCourse: 'Select Course',
       toShow: false,
-      payload: '',
+      payload: ''
     }
   },
   watch: {
-    selectedCourse() {
-      if ( this.selectedCourse === this.courseList[0] )  this.toShow = false;
+    selectedCourse () {
+      if (this.selectedCourse === this.courseList[0]) this.toShow = false
       else {
-        this.toShow = true;
-        this.userList = [];
-        this.getUser();
+        this.toShow = true
+        this.userList = []
+        this.getUser()
       }
-    },
+    }
   },
-  beforeMount() {
-    this.getPayload();
-    this.init();
+  beforeMount () {
+    this.getPayload()
+    this.init()
   },
   methods: {
-    init() {
-      this.mail = {'inbox': [], 'sent': []};
-      this.courseList = ['Select Course'];
-      this.showMail = false;
-      this.displayMail = -1;
-      this.getInbox();
-      this.getSent();
-      this.getCourse();
+    init () {
+      this.mail = { inbox: [], sent: [] }
+      this.courseList = ['Select Course']
+      this.showMail = false
+      this.displayMail = -1
+      this.getInbox()
+      this.getSent()
+      this.getCourse()
     },
-    getPayload() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === false ) {
-          this.$router.push('/');
+    getPayload () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === false) {
+          this.$router.push('/')
         } else {
-          this.payload = payload;
+          this.payload = payload
         }
       } else {
-        this.$router.push('/');
+        this.$router.push('/')
       }
     },
-    parseJwt(token) {
-      console.log(atob(token.split('.')[1]));
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      console.log(atob(token.split('.')[1]))
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
     },
-    getInbox() {
+    getInbox () {
       this.$http.get(`${API_BASE_URL}/inbox`)
         .then((res) => {
-          // console.log(res)
           res.data.data.forEach(ele => {
-            this.mail.inbox.push({'messageId': ele.messageId, 'status': ele.status, 'sender': ele.sender, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp), 'avatar': this.getAvatar(ele.sender.md5)})
+            this.mail.inbox.push({ messageId: ele.messageId, status: ele.status, sender: ele.sender, title: ele.title, message: ele.message, timestamp: this.timeFormat(ele.timestamp), avatar: this.getAvatar(ele.sender.md5) })
           })
         })
-        .catch((err) => {
-          // console.log(err);
-        });
     },
-    getSent() {
+    getSent () {
       this.$http.get(`${API_BASE_URL}/inbox/sent`)
         .then((res) => {
-          // console.log(res)
           res.data.data.forEach((ele) => {
-            var receiversFormat = '';
+            var receiversFormat = ''
             ele.receivers.forEach((rec) => {
-              if ( receiversFormat !== '' ) receiversFormat += ', ';
-              receiversFormat += rec.username;
+              if (receiversFormat !== '') receiversFormat += ', '
+              receiversFormat += rec.username
             })
-            this.mail.sent.push({'messageId': ele.messageId, 'receiver': {'username': receiversFormat}, 'title': ele.title, 'message': ele.message, 'timestamp': this.timeFormat(ele.timestamp)})
+            this.mail.sent.push({ messageId: ele.messageId, receiver: { username: receiversFormat }, title: ele.title, message: ele.message, timestamp: this.timeFormat(ele.timestamp) })
           })
         })
-        .catch((err) => {
-          // console.log(err);
-        });
     },
-    getCourse() {
+    getCourse () {
       this.$http.get(`${API_BASE_URL}/course`)
         .then((res) => {
-          // console.log(res)
           res.data.data.forEach((ele) => {
-            this.courseList.push(ele.course);
+            this.courseList.push(ele.course)
           })
         })
-        .catch((err) => {
-          // console.log(err)
-        })
     },
-    getUser() {
+    getUser () {
       this.$http.get(`${API_BASE_URL}/course/${this.selectedCourse}`)
         .then((res) => {
-          // console.log(res);
-          var data = res.data.data;
-          this.userList.push('Select All');
-          this.userList.push(data.teacher.username);
-          // this.userList.push({'username': data.teacher.username});
-          data.TAs.forEach((ele) => {this.userList.push(ele.username)})
-          // data.TAs.forEach((ele) => {this.userList.push({'username': ele.username})})
-          for ( var key in data.studentNicknames ) {
-            this.userList.push(data.studentNicknames[key]);
-            // this.userList.push({'username': data.studentNicknames[key]});
+          var data = res.data.data
+          this.userList.push('Select All')
+          this.userList.push(data.teacher.username)
+          data.TAs.forEach((ele) => { this.userList.push(ele.username) })
+          for (var key in data.studentNicknames) {
+            this.userList.push(data.studentNicknames[key])
           }
         })
-        .catch((err) => {
-          // console.log(err);
-        })
     },
-    getAvatar(payload) {
-      if ( payload === -1 ) payload = this.payload.md5;
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
+    getAvatar (payload) {
+      if (payload === -1) payload = this.payload.md5
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
     },
-    send() {
+    send () {
       // validate form
       // loading btn
-      if ( this.$refs.form.validate() ) {
-        if ( !(this.newMail.receiver) ) {
+      if (this.$refs.form.validate()) {
+        if (!(this.newMail.receiver)) {
           this.errMsg = ['You have to select at least one receiver(and select course before)']
-          this.errAlert = true;
-          return;
+          this.errAlert = true
+          return
         }
-        this.errMsg = ['User not found', ''];
-        // console.log(this.newMail.receiver)
+        this.errMsg = ['User not found', '']
         this.newMail.receiver.forEach((usr) => {
-          this.$http.post(`${API_BASE_URL}/auth/check/username`, {'username': usr})
-          .then((response) => {
-            if ( response.data.data.valid === 1 ) {
-              this.errMsg[1] += usr + ' ';
-            }
-          })
-          .catch((error) => {
-            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
-            this.errAlert = true;
-            return;
-          })
+          this.$http.post(`${API_BASE_URL}/auth/check/username`, { username: usr })
+            .then((response) => {
+              if (response.data.data.valid === 1) {
+                this.errMsg[1] += usr + ' '
+              }
+            })
+            .catch(() => {
+              this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.']
+              this.errAlert = true
+            })
         })
-        if ( !!(this.errMsg[1]) ) {
-          this.errAlert = true;
-          return;
+        if (this.errMsg[1]) {
+          this.errAlert = true
+          return
         }
-        this.$http.post(`${API_BASE_URL}/inbox`, {'receivers': this.newMail.receiver, 'title': this.newMail.title, 'message': this.newMail.message})
+        this.$http.post(`${API_BASE_URL}/inbox`, { receivers: this.newMail.receiver, title: this.newMail.title, message: this.newMail.message })
           .then((res) => {
-            // console.log(res)
             this.composeDialog = false
-            this.init();
+            this.init()
           })
-          .catch((err) => {
-            // console.log(err);
-            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'];
-            this.errAlert = true;
-          });
-      } 
-    },
-    open(by, i) {
-      if ( by === 'id' ) {
-        i = this.mail[this.displayFolder].map(function(e) { return e.messageId; }).indexOf(i);
+          .catch(() => {
+            this.errMsg = ['Some issue occurred, please check out your network connection, refresh the page or contact with administrator.']
+            this.errAlert = true
+          })
       }
-      // console.log(by, i);
+    },
+    open (by, i) {
+      if (by === 'id') {
+        i = this.mail[this.displayFolder].map(function (e) { return e.messageId }).indexOf(i)
+      }
       this.showMail = true
       this.displayMail = i
-      if ( this.mail[this.displayFolder][i].status === 0 ) {
-        this.read(this.displayFolder,i)
+      if (this.mail[this.displayFolder][i].status === 0) {
+        this.read(this.displayFolder, i)
       }
-      this.mailRender = false;
+      this.mailRender = false
       this.$nextTick(() => {
-        this.mailRender = true;
+        this.mailRender = true
       })
     },
-    clear(i) {
+    clear (i) {
       this.showMail = false
       this.displayFolder = this.folder[i]
       this.displayMail = -1
-      this.init();
+      this.init()
     },
-    remove(f,idx) {
-      var url = '';
-      if ( f === 'sent' ) {
-        url = '/sent';
+    async remove (f, idx) {
+      var url = ''
+      if (f === 'sent') {
+        url = '/sent'
       }
-      this.$http.delete(`${API_BASE_URL}/inbox${url}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'messageId': this.mail[f][idx].messageId}})
-        .then((res) => {
-          // console.log(res);
-        })
-        .catch((err) => {
-          // console.log(err);
-        })
+      await this.$http.delete(`${API_BASE_URL}/inbox${url}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { messageId: this.mail[f][idx].messageId } })
       this.mail[f].splice(idx, 1)
       this.showMail = false
       this.displayMail = -1
-      this.init();
+      this.init()
     },
-    cancelCompose() {
+    cancelCompose () {
       this.selectedCourse = 'Select Course'
       this.newMail.receiver = ''
       this.newMail.title = ''
       this.newMail.message = ''
       this.composeDialog = false
     },
-    reply(f,m) {
-      this.selectedCourse = 'Public';
-      this.newMail.receiver = [this.mail[f][m].sender.username];
+    reply (f, m) {
+      this.selectedCourse = 'Public'
+      this.newMail.receiver = [this.mail[f][m].sender.username]
       this.newMail.title = 'Re: ' + this.mail[f][m].title
       this.composeDialog = true
     },
-    read(f,idx) {
-      this.mail[f][idx].status ^= 1;
-      this.$http.put(`${API_BASE_URL}/inbox`, {'messageId': this.mail[f][idx].messageId})
-        .then((res) => {
-          // console.log(res);
-        })
-        .catch((err) => {
-          // console.log(err);
-        })
+    async read (f, idx) {
+      this.mail[f][idx].status ^= 1
+      await this.$http.put(`${API_BASE_URL}/inbox`, { messageId: this.mail[f][idx].messageId })
     },
-    receiverChg() {
-      this.userSearchValue = '';
-      // console.log(this.newMail.receiver)
-      if ( len > this.newMail.receiver.length ) {
-        if ( this.newMail.receiver.indexOf('Select All') < 0 ) {
-          this.userList.splice(0,0,'Select All');
+    receiverChg () {
+      this.userSearchValue = ''
+      if (len > this.newMail.receiver.length) {
+        if (this.newMail.receiver.indexOf('Select All') < 0) {
+          this.userList.splice(0, 0, 'Select All')
         }
-        this.newMail.receiver.splice(this.newMail.receiver.indexOf(item),1);
       }
-      len = this.newMail.receiver.length;
-      if ( this.newMail.receiver.indexOf('Select All') >= 0 ) {
-        this.newMail.receiver = [];
+      len = this.newMail.receiver.length
+      if (this.newMail.receiver.indexOf('Select All') >= 0) {
+        this.newMail.receiver = []
         this.userList.forEach(ele => {
-          if ( ele !== 'Select All')
-            this.newMail.receiver.push(ele)
+          if (ele !== 'Select All') { this.newMail.receiver.push(ele) }
         })
-        this.userList.shift();
+        this.userList.shift()
       }
-      // console.dir('recei:',this.newMail.receiver);
-      // console.dir('userL:',this.userList);
-      // if ( this.newMail.receiver.length < this.userList-1 &&  )
     },
-    removeUser(item) {
-      this.newMail.receiver.splice(this.newMail.receiver.indexOf(item),1);
+    removeUser (item) {
+      this.newMail.receiver.splice(this.newMail.receiver.indexOf(item), 1)
     }
-  },
+  }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

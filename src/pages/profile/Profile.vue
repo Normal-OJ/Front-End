@@ -113,24 +113,24 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/api'
 
 export default {
 
   name: 'Profile',
 
-  data() {
+  data () {
     return {
       passwdForm: false,
       passwd: {
-        'newPassword': '',
-        'oldPassword': '',
+        newPassword: '',
+        oldPassword: ''
       },
       info: {
-        'username': '',
-        'email': '',
-        'displayedName': '',
-        'bio': '',
+        username: '',
+        email: '',
+        displayedName: '',
+        bio: ''
       },
       avatar: this.setAvatar(''),
       errAlert: '',
@@ -140,77 +140,63 @@ export default {
     }
   },
 
-  beforeMount() {
-    this.getProfile();
+  beforeMount () {
+    this.getProfile()
   },
 
   methods: {
-    getProfile() {
-      // this.$http.get(`${API_BASE_URL}/profile`)
-      //   .then((res) => {
-      //     // console.log(res.data.data);
-      //     this.info = res.data.data;
-      //   })
-      //   .catch((err) => {
-      //     // console.log(err);
-      //   })
+    getProfile () {
       if (this.$cookies.isKey('jwt')) {
-        this.payload = this.parseJwt(this.$cookies.get('jwt'));
+        this.payload = this.parseJwt(this.$cookies.get('jwt'))
         if (this.payload.active === true) {
-          this.info.username = this.payload.username;
-          this.info.email = this.payload.email;
-          this.info.displayedName = this.payload.profile.displayedName;
-          this.info.bio = this.payload.profile.bio;
-          this.avatar = this.setAvatar(this.payload.md5);
+          this.info.username = this.payload.username
+          this.info.email = this.payload.email
+          this.info.displayedName = this.payload.profile.displayedName
+          this.info.bio = this.payload.profile.bio
+          this.avatar = this.setAvatar(this.payload.md5)
         }
       } else {
-        this.$router.push('/');
+        this.$router.push('/')
       }
     },
-    setAvatar(payload) {
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}&s=100`;
+    setAvatar (payload) {
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}&s=100`
     },
-    parseJwt(token) {
-      console.log(atob(token.split('.')[1]));
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      console.log(atob(token.split('.')[1]))
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    update() {
+    update () {
       if (this.$refs.profileForm.validate()) {
         this.$http.post(`${API_BASE_URL}/profile`, this.info)
           .then((res) => {
-            this.errMsg = 'Information updated successfully!';
-            this.errType = 'success';
-            this.errAlert = 'profile';
-            // console.log(res);
+            this.errMsg = 'Information updated successfully!'
+            this.errType = 'success'
+            this.errAlert = 'profile'
           })
-          .catch((err) => {
-            this.errMsg = 'Invalid profile!';
-            this.errType = 'error';
-            this.errAlert = 'profile';
+          .catch(() => {
+            this.errMsg = 'Invalid profile!'
+            this.errType = 'error'
+            this.errAlert = 'profile'
           })
       }
     },
-    submit() {
+    submit () {
       if (this.$refs.passwdForm.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/change-password`, this.passwd)
           .then((res) => {
-            this.errMsg = 'Password changed successfully!';
-            this.errType = 'success';
-            this.errAlert = 'passwd';
-            // console.log(res);
+            this.errMsg = 'Password changed successfully!'
+            this.errType = 'success'
+            this.errAlert = 'passwd'
           })
-          .catch((err) => {
-            this.errMsg = 'Sorry, your password do not match.';
-            this.errType = 'error';
-            this.errAlert = 'passwd';
-            // console.log(err);
+          .catch(() => {
+            this.errMsg = 'Sorry, your password do not match.'
+            this.errType = 'error'
+            this.errAlert = 'passwd'
           })
       }
-    },
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

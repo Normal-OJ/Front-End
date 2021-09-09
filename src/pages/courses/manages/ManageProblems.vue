@@ -19,7 +19,6 @@
               <th class="font-weight-bold subtitle-1 text--primary">Status</th>
               <th class="font-weight-bold subtitle-1 text--primary">Type</th>
               <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
-              <!-- <th class="font-weight-bold subtitle-1 text--primary">Course</th> -->
               <th class="font-weight-bold subtitle-1 text--primary">Operations</th>
             </tr>
           </thead>
@@ -44,14 +43,13 @@
               <td class="subtitle-1">{{ item.status }}</td>
               <td class="subtitle-1">{{ item.type }}</td>
               <td class="subtitle-1">
-                <v-chip 
+                <v-chip
                   class="mx-1"
                   v-for="tag in item.tags"
                   :key="tag"
                   label small
                 >{{ tag }}</v-chip>
               </td>
-              <!-- <td v-if="item.course && item.course.length > 0">{{ item.course[0] }}</td> -->
               <td>
                 <ui-button class="mr-1" color="info" @click.native="edit(idx)">
                   <template slot="content">
@@ -73,7 +71,6 @@
       </v-simple-table>
     </v-card>
 
-
     <v-card height="100%" elevation="2" v-else>
       <v-card-title class="font-weight-bold">
         Create Problems
@@ -94,7 +91,7 @@
                   counter="64"
                   :rules="[
                     v => !!v || 'Please enter the problem name.',
-                    v => !!v && v.length <= 64 || 'Sorry, the length is at most 64 characters.',
+                    v => (!!v && v.length <= 64) || 'Sorry, the length is at most 64 characters.',
                   ]"
                   filled
                 />
@@ -351,7 +348,7 @@
               <v-card-subtitle>
                 <v-row class="pl-4">
                   Tags:
-                  <v-chip 
+                  <v-chip
                     class="mx-1"
                     v-for="tag in prob.tags"
                     :key="tag"
@@ -400,15 +397,15 @@
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown';
-import JSZip from 'jszip';
+import VueMarkdown from 'vue-markdown'
+import JSZip from 'jszip'
 
 export default {
 
   name: 'ManageStudents',
 
   components: {
-    VueMarkdown,
+    VueMarkdown
   },
 
   data () {
@@ -424,42 +421,40 @@ export default {
       zip: null,
       existZip: null,
       testdata: null,
-      allowedLangAlt: [1, 2, 4],
+      allowedLangAlt: [1, 2, 4]
     }
   },
 
   computed: {
-    sampleLength() {
-      if ( this.prob.description.sampleInput )
-        return this.prob.description.sampleInput.length;
+    sampleLength () {
+      return this.prob.description.sampleInput && this.prob.description.sampleInput.length
     },
-    subtaskLength() {
-      if ( this.prob.testCaseInfo.tasks )
-        return this.prob.testCaseInfo.tasks.length;
-    },
+    subtaskLength () {
+      return this.prob.testCaseInfo.tasks && this.prob.testCaseInfo.tasks.length
+    }
   },
 
   watch: {
-    zip() {
-      var zip = new JSZip();
-      zip.file('testdata.zip', this.zip);
-      zip.generateAsync({type:'base64'})
+    zip () {
+      var zip = new JSZip()
+      zip.file('testdata.zip', this.zip)
+      zip.generateAsync({ type: 'base64' })
         .then((base64) => {
-          this.testdata = 'data:application/zip;base64,' + base64;
+          this.testdata = 'data:application/zip;base64,' + base64
         })
         .catch(() => {
-          this.testdata = null;
+          this.testdata = null
         })
-    },
+    }
   },
 
-  created() {
-    this.init();
-    this.getProbs();
+  created () {
+    this.init()
+    this.getProbs()
   },
 
   methods: {
-    init() {
+    init () {
       this.prob = {
         problemName: '',
         status: 0,
@@ -473,239 +468,197 @@ export default {
           output: '',
           sampleInput: [''],
           sampleOutput: [''],
-          hint: '',
+          hint: ''
         },
         testCaseInfo: {
           language: 0,
           fillInTemplate: '',
           tasks: [{
-            "caseCount": null,
-            "taskScore": null,
-            "memoryLimit": 536871,
-            "timeLimit": 1000,
-          }],
+            caseCount: null,
+            taskScore: null,
+            memoryLimit: 536871,
+            timeLimit: 1000
+          }]
         },
         canViewStdout: false,
-        allowedLanguage: 7,
-      };
+        allowedLanguage: 7
+      }
     },
-    getProbs() {
-      this.items = [];
-      this.tags = [];
+    getProbs () {
+      this.items = []
+      this.tags = []
       this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
         .then((res) => {
-          // console.log(res);
           res.data.data.forEach(ele => {
-            ele.status = ele.status===0 ? 'Online' : 'Offline';
-            ele.type = ele.type===0 ? 'default' : (ele.type===1 ? 'fillInTemplate' : 'handwritten');
-            // ele.courses = ele.courses[0];
-            this.items.push(ele);
+            ele.status = ele.status === 0 ? 'Online' : 'Offline'
+            ele.type = ele.type === 0 ? 'default' : (ele.type === 1 ? 'fillInTemplate' : 'handwritten')
+            this.items.push(ele)
             ele.tags.forEach(tag => {
-              this.tags.push(tag);
+              this.tags.push(tag)
             })
           })
-          this.tags = [...new Set(this.tags)];
-        })
-        .catch((err) => {
-          // console.log(err);
+          this.tags = [...new Set(this.tags)]
         })
     },
-    submit() {
-      if ( this.prob.testCaseInfo ) {
-        if ( this.prob.type === 2 ) {
-          this.prob.testCaseInfo;
-        } else {
-          this.prob.testCaseInfo.tasks.forEach(ele => {
-            ele.caseCount = Number(ele.caseCount);
-            ele.taskScore = Number(ele.taskScore);
-            ele.memoryLimit = Number(ele.memoryLimit);
-            ele.timeLimit = Number(ele.timeLimit);
-          });
-        }
+    submit () {
+      if (this.prob.testCaseInfo && this.prob.type !== 2) {
+        this.prob.testCaseInfo.tasks.forEach(ele => {
+          ele.caseCount = Number(ele.caseCount)
+          ele.taskScore = Number(ele.taskScore)
+          ele.memoryLimit = Number(ele.memoryLimit)
+          ele.timeLimit = Number(ele.timeLimit)
+        })
       }
-      this.prob.quota = Number(this.prob.quota);
-      if ( this.$refs.form.validate() && this.allowedLangAlt ) {
-        var temp = 0;
+      this.prob.quota = Number(this.prob.quota)
+      if (this.$refs.form.validate() && this.allowedLangAlt) {
+        var temp = 0
         this.allowedLangAlt.forEach(ele => {
-          temp += ele;
-        });
-        this.prob.allowedLanguage = temp;
+          temp += ele
+        })
+        this.prob.allowedLanguage = temp
       }
-      if ( this.$refs.form.validate() ) {
-        console.log(this.prob);
-        if ( this.creating === -1 ) {
+      if (this.$refs.form.validate()) {
+        console.log(this.prob)
+        if (this.creating === -1) {
           this.$http.post('/api/problem/manage', this.prob)
             .then((res) => {
-              // console.log(res);
-              if ( !this.zip ) {
-                this.$router.go(0);
+              if (!this.zip) {
+                this.$router.go(0)
               }
-              if ( this.prob.type !== 2 ) {
-                var formData = new FormData();
-                formData.append('case', this.zip);
+              if (this.prob.type !== 2) {
+                var formData = new FormData()
+                formData.append('case', this.zip)
                 return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`,
-                                    formData,
-                                    {
-                                      headers: { 'Content-Type' : 'multipart/form-data' }, 
-                                    })
+                  formData,
+                  {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                  })
               }
             })
             .then((res) => {
-              this.$router.go(0);
+              this.$router.go(0)
             })
             .catch((err) => {
-              this.errMsg = err.response.data.message;
-              this.errAlert = true;
-              console.log(err);
+              this.errMsg = err.response.data.message
+              this.errAlert = true
+              console.log(err)
             })
         } else {
           this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
             .then((res) => {
-              if ( !this.zip ) {
-                this.$router.go(0);
+              if (!this.zip) {
+                this.$router.go(0)
               }
-              if ( this.prob.type !== 2 && this.zip ) {
-                var formData = new FormData();
-                formData.append('case', this.zip); 
-                return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, 
-                                      formData,
-                                      {
-                                        headers: { 'Content-Type' : 'multipart/form-data' }, 
-                                      })
+              if (this.prob.type !== 2 && this.zip) {
+                var formData = new FormData()
+                formData.append('case', this.zip)
+                return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`,
+                  formData,
+                  {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                  })
               }
             })
             .then((res) => {
-              this.$router.go(0);
+              this.$router.go(0)
             })
             .catch((err) => {
-              this.errMsg = err.response.data.message;
-              this.errAlert = true;
-              console.log(err);
+              this.errMsg = err.response.data.message
+              this.errAlert = true
+              console.log(err)
             })
         }
       }
     },
-    editSample(val) {
-      if ( val > 0 )   {
-        this.prob.description.sampleInput.push('');
-        this.prob.description.sampleOutput.push('');
-      } else if ( this.sampleLength > 1 ) {
-        this.prob.description.sampleInput.pop();
-        this.prob.description.sampleOutput.pop();
+    editSample (val) {
+      if (val > 0) {
+        this.prob.description.sampleInput.push('')
+        this.prob.description.sampleOutput.push('')
+      } else if (this.sampleLength > 1) {
+        this.prob.description.sampleInput.pop()
+        this.prob.description.sampleOutput.pop()
       }
     },
-    editSubtask(val) {
-      if ( val > 0 )   {
+    editSubtask (val) {
+      if (val > 0) {
         this.prob.testCaseInfo.tasks.push({
-            "caseCount": null,
-            "taskScore": null,
-            "memoryLimit": 536871,
-            "timeLimit": 1000,
-          });
-      } else if ( this.subtaskLength > 1 ) {
-        this.prob.testCaseInfo.tasks.pop();
-      }
-      // this.subtaskLength += val; 
-      // this.subtaskLength = Math.max(this.subtaskLength, 1);
-    },
-    toCreate(idx) {
-      this.creating = idx;
-      if ( idx === -1 ) {
-        this.init();
+          caseCount: null,
+          taskScore: null,
+          memoryLimit: 536871,
+          timeLimit: 1000
+        })
+      } else if (this.subtaskLength > 1) {
+        this.prob.testCaseInfo.tasks.pop()
       }
     },
-    edit(idx) {
-      this.toCreate(idx);
+    toCreate (idx) {
+      this.creating = idx
+      if (idx === -1) {
+        this.init()
+      }
+    },
+    edit (idx) {
+      this.toCreate(idx)
       this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
-        .then(async(res) => {
+        .then(async (res) => {
           var data = res.data.data
-          console.log(data);
+          console.log(data)
           // problem data preprocess
           for (const [key, value] of Object.entries(data)) {
             // convert field name
-            if ( key === 'testCase' ) {
-              this.prob['testCaseInfo'] = value;
-            } else if ( key === 'allowedLanguage' ) {
-              this.prob[key] = value;
-              this.allowedLangAlt = [];
-              let temp = value;
+            if (key === 'testCase') {
+              this.prob.testCaseInfo = value
+            } else if (key === 'allowedLanguage') {
+              this.prob[key] = value
+              this.allowedLangAlt = []
+              const temp = value
               // allowed language range is [0, 3)
-              for(let i = 0 ; i < 3 ; i++) {
+              for (let i = 0; i < 3; i++) {
                 // check whether language id (i) is allowed
-                let d = 1 << i;
+                const d = 1 << i
                 // if so, push it into array
-                if(temp & d) {
-                  this.allowedLangAlt.push(d);
+                if (temp & d) {
+                  this.allowedLangAlt.push(d)
                 }
               }
             } else {
-              this.prob[key] = value;
+              this.prob[key] = value
             }
           }
-          console.log(this.prob);
-          // var isFile = false;
           // not a handwritten problem and have testcase uploaded
-          if ( this.prob.type !== 2 && data.testCaseInfo ) {
-            this.prob.testCaseInfo.tasks = [];
+          if (this.prob.type !== 2 && data.testCaseInfo) {
+            this.prob.testCaseInfo.tasks = []
             data.testCaseInfo.tasks.forEach((ele) => {
               this.prob.testCaseInfo.tasks.push(
                 {
-                  'caseCount': ele.input.length,
-                  'taskScore': ele.taskScore,
-                  'timeLimit': ele.timeLimit,
-                  'memoryLimit': ele.memoryLimit,
+                  caseCount: ele.input.length,
+                  taskScore: ele.taskScore,
+                  timeLimit: ele.timeLimit,
+                  memoryLimit: ele.memoryLimit
                 }
-              );
+              )
             })
           }
-          //     ele.input.forEach((file, jdx) => {
-          //       isFile = true;
-          //       zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.in`, file);
-          //     })
-          //     ele.output.forEach((file, jdx) => {
-          //       zip.file(`${('0'+idx).substr(-2)}${('0'+jdx).substr(-2)}.out`, file);
-          //     })
-          //     delete this.prob.testCaseInfo.tasks[idx]['input'];
-          //     delete this.prob.testCaseInfo.tasks[idx]['output'];
-          //   })
-
-          // console.log(this.prob);
-          // if ( isFile ) {
-          //   await zip.generateAsync({type:"base64"})
-          //     .then((base64) => {
-          //       this.testdata = "data:application/zip;base64," + base64;
-          //     })
-          // } else {
-          //   this.testdata = null;
-          this.create = true;
+          this.create = true
         })
-        .catch((err) => {
-          // console.log(err);
-        })
-        this.$http.get(`/api/problem/${this.items[idx].problemId}/testcase`)
-          .then((res) => {this.existZip = res.data;})
-      // this.prob = this.items[idx];
-      // this.create = true;
+      this.$http.get(`/api/problem/${this.items[idx].problemId}/testcase`)
+        .then((res) => { this.existZip = res.data })
     },
-    del(idx) {
-      this.$http.delete(`/api/problem/manage/${this.items[idx].problemId}`, {headers: {'Content-Type': 'application/json'}})
+    del (idx) {
+      this.$http.delete(`/api/problem/manage/${this.items[idx].problemId}`, { headers: { 'Content-Type': 'application/json' } })
         .then((res) => {
-          this.$router.go(0);
-          // console.log(res);
+          this.$router.go(0)
         })
         .catch((err) => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    download() {
-      window.location = this.testdata;
+    download () {
+      window.location = this.testdata
     },
-    downloadServer() {
-      window.location = `https://noj.tw/api/problem/${this.creating}/testcase`;
-    },
+    downloadServer () {
+      window.location = `https://noj.tw/api/problem/${this.creating}/testcase`
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

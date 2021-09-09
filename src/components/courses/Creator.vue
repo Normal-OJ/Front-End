@@ -39,39 +39,36 @@ export default {
   props: {
     value: {
       type: Boolean,
-      required: true,
+      required: true
     },
     type: {
       type: String,
-      required: true,
+      required: true
     },
     title: {
       type: String,
-      required: true,
+      required: true
     },
     noActivator: {
       type: Boolean,
-      default: false,
+      default: false
     }
   },
 
   data () {
     return {
-      dialog: false,
+      dialog: false
     }
   },
 
   watch: {
-    value() {
-      this.dialog = this.value;
+    value () {
+      this.dialog = this.value
     },
-    dialog() {
-      this.$emit('input', this.dialog);
-    },
+    dialog () {
+      this.$emit('input', this.dialog)
+    }
   }
 
 }
 </script>
-
-<style lang="css" scoped>
-</style>

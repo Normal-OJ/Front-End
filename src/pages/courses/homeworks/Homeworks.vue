@@ -45,10 +45,10 @@
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker 
-                  v-model="hw[`${datetime.lower}Date`]" 
+                <v-date-picker
+                  v-model="hw[`${datetime.lower}Date`]"
                   calendar-class="my-datepicker_calendar"
-                  @input="menu[idx*2] = false" 
+                  @input="menu[idx*2] = false"
                   color="primary"
                   no-title
                   width="500px"
@@ -96,9 +96,9 @@
         </v-form>
       </template>
     </Creator>
-    
+
     <ShowHomework v-if="probs" :items="items" :probs="probs" :perm="perm" :user="username"
-      @edit="edit" @delete="deleteHw" 
+      @edit="edit" @delete="deleteHw"
     ></ShowHomework>
   </div>
 </template>
@@ -107,14 +107,14 @@
 import Creator from '@/components/courses/Creator'
 import ShowHomework from '@/components/courses/ShowHomework'
 
-var offset = (new Date().getTimezoneOffset())*60*1000;
+var offset = (new Date().getTimezoneOffset()) * 60 * 1000
 
 export default {
 
   name: 'Homeworks',
 
   components: {
-    Creator, ShowHomework,
+    Creator, ShowHomework
   },
 
   data () {
@@ -125,209 +125,193 @@ export default {
       perm: false,
       titleRules: [
         v => !!v || 'Sorry, the title cannot be empty',
-        v => !!v && v.length <= 64 || 'Sorry, the length must be ≤ 64 characters',
+        v => (!!v && v.length <= 64) || 'Sorry, the length must be ≤ 64 characters'
       ],
       contentRules: [
         v => !!v || 'Sorry, the content cannot be empty',
-        v => !!v && v.length <= 100000 || 'Sorry, the length must be ≤ 100000 characters',
+        v => (!!v && v.length <= 100000) || 'Sorry, the length must be ≤ 100000 characters'
       ],
       hw: {
-        'title': '',
-        'content': '',
-        'startDate': '',
-        'endDate': '',
-        'startTime': '',
-        'endTime': '',
-        'problemIds': [],
-        'scoreboardStatus': false,
+        title: '',
+        content: '',
+        startDate: '',
+        endDate: '',
+        startTime: '',
+        endTime: '',
+        problemIds: [],
+        scoreboardStatus: false
       },
       menu: [false, false, false, false],
       editing: -1,
       datetimes: [
         { lower: 'start', upper: 'Start' },
-        { lower: 'end', upper: 'End' },
+        { lower: 'end', upper: 'End' }
       ],
       probs: null,
       errAlert: false,
       errMsg: '',
-      username: '',
+      username: ''
     }
   },
 
-  beforeMount() {
-    this.checkUser(this.getUsername());
-    this.getProblems();
-    this.getHomework();
+  beforeMount () {
+    this.checkUser(this.getUsername())
+    this.getProblems()
+    this.getHomework()
   },
 
   methods: {
-    getHomework() {
+    getHomework () {
       this.$http.get(`/api/course/${this.$route.params.name}/homework`)
         .then((res) => {
-          // console.log(res);
-          var temp = [[], [], []];
-          res.data.data.sort((a,b) => {return a.end - b.end});
+          var temp = [[], [], []]
+          res.data.data.sort((a, b) => { return a.end - b.end })
           res.data.data.forEach(ele => {
-            var status = this.getStatus(ele.start, ele.end);
+            var status = this.getStatus(ele.start, ele.end)
             temp[status === 'Running' ? 0 : status === 'Not Started' ? 1 : 2].push({
-              'title': ele.name,
-              'content': ele.markdown,
-              'status': status,
-              'start': this.timeFormat(ele.start),
-              'stStamp': ele.start*1000,
-              'end': this.timeFormat(ele.end),
-              'edStamp': ele.end*1000,
-              'problemIds': ele.problemIds,
-              'scoreboardStatus': ele.scoreboardStatus,
-              'studentStatus': ele.studentStatus,
-              'id': ele.id,
+              title: ele.name,
+              content: ele.markdown,
+              status: status,
+              start: this.timeFormat(ele.start),
+              stStamp: ele.start * 1000,
+              end: this.timeFormat(ele.end),
+              edStamp: ele.end * 1000,
+              problemIds: ele.problemIds,
+              scoreboardStatus: ele.scoreboardStatus,
+              studentStatus: ele.studentStatus,
+              id: ele.id
             })
           })
-          this.items = this.items.concat(temp[0].concat(temp[1].concat(temp[2])));
+          this.items = this.items.concat(temp[0].concat(temp[1].concat(temp[2])))
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     },
-    // findType(id) {
-    //   this.probs.forEach(ele => {
-    //     if ( ele.problemId === id ) {
-    //       return ele.type;
-    //     }
-    //   })
-    // },
-    getProblems() {
+    getProblems () {
       this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
         .then((res) => {
-          // console.log(res);
-          this.probs = res.data.data;
+          this.probs = res.data.data
           this.probs.forEach(ele => {
-            ele['displayedName'] = ele.problemId + ' - ' + ele.problemName;
+            ele.displayedName = ele.problemId + ' - ' + ele.problemName
           })
-
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     },
-    getStatus(st, ed) {
-      var now = Math.floor(new Date().getTime() / 1000);
-      if ( now < st ) return 'Not Started';
-      else if ( now <= ed ) return 'Running';
-      else  return 'End';
+    getStatus (st, ed) {
+      var now = Math.floor(new Date().getTime() / 1000)
+      if (now < st) return 'Not Started'
+      else if (now <= ed) return 'Running'
+      else return 'End'
     },
-    cancel() {
-      this.$refs.form.reset();
-      this.dialog = false;
+    cancel () {
+      this.$refs.form.reset()
+      this.dialog = false
     },
-    edit(idx, id) {
-      console.log('idx,id: ' + idx + id);
-      this.editing = id;
-      this.type = 'Update';
-      this.hw.title = this.items[idx].title;
-      this.hw.content = this.items[idx].content;
+    edit (idx, id) {
+      console.log('idx,id: ' + idx + id)
+      this.editing = id
+      this.type = 'Update'
+      this.hw.title = this.items[idx].title
+      this.hw.content = this.items[idx].content
 
-      this.hw.startDate = new Date(this.items[idx].stStamp-offset).toISOString().substr(0,10);
-      this.hw.endDate = new Date(this.items[idx].edStamp-offset).toISOString().substr(0,10);
-      this.hw.startTime = new Date(this.items[idx].stStamp-offset).toISOString().substr(11,5);
-      this.hw.endTime = new Date(this.items[idx].edStamp-offset).toISOString().substr(11,5);
+      this.hw.startDate = new Date(this.items[idx].stStamp - offset).toISOString().substr(0, 10)
+      this.hw.endDate = new Date(this.items[idx].edStamp - offset).toISOString().substr(0, 10)
+      this.hw.startTime = new Date(this.items[idx].stStamp - offset).toISOString().substr(11, 5)
+      this.hw.endTime = new Date(this.items[idx].edStamp - offset).toISOString().substr(11, 5)
 
-      this.hw.problemIds = this.items[idx].problemIds;
-      this.hw.scoreboardStatus = this.items[idx].scoreboardStatus;
-      this.dialog = true;
+      this.hw.problemIds = this.items[idx].problemIds
+      this.hw.scoreboardStatus = this.items[idx].scoreboardStatus
+      this.dialog = true
     },
-    post() {
-      if ( this.$refs.form.validate() ) {
-        var stD = this.hw.startDate.split('-');
-        var edD = this.hw.endDate.split('-');
+    post () {
+      if (this.$refs.form.validate()) {
+        var stD = this.hw.startDate.split('-')
+        var edD = this.hw.endDate.split('-')
         var data = {
-          'markdown': this.hw.content,
-          'start': new Date(stD[0]+'/'+stD[1]+'/'+stD[2]+' '+this.hw.startTime).getTime() / 1000,
-          'end': new Date(edD[0]+'/'+edD[1]+'/'+edD[2]+' '+this.hw.endTime).getTime() / 1000,
-          'problemIds': this.hw.problemIds,
-          'scordboardStatus': this.hw.scordboardStatus,
+          markdown: this.hw.content,
+          start: new Date(stD[0] + '/' + stD[1] + '/' + stD[2] + ' ' + this.hw.startTime).getTime() / 1000,
+          end: new Date(edD[0] + '/' + edD[1] + '/' + edD[2] + ' ' + this.hw.endTime).getTime() / 1000,
+          problemIds: this.hw.problemIds,
+          scordboardStatus: this.hw.scordboardStatus
         }
-        if ( this.editing != -1 ) {
-          data['newName'] = this.hw.title;
+        if (this.editing !== -1) {
+          data.newName = this.hw.title
           this.$http.put(`/api/homework/${this.editing}`, data)
             .then((res) => {
-              console.log(res);
-              this.cancel();
-              this.$router.go(0);
+              console.log(res)
+              this.cancel()
+              this.$router.go(0)
             })
             .catch((err) => {
-              console.log(err);
-              this.errMsg = 'error';
-              // this.errMsg = err.response.message;
-              this.errAlert = true;
+              console.log(err)
+              this.errMsg = 'error'
+              this.errAlert = true
             })
         } else {
-          data['courseName'] = this.$route.params.name;
-          data['name'] = this.hw.title;
+          data.courseName = this.$route.params.name
+          data.name = this.hw.title
           this.$http.post('/api/homework', data)
             .then((res) => {
-              console.log(res);
-              this.cancel();
-              this.$router.go(0);
+              console.log(res)
+              this.cancel()
+              this.$router.go(0)
             })
             .catch((err) => {
-              console.log(err);
-              this.errMsg = 'error';
-              // this.errMsg = err.response.message;
-              this.errAlert = true;
+              console.log(err)
+              this.errMsg = 'error'
+              this.errAlert = true
             })
         }
       }
     },
-    deleteHw(idx, id) {
-      this.$http.delete(`/api/homework/${id}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}})
+    deleteHw (idx, id) {
+      this.$http.delete(`/api/homework/${id}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' } })
         .then((res) => {
-          this.$router.go(0);
-          // console.log(res);
+          this.$router.go(0)
         })
-        .catch((err) => {
-        });
     },
-    checkUser(username) {
+    checkUser (username) {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
-          var data = res.data.data;
+          var data = res.data.data
           data.TAs.forEach(ele => {
-            if ( ele.username === username ) {
-              this.perm = true;
-              return;
+            if (ele.username === username) {
+              this.perm = true
             }
           })
         })
         .catch((err) => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
-    getUsername() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          if ( payload.role <= 1 ) this.perm = true;
-          this.username = payload.username;
-          return payload.username;
+    getUsername () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === true) {
+          if (payload.role <= 1) this.perm = true
+          this.username = payload.username
+          return payload.username
         }
       }
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
-  },
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
+    }
+  }
 }
 </script>
 

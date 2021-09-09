@@ -1,13 +1,7 @@
 <template>
-	<v-dialog v-model="dialog" :width="width" :persistent="persistent">
-    <template v-slot:activator="{ on: { click } }" v-if="this.$slots.activator">
+  <v-dialog v-model="dialog" :width="width" :persistent="persistent">
+    <template v-slot:activator v-if="this.$slots.activator">
       <slot name="activator">
-        <!-- <ui-button @click.native="click">
-          <template v-slot:content>
-            <v-icon>mdi-plus</v-icon>
-            Activator
-          </template>
-        </ui-button> -->
       </slot>
     </template>
     <v-card>
@@ -56,50 +50,47 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: false,
+      default: false
     },
     width: {
       type: String,
-      default: '75vw',
+      default: '75vw'
     },
     persistent: {
       type: Boolean,
-      default: false,
+      default: false
     },
     alert: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   watch: {
-    value() {
-      this.dialog = this.value;
+    value () {
+      this.dialog = this.value
     },
-    dialog() {
-      this.$emit('input', this.dialog);
-    },
+    dialog () {
+      this.$emit('input', this.dialog)
+    }
   },
 
   data () {
     return {
-      dialog: this.value,
+      dialog: this.value
     }
   },
 
   methods: {
-    cancel(check) {
-      if ( !this.alert || check ) {
-        this.$emit('cancel');
-        this.dialog = false;
+    cancel (check) {
+      if (!this.alert || check) {
+        this.$emit('cancel')
+        this.dialog = false
       }
     },
-    ok() {
-      this.dialog = false;
-    },
+    ok () {
+      this.dialog = false
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

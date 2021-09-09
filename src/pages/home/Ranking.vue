@@ -18,6 +18,7 @@
         <tbody>
           <tr v-for="(item, index) in items" :key="item.user.username">
             <td>{{
+              // eslint-disable-next-line vue/no-parsing-error
               (index < 3 ? ['🥇', '🥈', '🥉'][index] + ' ' : '') +
               item.user.username +
               (item.user.displayedName.length > 0 ? ` (${item.user.displayedName})` : '')
@@ -33,8 +34,7 @@
 </template>
 
 <script>
-
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/api'
 
 export default {
 
@@ -47,27 +47,20 @@ export default {
   },
 
   beforeMount () {
-    this.getRanking();
+    this.getRanking()
   },
 
   methods: {
-    getRanking() {
+    getRanking () {
       this.$http.get(`${API_BASE_URL}/ranking`)
         .then((res) => {
-          console.log(res.data);
-          this.showRanking(res.data.data);
+          this.showRanking(res.data.data)
         })
-        .catch((err) => {
-          console.log(err);
-        });
     },
 
-    showRanking(ranking) {
-      this.items = ranking.sort((a, b) => (b.ACProblem - a.ACProblem));
+    showRanking (ranking) {
+      this.items = ranking.sort((a, b) => (b.ACProblem - a.ACProblem))
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

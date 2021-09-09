@@ -110,18 +110,15 @@
               <ui-button :to="`homework/${item.id}`" color="info">
                 <template slot="content">View Student Status</template>
               </ui-button>
-              <!-- <HomeworkScoreboard :items="item.studentStatus" :probs="item.problemIds" :probsName="item.problem">
-              </HomeworkScoreboard> -->
             </v-card-text>
           </div>
-        </v-card-text>
       </v-card>
     </v-row>
     <v-row v-show="!items">
       <v-skeleton-loader
         class="mx-auto"
         type="image"
-        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" 
+        :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'"
       ></v-skeleton-loader>
     </v-row>
     <v-row v-if="items && items.length === 0" justify="center">
@@ -155,37 +152,36 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
-import HomeworkScoreboard from './HomeworkScoreboard'
-var TYPE = ['Programming', 'Template', 'Handwritten'];
+var TYPE = ['Programming', 'Template', 'Handwritten']
 export default {
 
   name: 'ShowHomework',
 
   components: {
-    VueMarkdown, HomeworkScoreboard,
+    VueMarkdown
   },
 
   props: {
     items: {
       type: Array,
-      required: true,
+      required: true
     },
     probs: {
       type: Array,
-      required: true,
+      required: true
     },
     perm: {
       type: Boolean,
-      default: false,
+      default: false
     },
     menuItems: {
       type: Array,
-      default: () => ['edit', 'delete'],
+      default: () => ['edit', 'delete']
     },
     user: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
 
   data () {
@@ -193,93 +189,75 @@ export default {
       dialog: false,
       menu: {
         i: null,
-        id: null,
+        id: null
       },
       ready: false,
-      prob: null,
+      prob: null
     }
   },
 
-  mounted() {
-    this.prob = {};
-    for ( let i=0; i<this.probs.length; i++ ) {
-      this.prob[String(this.probs[i].problemId)] = this.probs[i];
+  mounted () {
+    this.prob = {}
+    for (let i = 0; i < this.probs.length; i++) {
+      this.prob[String(this.probs[i].problemId)] = this.probs[i]
     }
-    this.ready = true;
-    // console.log(this.prob);
+    this.ready = true
   },
 
   methods: {
-    totalScore(item) {
-      let ret = 0, flag = false;
+    totalScore (item) {
+      let ret = 0; let flag = false
       item.problemIds.forEach(id => {
-        if ( !(item.studentStatus.hasOwnProperty(`${id}`)) ) {
-          if ( !(item.studentStatus.hasOwnProperty(`${this.user}`)) ) flag = true;
-          else ret += Math.max(0,item.studentStatus[`${this.user}`][`${id}`]['score']);
+        if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${id}`)) {
+          if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${this.user}`)) flag = true
+          else ret += Math.max(0, item.studentStatus[`${this.user}`][`${id}`].score)
         } else {
-          ret += Math.max(0,item.studentStatus[`${id}`]['score']);
+          ret += Math.max(0, item.studentStatus[`${id}`].score)
         }
       })
-      return (flag ? -1 : ret);
+      return (flag ? -1 : ret)
     },
-    totalAC(item) {
-      let ret = 0, cnt = 0, flag = false;
+    totalAC (item) {
+      let ret = 0; let cnt = 0; let flag = false
       item.problemIds.forEach(id => {
-        if ( !(item.studentStatus.hasOwnProperty(`${id}`)) ) {
-          if ( !(item.studentStatus.hasOwnProperty(`${this.user}`)) )  flag = true;
+        if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${id}`)) {
+          if (!Object.prototype.hasOwnProperty.call(item.studentStatus, `${this.user}`)) flag = true
           else {
-            if ( this.findType(id) !== TYPE[2] ) {
-              cnt++;
-              ret += Number(item.studentStatus[`${this.user}`][`${id}`]['problemStatus']===0); 
+            if (this.findType(id) !== TYPE[2]) {
+              cnt++
+              ret += Number(item.studentStatus[`${this.user}`][`${id}`].problemStatus === 0)
             }
-          } 
+          }
         } else {
-          if ( this.findType(id) !== TYPE[2] ) {
-            cnt++;
-            ret += Number(item.studentStatus[`${id}`]['problemStatus']===0);
+          if (this.findType(id) !== TYPE[2]) {
+            cnt++
+            ret += Number(item.studentStatus[`${id}`].problemStatus === 0)
           }
         }
       })
-      return (flag ? [-1, 0] : [ret, cnt]);
+      return (flag ? [-1, 0] : [ret, cnt])
     },
-    findType(id) {
-      if ( this.prob[`${id}`] )
-        return TYPE[this.prob[`${id}`].type];
-      // for ( var i=0; i<this.probs.length; i++ ) {
-      //   if ( this.probs[i].problemId === id ) {
-      //     return TYPE[this.probs[i].type];
-      //   }
-      // }
+    findType (id) {
+      if (this.prob[`${id}`]) { return TYPE[this.prob[`${id}`].type] }
     },
-    findProb(id) {
-      if ( this.prob[`${id}`] )
-        return this.prob[`${id}`].problemName;
-      // for ( var i=0; i<this.probs.length; i++ ) {
-      //   if ( this.probs[i].problemId === id ) {
-      //     return this.probs[i].problemName;
-      //   }
-      // }
+    findProb (id) {
+      if (this.prob[`${id}`]) { return this.prob[`${id}`].problemName }
     },
-    findQuota(id) {
-      if ( this.prob[`${id}`] )
-        return this.prob[`${id}`].quota;
+    findQuota (id) {
+      if (this.prob[`${id}`]) { return this.prob[`${id}`].quota }
     },
-    findCount(id) {
-      if ( this.prob[`${id}`] )
-        return this.prob[`${id}`].submitCount;
+    findCount (id) {
+      if (this.prob[`${id}`]) { return this.prob[`${id}`].submitCount }
     },
-    menuEmit(item, i, id) {
-      this.menu.i = i;
-      this.menu.id = id;
-      if ( item === 'edit' ) {
-        this.$emit(item,i,id);
+    menuEmit (item, i, id) {
+      this.menu.i = i
+      this.menu.id = id
+      if (item === 'edit') {
+        this.$emit(item, i, id)
       } else {
-        this.dialog = true;
+        this.dialog = true
       }
-    },
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

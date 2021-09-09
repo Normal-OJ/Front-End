@@ -80,7 +80,7 @@
       <v-spacer></v-spacer>
       <v-col cols="2">
         <h5>Types</h5>
-        <v-row class="my-3" v-for="type in alertTypes">
+        <v-row class="my-3" v-for="type in alertTypes" :key="type">
           <ui-button @click.native="alertType = type">
             <template slot="content">
               {{ type }}
@@ -130,11 +130,8 @@ export default {
       alert: true,
       alertType: 'info',
       alertTypes: ['info', 'success', 'warning', 'error'],
-      msg: 'This is custom Alert.',
+      msg: 'This is custom Alert.'
     }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>
