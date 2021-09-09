@@ -131,26 +131,24 @@
                 </v-hover>
               </td>
             </tr>
-            <tr 
-              v-if="scores && scores.length > 0" 
-              v-for="(score, idx) in scores"
-              :key="idx"
-            >
-              <td>{{ score.title }}</td>
-              <td>{{ score.score }}</td>
-              <td style="white-space: pre;">{{ score.content }}</td>
-              <td>{{ timeFormat(score.timestamp) }}</td>
-              <td>
-                <ui-button
-                  class="mr-1"
-                  color="error"
-                  alert
-                  @alertClick="delscore(score.title)"
-                >
-                  <template slot="content"><v-icon>mdi-trash-can</v-icon></template>
-                </ui-button>
-              </td>
-            </tr>
+            <template v-if="scores && scores.length > 0">
+              <tr v-for="(score, idx) in scores" :key="idx">
+                <td>{{ score.title }}</td>
+                <td>{{ score.score }}</td>
+                <td style="white-space: pre;">{{ score.content }}</td>
+                <td>{{ timeFormat(score.timestamp) }}</td>
+                <td>
+                  <ui-button
+                    class="mr-1"
+                    color="error"
+                    alert
+                    @alertClick="delscore(score.title)"
+                  >
+                    <template slot="content"><v-icon>mdi-trash-can</v-icon></template>
+                  </ui-button>
+                </td>
+              </tr>
+            </template>
             <tr v-else>
               <td colspan="5">🦄 No data available.</td>
             </tr>
@@ -211,12 +209,12 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true,
+      required: true
     },
     users: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
 
   data () {
@@ -232,99 +230,103 @@ export default {
         title: '',
         newtitle: '',
         score: '',
-        content: '',
-      },
+        content: ''
+      }
     }
   },
 
   watch: {
-    grade() {
-      if ( this.grade ) {
+    grade () {
+      if (this.grade) {
         this.$http.get(`/api/course/${this.$route.params.name}/grade/${this.grade}`)
           .then((res) => {
-            this.scores = res.data.data;
+            this.scores = res.data.data
           })
           .catch((err) => {
-            console.log(err);
-            this.scores = null;
+            console.log(err)
+            this.scores = null
           })
       }
     }
   },
 
   methods: {
-    cancel() {
-      this.dialog = false;
-      this.gradeDialog = false;
-      this.newUsers = [];
+    cancel () {
+      this.dialog = false
+      this.gradeDialog = false
+      this.newUsers = []
     },
-    submit() {
-      // console.dir(this.newUsers);
-      var data = {};
+    submit () {
+      var data = {}
       this.items.forEach(ele => {
-        data[ele.username] = ele.displayName;
+        data[ele.username] = ele.displayName
       })
       this.newUsers.forEach(ele => {
-        data[ele.username] = ele.displayName;
+        data[ele.username] = ele.displayName
       })
       this.$http.put(`/api/course/${this.$route.params.name}`,
-                    {
-                      TAs: [],
-                      studentNicknames: data,
-                    })
-        .then((res) => {
-          this.$router.go(0);
+        {
+          TAs: [],
+          studentNicknames: data
         })
-        .catch((err) => {
-
+        .then(() => {
+          this.$router.go(0)
         })
     },
-    del(idx) {
-      this.items.splice(idx,1);
-      this.submit();
+    del (idx) {
+      const data = {}
+      this.items.forEach((ele, index) => {
+        if (index === idx) return
+        data[ele.username] = ele.displayName
+      })
+      this.$http.put(`/api/course/${this.$route.params.name}`,
+        {
+          TAs: [],
+          studentNicknames: data
+        })
+        .then(() => {
+          this.$router.go(0)
+        })
     },
-    update(grade) {
-      this.grade = null;
+    update (grade) {
+      this.grade = null
       this.$nextTick(() => {
-        this.grade = grade;
+        this.grade = grade
       })
     },
-    scoring() {
-      if ( this.$refs.form.validate() ) {
+    scoring () {
+      if (this.$refs.form.validate()) {
         this.$http.post(`/api/course/${this.$route.params.name}/grade/${this.grade}`, this.data)
-          .then((res) => {
-            this.gradeDialog = false;
-            this.$refs.form.reset();
-            this.update(this.grade);
+          .then(() => {
+            this.gradeDialog = false
+            this.$refs.form.reset()
+            this.update(this.grade)
           })
           .catch((err) => {
-            console.log(err);
+            console.log(err)
           })
       }
     },
-    delscore(title) {
-      this.$http.delete(`/api/course/${this.$route.params.name}/grade/${this.grade}`, {headers: {'Accept': 'application/vnd.hal+json', 'Content-Type': 'application/json'}, data: {'title': title}})
-        .then((res) => {
-          this.update(this.grade);
+    delscore (title) {
+      this.$http.delete(`/api/course/${this.$route.params.name}/grade/${this.grade}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { title: title } })
+        .then(() => {
+          this.update(this.grade)
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err)
         })
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

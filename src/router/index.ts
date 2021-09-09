@@ -21,22 +21,22 @@ export default new Router({
     {
       path: '/problem/:id',
       name: 'Problem',
-      component: () => import('@/pages/problem/Problem.vue'),
+      component: () => import('@/pages/problem/Problem.vue')
     },
     {
       path: '/problem/:id/statistic',
       name: 'Statistic',
-      component: () => import('@/pages/problem/Statistic.vue'),
+      component: () => import('@/pages/problem/Statistic.vue')
     },
     {
       path: '/submission/:id',
       name: 'Submission',
-      component: () => import('@/pages/submission/Submission.vue'),
+      component: () => import('@/pages/submission/Submission.vue')
     },
     {
       path: '/courses',
       name: 'Courses',
-      component: () => import('@/pages/courses/Courses.vue'),
+      component: () => import('@/pages/courses/Courses.vue')
     },
     {
       path: '/course/:name',
@@ -45,80 +45,80 @@ export default new Router({
       children: [
         {
           path: 'announcements',
-          component: () => import('@/pages/courses/announcements/Announcement.vue'),
+          component: () => import('@/pages/courses/announcements/Announcement.vue')
         },
         {
           path: 'announcement/:id',
-          component: () => import('@/pages/courses/announcements/Announcements.vue'),
+          component: () => import('@/pages/courses/announcements/Announcements.vue')
         },
         {
           path: 'homeworks',
-          component: () => import('@/pages/courses/homeworks/Homeworks.vue'),
+          component: () => import('@/pages/courses/homeworks/Homeworks.vue')
         },
         {
           path: 'homework/:id',
-          component: () => import('@/pages/courses/homeworks/Status.vue'),
+          component: () => import('@/pages/courses/homeworks/Status.vue')
         },
         {
           path: 'homework/:id/handwritten',
-          component: () => import('@/pages/courses/homeworks/Handwritten.vue'),
+          component: () => import('@/pages/courses/homeworks/Handwritten.vue')
         },
         {
           path: 'problems',
-          component: () => import('@/pages/courses/problems/Problems.vue'),
+          component: () => import('@/pages/courses/problems/Problems.vue')
         },
         {
           path: 'submissions',
-          component: () => import('@/pages/courses/submissions/Submissions.vue'),
+          component: () => import('@/pages/courses/submissions/Submissions.vue')
         },
         {
           path: 'discussions',
-          component: () => import('@/pages/courses/discussions/Discussion.vue'),
+          component: () => import('@/pages/courses/discussions/Discussion.vue')
         },
         {
           path: 'discussion/:id',
-          component: () => import('@/pages/courses/discussions/Discussions.vue'),
+          component: () => import('@/pages/courses/discussions/Discussions.vue')
         },
         {
           path: 'grades',
-          component: () => import('@/pages/courses/grades/Grades.vue'),
+          component: () => import('@/pages/courses/grades/Grades.vue')
         },
         {
           path: 'manages',
-          component: () => import('@/pages/courses/manages/Manages.vue'),
-        },
+          component: () => import('@/pages/courses/manages/Manages.vue')
+        }
       ],
-      redirect: '/course/:name/announcements',
+      redirect: '/course/:name/announcements'
     },
     {
       path: '/inbox',
       name: 'Inbox',
-      component: () => import('@/pages/inbox/Inbox.vue'),
+      component: () => import('@/pages/inbox/Inbox.vue')
     },
     {
       path: '/about',
       name: 'About',
-      component: () => import('@/pages/about/About.vue'),
+      component: () => import('@/pages/about/About.vue')
     },
     {
       path: '/email_verify',
       name: 'EmailVerify',
-      component: () => import('@/pages/help/EmailVerify.vue'),
+      component: () => import('@/pages/help/EmailVerify.vue')
     },
     {
       path: '/email_resend',
       name: 'EmailResend',
-      component: () => import('@/pages/help/EmailResend.vue'),
+      component: () => import('@/pages/help/EmailResend.vue')
     },
     {
       path: '/profile',
       name: 'Profile',
-      component: () => import('@/pages/profile/Profile.vue'),
+      component: () => import('@/pages/profile/Profile.vue')
     },
     {
       path: '/ui/demo',
       name: 'Demo',
-      component: () => import('@/components/Demo.vue'),
-    },
+      component: () => import('@/components/Demo.vue')
+    }
   ]
 })

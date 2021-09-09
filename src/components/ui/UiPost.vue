@@ -96,78 +96,76 @@ export default {
   name: 'UiPost',
 
   components: {
-    VueMarkdown,
+    VueMarkdown
   },
 
   props: {
     width: {
       type: String,
-      default: '50vw',
+      default: '50vw'
     },
     height: {
       type: String,
-      default: 'auto',
+      default: 'auto'
     },
     menu: {
       type: Boolean,
-      default: false,
+      default: false
     },
     menuItems: {
       type: Array,
-      default: () => ['edit', 'delete'],
+      default: () => ['edit', 'delete']
     },
     elevation: {
       type: String,
-      default: '2',
+      default: '2'
     },
     markdown: {
       type: String,
-      default: null,
+      default: null
     },
     mask: {
       type: Boolean,
-      default: false,
+      default: false
     },
     readmore: {
       type: String,
-      default: null,
+      default: null
     },
     author: {
       type: String,
-      default: null,
+      default: null
     },
     createdTime: {
       type: String,
-      default: null,
+      default: null
     },
     updater: {
       type: String,
-      default: null,
+      default: null
     },
     updatedTime: {
       type: String,
-      default: null,
+      default: null
     },
     title: {
       type: String,
-      default: null,
-    },
+      default: null
+    }
   },
 
   data () {
     return {
-      dialog: false,
+      dialog: false
     }
   },
 
   methods: {
-    menuEmit(item) {
-      if ( item === 'edit' )
-        this.$emit(item);
-      else {
-        this.dialog = true;
+    menuEmit (item) {
+      if (item === 'edit') { this.$emit(item) } else {
+        this.dialog = true
       }
-    },
+    }
   }
 }
 </script>

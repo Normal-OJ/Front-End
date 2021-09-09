@@ -1,11 +1,11 @@
 <template>
-  <v-container 
+  <v-container
     :style="{width: $vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'}"
     class="pt-0"
   >
     <h2>Hello, {{ username }}</h2>
     <h3>Please fill out the form to complete your registeration.</h3>
-    <v-card 
+    <v-card
       class="my-3 mx-auto flex-column d-flex"
       :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
     >
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/api'
 
 export default {
 
@@ -74,72 +74,54 @@ export default {
       payload: null,
       username: '',
       profile: {
-        // 'avatar': null,
-        'displayedName': '',
-        'bio': '',
+        displayedName: '',
+        bio: ''
       },
       avatar: this.getAvatar(''),
       agree: false,
       errAlert: false,
-      errMsg: '',
-      // file: null,
-      // avatarRules: [
-      //   val => !val || val.size < 1048576 || 'Sorry, the limit of avatar size is 1MB.'
-      // ],
+      errMsg: ''
     }
   },
 
   beforeMount () {
-    this.payload = this.getPayload();
-    this.username = this.payload.username;
-    this.profile.displayedName = this.username;
-    this.avatar = this.getAvatar(this.payload.md5);
-    // console.log('creating');
-    // this.getAvatar();
+    this.payload = this.getPayload()
+    this.username = this.payload.username
+    this.profile.displayedName = this.username
+    this.avatar = this.getAvatar(this.payload.md5)
   },
 
   methods: {
-    getPayload() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === false ) {
-          return this.parseJwt(this.$cookies.get('jwt'));
-        } else {
-          // this.$router.push('/');
+    getPayload () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === false) {
+          return this.parseJwt(this.$cookies.get('jwt'))
         }
-      } else {
-        // this.$router.push('/');
       }
     },
-    parseJwt(token) {
-      console.log(atob(token.split('.')[1]));
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      console.log(atob(token.split('.')[1]))
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    submit() {
-      if ( this.$refs.form.validate() ) {
-        this.$http.post(`${API_BASE_URL}/auth/active`, {'agreement': this.agree, 'profile': this.profile})
+    submit () {
+      if (this.$refs.form.validate()) {
+        this.$http.post(`${API_BASE_URL}/auth/active`, { agreement: this.agree, profile: this.profile })
           .then((response) => {
-            this.$router.push('/');
-            console.log(response.data);
+            this.$router.push('/')
+            console.log(response.data)
           })
           .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
-            this.errAlert = true;
-            console.log(error.response.data);
-          });
+            this.errAlert = true
+            console.log(error.response.data)
+          })
       }
     },
-    getAvatar(payload) {
-      var d = encodeURI("https://noj.tw/defaultAvatar.png");
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`;
-    },
-    // uploadImage(event) {
-    //   console.log(event)
-    //   this.image = URL.createObjectURL(event)
-    // },
-  },
+    getAvatar (payload) {
+      var d = encodeURI('https://noj.tw/defaultAvatar.png')
+      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
+    }
+  }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

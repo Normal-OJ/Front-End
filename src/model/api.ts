@@ -4,7 +4,7 @@ import VueAxios from 'vue-axios'
 
 const API_BASE_URL = '/api'
 
-export function apiSetup() {
+export function apiSetup () {
   Vue.use(VueAxios, axios)
   Vue.axios.defaults.baseURL = API_BASE_URL
   Vue.axios.interceptors.response.use(
@@ -15,6 +15,6 @@ export function apiSetup() {
         throw error.response.data
       }
       throw error
-    },
+    }
   )
 }

@@ -11,7 +11,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr 
+          <tr
             v-for="item in items"
             :key="item.title"
           >
@@ -45,56 +45,53 @@ export default {
   data () {
     return {
       items: null,
-      loading: false,
+      loading: false
     }
   },
 
-  created() {
-    this.getGrade(this.getUser());
+  created () {
+    this.getGrade(this.getUser())
   },
 
   methods: {
-    getUser() {
-      if ( this.$cookies.isKey('jwt') ) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'));
-        if ( payload.active === true ) {
-          return payload.username;
+    getUser () {
+      if (this.$cookies.isKey('jwt')) {
+        var payload = this.parseJwt(this.$cookies.get('jwt'))
+        if (payload.active === true) {
+          return payload.username
         } else {
-          this.$router.push('/');
+          this.$router.push('/')
         }
       } else {
-        this.$router.push('/');
+        this.$router.push('/')
       }
     },
-    parseJwt(token) {
-      return JSON.parse(atob(token.split('.')[1])).data;
+    parseJwt (token) {
+      return JSON.parse(atob(token.split('.')[1])).data
     },
-    getGrade(user) {
-      this.loading = true;
+    getGrade (user) {
+      this.loading = true
       this.$http.get(`/api/course/${this.$route.params.name}/grade/${user}`)
         .then((res) => {
-          this.items = res.data.data;
-          this.loading = false;
+          this.items = res.data.data
+          this.loading = false
         })
         .catch((err) => {
-          console.log(err);
-          this.loading = false;
+          console.log(err)
+          this.loading = false
         })
     },
-    timeFormat(time) {
-      var tmp = new Date(time * 1000);
-      var year = tmp.getFullYear();
-      var month = '0' + (tmp.getMonth()+1);
-      var date = '0' + tmp.getDate();
-      var hour = '0' + tmp.getHours();
-      var min = '0' + tmp.getMinutes();
-      var sec = '0' + tmp.getSeconds();
-      var time = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2);
-      return time;
-    },
+    timeFormat (time) {
+      var tmp = new Date(time * 1000)
+      var year = tmp.getFullYear()
+      var month = '0' + (tmp.getMonth() + 1)
+      var date = '0' + tmp.getDate()
+      var hour = '0' + tmp.getHours()
+      var min = '0' + tmp.getMinutes()
+      var sec = '0' + tmp.getSeconds()
+      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
+      return formattedTime
+    }
   }
 }
 </script>
-
-<style lang="css" scoped>
-</style>
