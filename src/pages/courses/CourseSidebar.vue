@@ -14,14 +14,10 @@
     <v-divider></v-divider>
     <v-list nav>
       <v-list-item-group color="primary">
-        <template
-          v-if="(link.title!=='Manages'||perm)
-            &&(courseName!=='Public'
-            ||(link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
-        >
+        <template v-for="link in links">
           <v-list-item
-            v-for="link in links"
             :key="link.title"
+            v-if="(link.title!=='Manages'||perm)&&(courseName!=='Public'||(link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
             :to="link.path"
             link
             dense
