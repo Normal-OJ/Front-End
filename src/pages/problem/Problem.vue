@@ -221,7 +221,7 @@ export default {
               })
             } else {
               this.submData.push({
-                Timestamp: this.timeFormat(ele.timestamp),
+                Timestamp: this.$formatTime(ele.timestamp),
                 Status: ele.status + 1,
                 Score: ele.score,
                 'Run Time': ele.runTime,
@@ -298,17 +298,6 @@ export default {
       }
       this.snackbar = true
       this.getSubm()
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     getUsername () {
       if (this.$cookies.isKey('jwt')) {

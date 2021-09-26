@@ -192,7 +192,7 @@ export default {
             { title: 'Memory(KB)', text: data.memoryUsage },
             { title: 'Score', text: data.score },
             { title: 'Language', text: this.LANG[data.languageType] },
-            { title: 'Submit Time', text: this.timeFormat(data.timestamp) }
+            { title: 'Submit Time', text: this.$formatTime(data.timestamp) }
           ]
           // a handwritten submission with feedback
           if (data.languageType === 3) {
@@ -244,17 +244,6 @@ export default {
         .catch((err) => {
           console.log(err)
         })
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     isKey (key, obj) {
       var keys = Object.keys(obj).map(function (x) {
