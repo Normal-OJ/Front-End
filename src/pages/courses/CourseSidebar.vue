@@ -17,7 +17,7 @@
         <template v-for="link in links">
           <v-list-item
             :key="link.title"
-            v-if="(link.title!=='Manages'||perm)&&(courseName!=='Public'||(link.title!=='Homeworks'&&link.title!=='Discussions'&&link.title!=='Grades'))"
+            v-if="canAccessLink(link)"
             :to="link.path"
             link
             dense
@@ -72,6 +72,13 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    canAccessLink (link) {
+      // eslint-disable-next-line no-undef
+      return (link.title !== 'Manages' || this.perm) && (
+        this.courseName !== 'Public' ||
+          (link.title !== 'Homeworks' && link.title !== 'Discussions' && link.title !== 'Grades')
+      )
     },
     getUsername () {
       if (this.$cookies.isKey('jwt')) {

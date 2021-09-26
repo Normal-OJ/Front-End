@@ -11,9 +11,9 @@
           </v-col>
           <v-col cols="11">
             <v-row no-gutters>
-              <v-card-subtitle class="py-0 text--primary" v-text="item.author.username"></v-card-subtitle>
-              <v-card-subtitle class="py-0" v-text="$formatTime(item.created) + (item.created !== item.updated ? ' (edited)' : '')"></v-card-subtitle>
-              <v-spacer></v-spacer>
+              <v-card-subtitle class="py-0 text--primary" v-text="item.author.username" />
+              <v-card-subtitle class="py-0" v-text="displayTimeAndIsEdited(item)" />
+              <v-spacer />
               <!-- Menu -->
               <v-menu v-if="perm(item)" offset-x>
                 <template v-slot:activator="{ on }">
@@ -297,6 +297,9 @@ export default {
           this.$refs.editingReply[0].focus()
         }
       }
+    },
+    displayTimeAndIsEdited (item) {
+      return this.$formatTime(item.created) + (item.created !== item.updated ? ' (edited)' : '')
     },
     perm (item) {
       const payload = this.getPayload()

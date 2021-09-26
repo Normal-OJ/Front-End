@@ -11,7 +11,7 @@ const timeFromNow = (timestamp) => {
  * Convert unix timestamp to specific format
  * @param {number} timestamp
  * @param {string} format
- * @returns
+ * @returns {string} the formatted time
  */
 const formatTime = (timestamp, format = 'YYYY/MM/DD HH:mm:ss') => {
   return dayjs(timestamp * 1000).format(format)
