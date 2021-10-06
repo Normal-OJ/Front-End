@@ -180,7 +180,7 @@ export default {
         .then((res) => {
           this.items = res.data.data.submissions.map(s => {
             s.languageType = this.LANG[s.languageType]
-            s.timestamp = this.timeFormat(s.timestamp)
+            s.timestamp = this.$formatTime(s.timestamp)
             return s
           })
         })
@@ -209,17 +209,6 @@ export default {
       } catch (e) {
         console.log(e)
       }
-    },
-    timeFormat (time) {
-      const tmp = new Date(time * 1000)
-      const year = tmp.getFullYear()
-      const month = '0' + (tmp.getMonth() + 1)
-      const date = '0' + tmp.getDate()
-      const hour = '0' + tmp.getHours()
-      const min = '0' + tmp.getMinutes()
-      const sec = '0' + tmp.getSeconds()
-      const timeString = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return timeString
     },
     getUsername () {
       if (this.$cookies.isKey('jwt')) {

@@ -136,7 +136,7 @@
                 <td>{{ score.title }}</td>
                 <td>{{ score.score }}</td>
                 <td style="white-space: pre;">{{ score.content }}</td>
-                <td>{{ timeFormat(score.timestamp) }}</td>
+                <td>{{ $formatTime(score.timestamp) }}</td>
                 <td>
                   <ui-button
                     class="mr-1"
@@ -315,18 +315,8 @@ export default {
         .catch((err) => {
           console.log(err)
         })
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     }
+
   }
 }
 </script>
