@@ -402,7 +402,7 @@ import JSZip from 'jszip'
 
 export default {
 
-  name: 'ManageStudents',
+  name: 'ManageProblems',
 
   components: {
     VueMarkdown
@@ -518,7 +518,6 @@ export default {
         this.prob.allowedLanguage = temp
       }
       if (this.$refs.form.validate()) {
-        console.log(this.prob)
         if (this.creating === -1) {
           this.$http.post('/api/problem/manage', this.prob)
             .then((res) => {
@@ -602,7 +601,6 @@ export default {
       this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
         .then(async (res) => {
           var data = res.data.data
-          console.log(data)
           // problem data preprocess
           for (const [key, value] of Object.entries(data)) {
             // convert field name

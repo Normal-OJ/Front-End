@@ -67,7 +67,6 @@ export default {
     getPosts () {
       this.$http.get(`${API_BASE_URL}/post/${this.$route.params.name}`)
         .then((res) => {
-          console.log(res)
           this.items = []
           res.data.data.forEach(ele => {
             if (ele.thread.status !== 1) {
@@ -128,12 +127,10 @@ export default {
       this.dialog = true
     },
     deletePost (idx, id) {
-      // console.log(id);
       this.post.targetThreadId = id
       this.$http.delete(`${API_BASE_URL}/post`, { headers: { 'Content-Type': 'application/json' }, data: { targetThreadId: this.post.targetThreadId } })
         .then((res) => {
           this.$router.go(0)
-          // console.log(res);
         })
         .catch((err) => {
           console.log(err)

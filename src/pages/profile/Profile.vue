@@ -164,7 +164,6 @@ export default {
       return `https://www.gravatar.com/avatar/${payload}?d=${d}&s=100`
     },
     parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
       return JSON.parse(atob(token.split('.')[1])).data
     },
     update () {

@@ -132,12 +132,7 @@ export default {
               this.errAlert = true
             } else {
               this.$http.post(`/api/auth/${this.diaIdx ? 'password-recovery' : 'resend-email'}`, { email: this.email })
-                .then(res => {
-                  // Nothing to do
-                  console.log(res.data)
-                })
                 .catch(err => {
-                  // Something to do
                   console.log(err.response.data)
                 })
               this.show = false

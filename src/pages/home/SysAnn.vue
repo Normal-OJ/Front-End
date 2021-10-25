@@ -36,8 +36,6 @@ export default {
     getAnn () {
       this.$http.get(`/api/ann/${this.$route.params.id}`)
         .then((res) => {
-          console.log(`/api/ann/${this.$route.params.id}`)
-          console.log(res)
           this.items = []
           res.data.data.forEach(ele => {
             this.items.push({
@@ -54,9 +52,6 @@ export default {
     },
     operate (idx) {
       if (idx === 0) { this.annDialog = true } else if (idx === 1) this.deleteAnn()
-    },
-    edit (idx, id) {
-      console.log()
     },
     editAnn () {
       if (this.$refs.form.validate()) {

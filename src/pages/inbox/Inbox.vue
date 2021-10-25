@@ -413,7 +413,6 @@ export default {
       }
     },
     parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
       return JSON.parse(atob(token.split('.')[1])).data
     },
     getInbox () {

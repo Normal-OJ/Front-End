@@ -163,12 +163,10 @@ export default {
       this.dialog = true
     },
     deletePost (idx, id) {
-      console.log(id)
       this.post.targetThreadId = id
       this.$http.delete(`${API_BASE_URL}/post`, { headers: { 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
         .then((res) => {
           this.$router.push(`/course/${this.$route.params.name}/discussions`)
-          // console.log(res);
         })
         .catch((err) => {
           console.log(err)
@@ -177,7 +175,6 @@ export default {
     newComment (id, content) {
       this.$http.post(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
         .then((res) => {
-          // console.log(res);
           this.$router.go(0)
         })
         .catch((err) => {
@@ -192,7 +189,6 @@ export default {
     editComment (id, content) {
       this.$http.put(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
         .then((res) => {
-          // console.log(res);
           this.$router.go(0)
         })
         .catch((err) => {

@@ -120,7 +120,6 @@ export default {
       this.$http.delete('/api/ann', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { annId: id } })
         .then((res) => {
           this.$router.go(0)
-          // console.log(res);
         })
     },
     checkUser (username) {

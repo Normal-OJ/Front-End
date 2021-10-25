@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" :width="width" :persistent="persistent">
-    <template v-slot:activator v-if="this.$slots.activator">
-      <slot name="activator">
+    <template v-if="this.$slots.activator" v-slot:activator="{ on }">
+      <slot name="activator" v-on="on">
       </slot>
     </template>
     <v-card>
