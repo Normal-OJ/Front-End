@@ -26,22 +26,22 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <template v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'">
+              <template v-for="info in submInfo">
                 <th
-                  v-for="info in submInfo"
                   :key="info.title"
+                  v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
                   class="subtitle-1"
                   v-text="info.title"
-                ></th>
+                />
               </template>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <template v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'">
+              <template v-for="info in submInfo">
                 <td
-                  v-for="info in submInfo"
                   :key="info.title"
+                  v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
                   class="subtitle-1 text-left"
                 >
                   <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
