@@ -37,7 +37,7 @@
             </tr>
             <tr v-for="(item, idx) in items" :key="item.title">
               <td class="subtitle-1">{{ item.username }}</td>
-              <td class="subtitle-1">{{ item.displayName }}</td>
+              <td class="subtitle-1">{{ item.displayedName }}</td>
               <td class="subtitle-1">Student</td>
               <td class="subtitle-1">
                 <ui-button class="mr-1" color="info" @click.native="grade = item.username">

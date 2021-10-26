@@ -101,15 +101,13 @@ export default {
       }
     },
     parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
       return JSON.parse(atob(token.split('.')[1])).data
     },
     submit () {
       if (this.$refs.form.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/active`, { agreement: this.agree, profile: this.profile })
-          .then((response) => {
+          .then(() => {
             this.$router.push('/')
-            console.log(response.data)
           })
           .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'

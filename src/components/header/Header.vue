@@ -193,7 +193,7 @@ export default {
     },
     signout () {
       this.$http.get(`${API_BASE_URL}/auth/session`)
-        .then((res) => {
+        .then(() => {
           this.isLogin = false
           this.$router.push('/')
           this.showAlert()

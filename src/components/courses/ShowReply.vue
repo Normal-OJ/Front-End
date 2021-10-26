@@ -282,7 +282,7 @@ export default {
       if (op === 'delete') {
         if (check) {
           this.$http.delete('/api/post', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
         } else {

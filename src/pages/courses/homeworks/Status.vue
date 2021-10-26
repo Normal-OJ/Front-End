@@ -57,7 +57,6 @@ export default {
     getHW () {
       this.$http.get(`/api/homework/${this.$route.params.id}`)
         .then((res) => {
-          // console.log(res.data.data);
           this.items = res.data.data.studentStatus
           this.probs = res.data.data.problemIds
           this.getReport()
@@ -72,9 +71,6 @@ export default {
           problemId: ele,
           course: this.$route.params.name
         })
-          .then((res) => {
-            // this.getUrl();
-          })
           .catch((err) => {
             console.log(err)
           })

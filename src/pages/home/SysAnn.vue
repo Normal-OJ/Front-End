@@ -36,8 +36,6 @@ export default {
     getAnn () {
       this.$http.get(`/api/ann/${this.$route.params.id}`)
         .then((res) => {
-          console.log(`/api/ann/${this.$route.params.id}`)
-          console.log(res)
           this.items = []
           res.data.data.forEach(ele => {
             this.items.push({
@@ -55,20 +53,17 @@ export default {
     operate (idx) {
       if (idx === 0) { this.annDialog = true } else if (idx === 1) this.deleteAnn()
     },
-    edit (idx, id) {
-      console.log()
-    },
     editAnn () {
       if (this.$refs.form.validate()) {
         this.$http.put('/api/ann', { title: this.newTitle, markdown: this.newContent, annId: this.$route.params.id })
-          .then((res) => {
+          .then(() => {
             this.annDialog = false
           })
       }
     },
     deleteAnn () {
       this.$http.delete('/api/ann', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { annId: this.$route.params.id } })
-        .then((res) => {
+        .then(() => {
           this.$router.push(`/course/${this.$route.params.name}/announcement`)
         })
         .catch((err) => {

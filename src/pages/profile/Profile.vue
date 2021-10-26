@@ -164,13 +164,12 @@ export default {
       return `https://www.gravatar.com/avatar/${payload}?d=${d}&s=100`
     },
     parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
       return JSON.parse(atob(token.split('.')[1])).data
     },
     update () {
       if (this.$refs.profileForm.validate()) {
         this.$http.post(`${API_BASE_URL}/profile`, this.info)
-          .then((res) => {
+          .then(() => {
             this.errMsg = 'Information updated successfully!'
             this.errType = 'success'
             this.errAlert = 'profile'
@@ -185,7 +184,7 @@ export default {
     submit () {
       if (this.$refs.passwdForm.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/change-password`, this.passwd)
-          .then((res) => {
+          .then(() => {
             this.errMsg = 'Password changed successfully!'
             this.errType = 'success'
             this.errAlert = 'passwd'

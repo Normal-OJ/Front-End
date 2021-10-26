@@ -413,7 +413,6 @@ export default {
       }
     },
     parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
       return JSON.parse(atob(token.split('.')[1])).data
     },
     getInbox () {
@@ -489,7 +488,7 @@ export default {
           return
         }
         this.$http.post(`${API_BASE_URL}/inbox`, { receivers: this.newMail.receiver, title: this.newMail.title, message: this.newMail.message })
-          .then((res) => {
+          .then(() => {
             this.composeDialog = false
             this.init()
           })

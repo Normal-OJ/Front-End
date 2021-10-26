@@ -143,7 +143,7 @@ export default {
     },
     comment (sid) {
       this.$http.put(`/api/submission/${sid}/grade`, { score: Number(this.data.score) })
-        .then((res) => {
+        .then(() => {
           if (this.data.file) {
             var formData = new FormData()
             formData.append('comment', this.data.file)
@@ -156,7 +156,7 @@ export default {
           }
           return true
         })
-        .then((res) => { this.dialog = false; this.$router.go(0) })
+        .then(() => { this.dialog = false; this.$router.go(0) })
         .catch((err) => console.log(err))
     },
     getUrl () {
