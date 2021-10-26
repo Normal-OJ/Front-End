@@ -89,12 +89,10 @@ export default {
   methods: {
     signin () {
       this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
-        .then((response) => {
-          // successful sign in
+        .then(() => {
           this.$emit('signin')
         })
         .catch(() => {
-          // wrong password or not active
           this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)'
           this.errAlert = true
         })

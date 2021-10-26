@@ -142,7 +142,7 @@ export default {
       this.btnLoading = true
       if (this.$refs.form.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/signup`, this.authData)
-          .then((response) => {
+          .then(() => {
             this.signup = false
             this.dialog = true
             this.$emit('signup')

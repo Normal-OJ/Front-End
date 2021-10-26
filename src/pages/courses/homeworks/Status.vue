@@ -71,9 +71,6 @@ export default {
           problemId: ele,
           course: this.$route.params.name
         })
-          .then((res) => {
-            // this.getUrl();
-          })
           .catch((err) => {
             console.log(err)
           })

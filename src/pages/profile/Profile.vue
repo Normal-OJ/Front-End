@@ -169,7 +169,7 @@ export default {
     update () {
       if (this.$refs.profileForm.validate()) {
         this.$http.post(`${API_BASE_URL}/profile`, this.info)
-          .then((res) => {
+          .then(() => {
             this.errMsg = 'Information updated successfully!'
             this.errType = 'success'
             this.errAlert = 'profile'
@@ -184,7 +184,7 @@ export default {
     submit () {
       if (this.$refs.passwdForm.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/change-password`, this.passwd)
-          .then((res) => {
+          .then(() => {
             this.errMsg = 'Password changed successfully!'
             this.errType = 'success'
             this.errAlert = 'passwd'

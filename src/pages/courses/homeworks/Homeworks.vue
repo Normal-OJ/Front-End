@@ -254,8 +254,7 @@ export default {
           data.courseName = this.$route.params.name
           data.name = this.hw.title
           this.$http.post('/api/homework', data)
-            .then((res) => {
-              console.log(res)
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -269,7 +268,7 @@ export default {
     },
     deleteHw (idx, id) {
       this.$http.delete(`/api/homework/${id}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' } })
-        .then((res) => {
+        .then(() => {
           this.$router.go(0)
         })
     },

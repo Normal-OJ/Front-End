@@ -56,14 +56,14 @@ export default {
     editAnn () {
       if (this.$refs.form.validate()) {
         this.$http.put('/api/ann', { title: this.newTitle, markdown: this.newContent, annId: this.$route.params.id })
-          .then((res) => {
+          .then(() => {
             this.annDialog = false
           })
       }
     },
     deleteAnn () {
       this.$http.delete('/api/ann', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { annId: this.$route.params.id } })
-        .then((res) => {
+        .then(() => {
           this.$router.push(`/course/${this.$route.params.name}/announcement`)
         })
         .catch((err) => {

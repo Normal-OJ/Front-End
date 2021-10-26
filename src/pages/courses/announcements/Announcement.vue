@@ -103,13 +103,13 @@ export default {
       if (this.$refs.form.validate()) {
         if (this.editing !== -1) {
           this.$http.put('/api/ann', { title: this.ann.title, markdown: this.ann.content, annId: this.editing })
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
         } else {
           this.$http.post('/api/ann', { courseName: this.$route.params.name, title: this.ann.title, markdown: this.ann.content })
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -125,7 +125,7 @@ export default {
     },
     deleteAnn (idx, id) {
       this.$http.delete('/api/ann', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { annId: id } })
-        .then((res) => {
+        .then(() => {
           this.$router.push(`/course/${this.$route.params.name}/announcements`)
         })
     },

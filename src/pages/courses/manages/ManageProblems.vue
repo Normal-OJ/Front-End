@@ -534,7 +534,7 @@ export default {
                   })
               }
             })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
             .catch((err) => {
@@ -544,7 +544,7 @@ export default {
             })
         } else {
           this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
-            .then((res) => {
+            .then(() => {
               if (!this.zip) {
                 this.$router.go(0)
               }
@@ -558,7 +558,7 @@ export default {
                   })
               }
             })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
             .catch((err) => {
@@ -644,7 +644,7 @@ export default {
     },
     del (idx) {
       this.$http.delete(`/api/problem/manage/${this.items[idx].problemId}`, { headers: { 'Content-Type': 'application/json' } })
-        .then((res) => {
+        .then(() => {
           this.$router.go(0)
         })
         .catch((err) => {

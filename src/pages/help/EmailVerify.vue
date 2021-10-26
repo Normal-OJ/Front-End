@@ -106,7 +106,7 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         this.$http.post(`${API_BASE_URL}/auth/active`, { agreement: this.agree, profile: this.profile })
-          .then((response) => {
+          .then(() => {
             this.$router.push('/')
           })
           .catch((error) => {
