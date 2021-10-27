@@ -9,22 +9,23 @@
         <v-card-title>
           <v-row>
             <!-- title -->
-            <v-card-title class="headline font-weight-bold py-0">{{ item.title }}</v-card-title>
+            <v-card-title class="headline font-weight-bold py-0" data-test="title">{{ item.title }}</v-card-title>
             <v-spacer></v-spacer>
             <v-chip
               class="mr-3"
               :color="item.status === 'End' ? 'error' : 'success'"
               label
+              data-test="hw-status"
             >{{ item.status }}</v-chip>
             <!-- Menu -->
-            <v-menu v-if="perm" offset-x>
+            <v-menu v-if="perm" offset-x data-test="menu">
               <template v-slot:activator="{ on }">
                 <v-btn icon v-on="on">
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click="menuEmit(menu,idx,item.id)">
+                <v-list-item v-for="(menu, i) in menuItems" :key="i" @click.native="menuEmit(menu,idx,item.id)" data-test="menu-item">
                   <v-list-item-title>{{ menu }}</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -40,6 +41,7 @@
             dark
             colored-border
             elevation="0"
+            data-test="due-time"
           >{{ 'Due Time: ' + item.end }}</v-alert>
         </v-card-text>
         <v-card-text class="py-0 text--primary">
@@ -64,11 +66,11 @@
         </v-card-text>
         <v-card-title class="font-weight-bold">Description</v-card-title>
           <v-card-text class="text--primary">
-            <vue-markdown :source="item.content"></vue-markdown>
+            <vue-markdown :source="item.content" data-test="markdown"></vue-markdown>
           </v-card-text>
           <v-divider></v-divider>
         <v-card-title class="font-weight-bold">Problem</v-card-title>
-          <v-simple-table class="px-3">
+          <v-simple-table class="px-3" data-test="problem-table">
             <template v-slot:default>
               <thead>
                 <tr>
@@ -104,10 +106,10 @@
           </v-simple-table>
           <div v-if="perm">
             <v-card-text>
-              <ui-button :to="`homework/${item.id}/handwritten`" color="warning" class="mr-3">
+              <ui-button :to="`homework/${item.id}/handwritten`" color="warning" class="mr-3" data-test="handwritten">
                 <template slot="content">Check Handwritten</template>
               </ui-button>
-              <ui-button :to="`homework/${item.id}`" color="info">
+              <ui-button :to="`homework/${item.id}`" color="info" data-test="student-status">
                 <template slot="content">View Student Status</template>
               </ui-button>
             </v-card-text>
