@@ -79,8 +79,8 @@ export default {
               title: ele.title,
               author: ele.creator,
               content: ele.markdown,
-              createdTime: this.timeFormat(ele.createTime),
-              lastUpdatedTime: this.timeFormat(ele.updateTime),
+              createdTime: this.$formatTime(ele.createTime),
+              lastUpdatedTime: this.$formatTime(ele.updateTime),
               lastUpdater: ele.updater
             })
           })
@@ -96,13 +96,13 @@ export default {
       if (this.$refs.form.validate()) {
         if (this.editing !== -1) {
           this.$http.put('/api/ann', { title: this.ann.title, markdown: this.ann.content, annId: this.editing, pinned: this.ann.pinned })
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
         } else {
           this.$http.post('/api/ann', { courseName: this.$route.params.name, title: this.ann.title, markdown: this.ann.content, pinned: this.ann.pinned })
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -118,9 +118,8 @@ export default {
     },
     deleteAnn (idx, id) {
       this.$http.delete('/api/ann', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { annId: id } })
-        .then((res) => {
+        .then(() => {
           this.$router.go(0)
-          // console.log(res);
         })
     },
     checkUser (username) {
@@ -145,18 +144,8 @@ export default {
     },
     parseJwt (token) {
       return JSON.parse(atob(token.split('.')[1])).data
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     }
+
   }
 }
 </script>

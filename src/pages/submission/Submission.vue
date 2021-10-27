@@ -26,22 +26,22 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <template v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'">
+              <template v-for="info in submInfo">
                 <th
-                  v-for="info in submInfo"
                   :key="info.title"
+                  v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
                   class="subtitle-1"
                   v-text="info.title"
-                ></th>
+                />
               </template>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <template v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'">
+              <template v-for="info in submInfo">
                 <td
-                  v-for="info in submInfo"
                   :key="info.title"
+                  v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
                   class="subtitle-1 text-left"
                 >
                   <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
@@ -192,7 +192,7 @@ export default {
             { title: 'Memory(KB)', text: data.memoryUsage },
             { title: 'Score', text: data.score },
             { title: 'Language', text: this.LANG[data.languageType] },
-            { title: 'Submit Time', text: this.timeFormat(data.timestamp) }
+            { title: 'Submit Time', text: this.$formatTime(data.timestamp) }
           ]
           // a handwritten submission with feedback
           if (data.languageType === 3) {
@@ -244,17 +244,6 @@ export default {
         .catch((err) => {
           console.log(err)
         })
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     isKey (key, obj) {
       var keys = Object.keys(obj).map(function (x) {

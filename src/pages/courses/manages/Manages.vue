@@ -66,31 +66,12 @@ export default {
       this.$http.get(`/api/course/${this.$route.params.name}`)
         .then((res) => {
           var data = res.data.data
-          this.items = []
-          for (var key in data.studentNicknames) {
-            this.items.push({ username: key, displayName: data.studentNicknames[key] })
-          }
-          this.getUsers()
+          this.items = data.students
         })
-    },
-    getUsers () {
-      this.$http.get('/api/course/Public')
-        .then((res) => {
-          var data = res.data.data
-          this.users = []
-          for (var key in data.studentNicknames) {
-            if (!this.findInItems(key)) {
-              this.users.push({ username: key, displayName: data.studentNicknames[key] })
-            }
-          }
+        .catch((err) => {
+          alert('請求課程資料失敗')
+          console.log(err)
         })
-    },
-    findInItems (username) {
-      let flag = false
-      this.items.forEach(ele => {
-        if (ele.username === username) return (flag = true)
-      })
-      return flag
     }
   }
 }

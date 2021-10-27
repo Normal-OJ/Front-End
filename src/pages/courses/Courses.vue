@@ -130,7 +130,7 @@ export default {
     create () {
       if (this.$refs.form.validate()) {
         this.$http.post('/api/course', { course: this.courseName, teacher: this.teacher })
-          .then((res) => {
+          .then(() => {
             this.dialog = false
             this.$router.go(0)
           })

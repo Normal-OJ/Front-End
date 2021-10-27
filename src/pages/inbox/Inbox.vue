@@ -413,25 +413,13 @@ export default {
       }
     },
     parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
       return JSON.parse(atob(token.split('.')[1])).data
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     getInbox () {
       this.$http.get(`${API_BASE_URL}/inbox`)
         .then((res) => {
           res.data.data.forEach(ele => {
-            this.mail.inbox.push({ messageId: ele.messageId, status: ele.status, sender: ele.sender, title: ele.title, message: ele.message, timestamp: this.timeFormat(ele.timestamp), avatar: this.getAvatar(ele.sender.md5) })
+            this.mail.inbox.push({ messageId: ele.messageId, status: ele.status, sender: ele.sender, title: ele.title, message: ele.message, timestamp: this.$formatTime(ele.timestamp), avatar: this.getAvatar(ele.sender.md5) })
           })
         })
     },
@@ -444,7 +432,7 @@ export default {
               if (receiversFormat !== '') receiversFormat += ', '
               receiversFormat += rec.username
             })
-            this.mail.sent.push({ messageId: ele.messageId, receiver: { username: receiversFormat }, title: ele.title, message: ele.message, timestamp: this.timeFormat(ele.timestamp) })
+            this.mail.sent.push({ messageId: ele.messageId, receiver: { username: receiversFormat }, title: ele.title, message: ele.message, timestamp: this.$formatTime(ele.timestamp) })
           })
         })
     },
@@ -500,7 +488,7 @@ export default {
           return
         }
         this.$http.post(`${API_BASE_URL}/inbox`, { receivers: this.newMail.receiver, title: this.newMail.title, message: this.newMail.message })
-          .then((res) => {
+          .then(() => {
             this.composeDialog = false
             this.init()
           })

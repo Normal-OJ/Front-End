@@ -116,8 +116,8 @@ export default {
                 status: ele.status,
                 author: ele.thread.author,
                 content: ele.thread.content,
-                createdTime: this.timeFormat(ele.thread.created),
-                updated: this.timeFormat(ele.thread.updated),
+                createdTime: this.$formatTime(ele.thread.created),
+                updated: this.$formatTime(ele.thread.updated),
                 reply: ele.thread.reply
               })
             }
@@ -136,7 +136,7 @@ export default {
       if (this.$refs.form.validate()) {
         if (this.post.targetThreadId) {
           this.$http.put(`${API_BASE_URL}/post`, this.post)
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -145,7 +145,7 @@ export default {
             })
         } else {
           this.$http.post(`${API_BASE_URL}/post`, this.post)
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -163,12 +163,10 @@ export default {
       this.dialog = true
     },
     deletePost (idx, id) {
-      console.log(id)
       this.post.targetThreadId = id
       this.$http.delete(`${API_BASE_URL}/post`, { headers: { 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
-        .then((res) => {
+        .then(() => {
           this.$router.push(`/course/${this.$route.params.name}/discussions`)
-          // console.log(res);
         })
         .catch((err) => {
           console.log(err)
@@ -176,8 +174,7 @@ export default {
     },
     newComment (id, content) {
       this.$http.post(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
-        .then((res) => {
-          // console.log(res);
+        .then(() => {
           this.$router.go(0)
         })
         .catch((err) => {
@@ -191,8 +188,7 @@ export default {
     },
     editComment (id, content) {
       this.$http.put(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
-        .then((res) => {
-          // console.log(res);
+        .then(() => {
           this.$router.go(0)
         })
         .catch((err) => {
@@ -203,17 +199,6 @@ export default {
           }
           this.snackbar = true
         })
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     getAvatar (payload) {
       var d = encodeURI('https://noj.tw/defaultAvatar.png')

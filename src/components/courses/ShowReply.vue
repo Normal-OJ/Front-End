@@ -11,9 +11,9 @@
           </v-col>
           <v-col cols="11">
             <v-row no-gutters>
-              <v-card-subtitle class="py-0 text--primary" v-text="item.author.username"></v-card-subtitle>
-              <v-card-subtitle class="py-0" v-text="timeFormat(item.created) + (item.created !== item.updated ? ' (edited)' : '')"></v-card-subtitle>
-              <v-spacer></v-spacer>
+              <v-card-subtitle class="py-0 text--primary" v-text="item.author.username" />
+              <v-card-subtitle class="py-0" v-text="displayTimeAndIsEdited(item)" />
+              <v-spacer />
               <!-- Menu -->
               <v-menu v-if="perm(item)" offset-x>
                 <template v-slot:activator="{ on }">
@@ -86,7 +86,7 @@
             <v-col cols="11">
               <v-row no-gutters>
                 <v-card-subtitle class="py-0 text--primary" v-text="thread.author.username"></v-card-subtitle>
-                <v-card-subtitle class="py-0" v-text="timeFormat(thread.created)"></v-card-subtitle>
+                <v-card-subtitle class="py-0" v-text="$formatTime(thread.created)"></v-card-subtitle>
                 <v-spacer></v-spacer>
                 <!-- Menu -->
                 <v-menu v-if="perm(item)" offset-x>
@@ -282,7 +282,7 @@ export default {
       if (op === 'delete') {
         if (check) {
           this.$http.delete('/api/post', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
         } else {
@@ -297,6 +297,9 @@ export default {
           this.$refs.editingReply[0].focus()
         }
       }
+    },
+    displayTimeAndIsEdited (item) {
+      return this.$formatTime(item.created) + (item.created !== item.updated ? ' (edited)' : '')
     },
     perm (item) {
       const payload = this.getPayload()
@@ -325,17 +328,6 @@ export default {
     },
     parseJwt (token) {
       return JSON.parse(atob(token.split('.')[1])).data
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     }
   }
 }

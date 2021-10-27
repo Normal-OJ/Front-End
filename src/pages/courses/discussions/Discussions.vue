@@ -67,7 +67,6 @@ export default {
     getPosts () {
       this.$http.get(`${API_BASE_URL}/post/${this.$route.params.name}`)
         .then((res) => {
-          console.log(res)
           this.items = []
           res.data.data.forEach(ele => {
             if (ele.thread.status !== 1) {
@@ -77,8 +76,8 @@ export default {
                 status: ele.status,
                 author: ele.thread.author,
                 content: ele.thread.content,
-                createdTime: this.timeFormat(ele.thread.created),
-                updated: this.timeFormat(ele.thread.updated),
+                createdTime: this.$formatTime(ele.thread.created),
+                updated: this.$formatTime(ele.thread.updated),
                 reply: ele.thread.reply
               })
             }
@@ -100,7 +99,7 @@ export default {
       if (this.$refs.form.validate()) {
         if (this.post.targetThreadId) {
           this.$http.put(`${API_BASE_URL}/post`, this.post)
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -109,7 +108,7 @@ export default {
             })
         } else {
           this.$http.post(`${API_BASE_URL}/post`, this.post)
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -128,27 +127,14 @@ export default {
       this.dialog = true
     },
     deletePost (idx, id) {
-      // console.log(id);
       this.post.targetThreadId = id
       this.$http.delete(`${API_BASE_URL}/post`, { headers: { 'Content-Type': 'application/json' }, data: { targetThreadId: this.post.targetThreadId } })
-        .then((res) => {
+        .then(() => {
           this.$router.go(0)
-          // console.log(res);
         })
         .catch((err) => {
           console.log(err)
         })
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     getAvatar (payload) {
       var d = encodeURI('https://noj.tw/defaultAvatar.png')

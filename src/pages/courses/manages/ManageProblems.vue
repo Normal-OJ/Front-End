@@ -402,7 +402,7 @@ import JSZip from 'jszip'
 
 export default {
 
-  name: 'ManageStudents',
+  name: 'ManageProblems',
 
   components: {
     VueMarkdown
@@ -518,7 +518,6 @@ export default {
         this.prob.allowedLanguage = temp
       }
       if (this.$refs.form.validate()) {
-        console.log(this.prob)
         if (this.creating === -1) {
           this.$http.post('/api/problem/manage', this.prob)
             .then((res) => {
@@ -535,7 +534,7 @@ export default {
                   })
               }
             })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
             .catch((err) => {
@@ -545,7 +544,7 @@ export default {
             })
         } else {
           this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
-            .then((res) => {
+            .then(() => {
               if (!this.zip) {
                 this.$router.go(0)
               }
@@ -559,7 +558,7 @@ export default {
                   })
               }
             })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
             .catch((err) => {
@@ -602,7 +601,6 @@ export default {
       this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
         .then(async (res) => {
           var data = res.data.data
-          console.log(data)
           // problem data preprocess
           for (const [key, value] of Object.entries(data)) {
             // convert field name
@@ -646,7 +644,7 @@ export default {
     },
     del (idx) {
       this.$http.delete(`/api/problem/manage/${this.items[idx].problemId}`, { headers: { 'Content-Type': 'application/json' } })
-        .then((res) => {
+        .then(() => {
           this.$router.go(0)
         })
         .catch((err) => {

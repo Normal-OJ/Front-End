@@ -89,12 +89,10 @@ export default {
   methods: {
     signin () {
       this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
-        .then((response) => {
-          // successful sign in
+        .then(() => {
           this.$emit('signin')
         })
         .catch(() => {
-          // wrong password or not active
           this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)'
           this.errAlert = true
         })
@@ -103,17 +101,14 @@ export default {
       this.btnLoading = true
       if (this.$refs.form.validate()) {
         var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username'
-        console.log('type: ' + type)
         this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData.username })
           .then((response) => {
-            // console.log(response.data);
             if (response.data.data.valid === 1) {
               // this user is not exist
               type = (type === 'email') ? 'username' : 'email'
 
               this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData.username })
                 .then((response) => {
-                  // console.log(response.data);
                   if (response.data.data.valid === 1) {
                     this.errMsg = 'Sorry, we couldn\'t find an account with that E-mail/Username.'
                     this.errAlert = true
