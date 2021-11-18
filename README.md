@@ -1,36 +1,48 @@
 # Normal OJ Web Frontend
 
-## Contributing Guide
+A Vue.js based web project that communicates with the backend via XHR requests.
 
-Clone this project via SSH:
+## Demo
+
+A production site of this repo is live on https://noj.tw.
+
+## Installation 
+
+Install node modules with npm:
 
 ```shell
-$ git clone git@gitlab.noj.tw:noj/codebase/frontend.git
-$ cd frontend
+npm install
+```
+
+## Run Locally
+
+Clone this repository via SSH:
+
+```shell
+git clone git@gitlab.noj.tw:noj/codebase/frontend.git
+cd frontend
 ```
 
 Install node modules with npm:
 
 ```shell
-$ npm install
+npm install
 ```
 
-`vue-cli-service` provides hot-reloads for development environment:
+`vue-cli-service` enables hot-reloading for development scenario:
 
 ```shell
-$ npm run serve
+npm run serve
 ```
 
-You can refer to Vue.js CLI documentation: https://cli.vuejs.org/config
+## Deployment
 
-## Building for production
+To deploy this project, trigger a GitLab CI pipeline. A Caddy container containing the artifacts will be built and pushed to the Container Registry. After that Ansible kicks in and deploys the new container with Docker Compose.
 
-```shell
-$ npm run build
-```
+## Documentation
 
-## Testing
+TODO
 
-```shell
-$ npm run test
-```
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
