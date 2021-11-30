@@ -125,7 +125,13 @@ export default {
         })
         .then((res) => {
           this.students = res.data.data.students
-          return this.$http.get(`/api/submission?offset=0&count=-1&course=${this.prob.courses[0]}&problemId=${this.$route.params.id}`)
+          const params = {
+              offset: 0,
+              count: -1,
+              course: this.prob.courses[0],
+              problemId: this.$route.params.id,
+          }
+          return this.$http.get('/api/submission', { params })
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
