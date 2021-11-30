@@ -207,6 +207,7 @@ export default {
   name: 'ManageStudents',
 
   props: {
+    // Array of students' username
     items: {
       type: Array,
       required: true
@@ -258,11 +259,11 @@ export default {
     },
     submit () {
       var data = {}
-      this.items.forEach(ele => {
-        data[ele.username] = ele.displayName
+      this.items.forEach(student => {
+        data[student] = student
       })
-      this.newUsers.forEach(ele => {
-        data[ele.username] = ele.displayName
+      this.newUsers.forEach(student => {
+        data[student] = student
       })
       this.$http.put(`/api/course/${this.$route.params.name}`,
         {

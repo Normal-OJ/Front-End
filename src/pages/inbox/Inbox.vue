@@ -451,8 +451,8 @@ export default {
           this.userList.push('Select All')
           this.userList.push(data.teacher.username)
           data.TAs.forEach((ele) => { this.userList.push(ele.username) })
-          for (var key in data.studentNicknames) {
-            this.userList.push(data.studentNicknames[key])
+          for (const student in data.students) {
+            this.userList.push(student)
           }
         })
     },

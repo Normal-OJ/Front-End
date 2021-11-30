@@ -124,7 +124,7 @@ export default {
           return this.$http.get(`/api/course/${co}`)
         })
         .then((res) => {
-          this.students = res.data.data.studentNicknames
+          this.students = res.data.data.students
           return this.$http.get(`/api/submission?offset=0&count=-1&course=${this.prob.courses[0]}&problemId=${this.$route.params.id}`)
         })
         .then((res) => {
@@ -162,8 +162,8 @@ export default {
         })
     },
     inCourse (user) {
-      for (var key in this.students) {
-        if (key === user) return true
+      for (const { username } of this.students) {
+        if (username === user) return true
       }
       return false
     }
