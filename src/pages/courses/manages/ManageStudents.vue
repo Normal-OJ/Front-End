@@ -207,7 +207,7 @@ export default {
   name: 'ManageStudents',
 
   props: {
-    // Array of students' username
+    // Array of students' user object
     items: {
       type: Array,
       required: true
@@ -258,9 +258,9 @@ export default {
       this.newUsers = []
     },
     submit () {
-      var data = {}
-      this.items.forEach(student => {
-        data[student] = student
+      let data = {}
+      this.items.forEach(({ username, displayedName }) => {
+        data[username] = displayedName
       })
       this.newUsers.forEach(student => {
         data[student] = student
@@ -270,24 +270,20 @@ export default {
           TAs: [],
           studentNicknames: data
         })
-        .then(() => {
-          this.$router.go(0)
-        })
+        .then(() => this.$router.go(0))
     },
     del (idx) {
       const data = {}
       this.items.forEach((ele, index) => {
         if (index === idx) return
-        data[ele.username] = ele.displayName
+        data[ele.username] = ele.displayedName
       })
       this.$http.put(`/api/course/${this.$route.params.name}`,
         {
           TAs: [],
-          studentNicknames: data
+          studentNicknames: data,
         })
-        .then(() => {
-          this.$router.go(0)
-        })
+        .then(() => this.$router.go(0))
     },
     update (grade) {
       this.grade = null
