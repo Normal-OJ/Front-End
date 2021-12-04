@@ -450,10 +450,8 @@ export default {
           var data = res.data.data
           this.userList.push('Select All')
           this.userList.push(data.teacher.username)
-          data.TAs.forEach((ele) => { this.userList.push(ele.username) })
-          for (const student in data.students) {
-            this.userList.push(student)
-          }
+          this.userList.push(...data.TAs.map(({ username }) => username))
+          this.userList.push(...data.students.map(({ username }) => username))
         })
     },
     getAvatar (payload) {
