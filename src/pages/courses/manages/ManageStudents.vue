@@ -258,7 +258,7 @@ export default {
       this.newUsers = []
     },
     submit () {
-      let data = {}
+      const data = {}
       this.items.forEach(({ username, displayedName }) => {
         data[username] = displayedName
       })
