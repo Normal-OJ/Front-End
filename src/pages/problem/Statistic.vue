@@ -88,7 +88,7 @@ export default {
       prob: null,
       subm: null,
       data: [0, 0, 0, 0, 0, 0, 0, 0],
-      students: null,
+      students: [],
       hand: false,
       login: false,
       user: new User(this.$cookies.get('jwt'))
@@ -120,9 +120,7 @@ export default {
           }
           return this.prob.courses[0]
         })
-        .then((co) => {
-          return this.$http.get(`/api/course/${co}`)
-        })
+        .then((co) => this.$http.get(`/api/course/${co}`))
         .then((res) => {
           this.students = res.data.data.students
           const params = {
@@ -168,10 +166,7 @@ export default {
         })
     },
     inCourse (user) {
-      for (const { username } of this.students) {
-        if (username === user) return true
-      }
-      return false
+      return this.students.find(({ username }) => username === user) !== undefined
     }
   }
 }
