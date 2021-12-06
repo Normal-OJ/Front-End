@@ -88,7 +88,7 @@ export default {
       prob: null,
       subm: null,
       data: [0, 0, 0, 0, 0, 0, 0, 0],
-      students: null,
+      students: [],
       hand: false,
       login: false,
       user: new User(this.$cookies.get('jwt'))
@@ -120,12 +120,16 @@ export default {
           }
           return this.prob.courses[0]
         })
-        .then((co) => {
-          return this.$http.get(`/api/course/${co}`)
-        })
+        .then((co) => this.$http.get(`/api/course/${co}`))
         .then((res) => {
-          this.students = res.data.data.studentNicknames
-          return this.$http.get(`/api/submission?offset=0&count=-1&course=${this.prob.courses[0]}&problemId=${this.$route.params.id}`)
+          this.students = res.data.data.students
+          const params = {
+              offset: 0,
+              count: -1,
+              course: this.prob.courses[0],
+              problemId: this.$route.params.id,
+          }
+          return this.$http.get('/api/submission', { params })
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
@@ -162,10 +166,7 @@ export default {
         })
     },
     inCourse (user) {
-      for (var key in this.students) {
-        if (key === user) return true
-      }
-      return false
+      return this.students.find(({ username }) => username === user) !== undefined
     }
   }
 }
