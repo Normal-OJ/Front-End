@@ -79,8 +79,8 @@ export default {
               title: ele.title,
               author: ele.creator,
               content: ele.markdown,
-              createdTime: this.timeFormat(ele.createTime),
-              lastUpdatedTime: this.timeFormat(ele.updateTime),
+              createdTime: this.$formatTime(ele.createTime),
+              lastUpdatedTime: this.$formatTime(ele.updateTime),
               lastUpdater: ele.updater
             })
           })
@@ -145,18 +145,8 @@ export default {
     },
     parseJwt (token) {
       return JSON.parse(atob(token.split('.')[1])).data
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     }
+
   }
 }
 </script>

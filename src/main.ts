@@ -5,6 +5,7 @@ import vuetify from './plugins/vuetify'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueCookies from 'vue-cookies'
+import dayjsPlugin from './utils/dayjsPlugin'
 
 import UiDialog from './components/ui/UiDialog.vue'
 import UiButton from './components/ui/UiButton.vue'
@@ -13,6 +14,7 @@ import UiPost from './components/ui/UiPost.vue'
 
 Vue.use(VueAxios, axios)
 Vue.use(VueCookies)
+Vue.use(dayjsPlugin)
 Vue.config.productionTip = false
 Vue.component('ui-dialog', UiDialog)
 Vue.component('ui-button', UiButton)

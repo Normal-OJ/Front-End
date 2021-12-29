@@ -77,8 +77,8 @@ export default {
                 status: ele.status,
                 author: ele.thread.author,
                 content: ele.thread.content,
-                createdTime: this.timeFormat(ele.thread.created),
-                updated: this.timeFormat(ele.thread.updated),
+                createdTime: this.$formatTime(ele.thread.created),
+                updated: this.$formatTime(ele.thread.updated),
                 reply: ele.thread.reply
               })
             }
@@ -138,17 +138,6 @@ export default {
         .catch((err) => {
           console.log(err)
         })
-    },
-    timeFormat (time) {
-      var tmp = new Date(time * 1000)
-      var year = tmp.getFullYear()
-      var month = '0' + (tmp.getMonth() + 1)
-      var date = '0' + tmp.getDate()
-      var hour = '0' + tmp.getHours()
-      var min = '0' + tmp.getMinutes()
-      var sec = '0' + tmp.getSeconds()
-      const formattedTime = year + '/' + month.substr(-2) + '/' + date.substr(-2) + ' ' + hour.substr(-2) + ':' + min.substr(-2) + ':' + sec.substr(-2)
-      return formattedTime
     },
     getAvatar (payload) {
       var d = encodeURI('https://noj.tw/defaultAvatar.png')
