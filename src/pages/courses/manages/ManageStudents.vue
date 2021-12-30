@@ -37,7 +37,7 @@
             </tr>
             <tr v-for="(item, idx) in items" :key="item.title">
               <td class="subtitle-1">{{ item.username }}</td>
-              <td class="subtitle-1">{{ item.displayName }}</td>
+              <td class="subtitle-1">{{ item.displayedName }}</td>
               <td class="subtitle-1">Student</td>
               <td class="subtitle-1">
                 <ui-button class="mr-1" color="info" @click.native="grade = item.username">
@@ -207,6 +207,7 @@ export default {
   name: 'ManageStudents',
 
   props: {
+    // Array of students' user object
     items: {
       type: Array,
       required: true
@@ -257,12 +258,12 @@ export default {
       this.newUsers = []
     },
     submit () {
-      var data = {}
-      this.items.forEach(ele => {
-        data[ele.username] = ele.displayName
+      const data = {}
+      this.items.forEach(({ username, displayedName }) => {
+        data[username] = displayedName
       })
-      this.newUsers.forEach(ele => {
-        data[ele.username] = ele.displayName
+      this.newUsers.forEach(student => {
+        data[student] = student
       })
       this.$agent.Course.modify(this.$route.params.name, {
         TAs: [],
@@ -276,7 +277,7 @@ export default {
       const data = {}
       this.items.forEach((ele, index) => {
         if (index === idx) return
-        data[ele.username] = ele.displayName
+        data[ele.username] = ele.displayedName
       })
       this.$agent.Course.modify(this.$route.params.name, {
         TAs: [],

@@ -88,7 +88,7 @@ export default {
       prob: null,
       subm: null,
       data: [0, 0, 0, 0, 0, 0, 0, 0],
-      students: null,
+      students: [],
       hand: false,
       login: false,
       user: new User(this.$cookies.get('jwt'))
@@ -161,10 +161,7 @@ export default {
         })
     },
     inCourse (user) {
-      for (var key in this.students) {
-        if (key === user) return true
-      }
-      return false
+      return this.students.find(({ username }) => username === user) !== undefined
     }
   }
 }

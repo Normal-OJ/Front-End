@@ -147,7 +147,7 @@ export default {
           }
           return true
         })
-        .then((res) => { this.dialog = false; this.$router.go(0) })
+        .then(() => { this.dialog = false; this.$router.go(0) })
         .catch((err) => console.log(err))
     },
     getUrl () {

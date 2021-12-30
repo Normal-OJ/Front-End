@@ -1,8 +1,7 @@
 module.exports = {
   extends: [
     'plugin:vue/essential',
-    'eslint:recommended',
-    '@vue/standard'
+    'eslint:recommended'
   ],
   plugins: [
     'vue'

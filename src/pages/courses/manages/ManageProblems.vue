@@ -402,7 +402,7 @@ import JSZip from 'jszip'
 
 export default {
 
-  name: 'ManageStudents',
+  name: 'ManageProblems',
 
   components: {
     VueMarkdown
@@ -534,7 +534,7 @@ export default {
                   })
               }
             })
-            .then((res) => {
+            .then(() => {
               this.$router.go(0)
             })
             .catch((err) => {
@@ -544,7 +544,7 @@ export default {
             })
         } else {
           this.$agent.Problem.modify(this.items[this.creating].problemId, this.prob)
-            .then((res) => {
+            .then(() => {
               if (!this.zip) {
                 this.$router.go(0)
               }

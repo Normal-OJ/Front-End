@@ -293,6 +293,9 @@ export default {
       if (op === 'delete') {
         if (check) {
           this.$agent.Post.delete({ targetThreadId: id })
+            .then(() => {
+              this.$router.go(0)
+            })
         } else {
           this.deleting = id
           this.dialog = true

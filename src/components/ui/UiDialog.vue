@@ -2,7 +2,6 @@
   <v-dialog v-model="dialog" :width="width" :persistent="persistent">
     <template v-slot:activator="{}" v-if="this.$slots.activator">
       <slot name="activator">
-        <!-- <ui-button v-on="on">toggle</ui-button> -->
       </slot>
     </template>
     <v-card>

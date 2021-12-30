@@ -143,13 +143,13 @@ export default {
       if (this.$refs.form.validate()) {
         if (this.post.targetThreadId) {
           this.$agent.Post.modify(this.post)
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
         } else {
           this.$agent.Post.create(this.post)
-            .then((res) => {
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
