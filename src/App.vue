@@ -18,7 +18,7 @@ export default {
   },
 
   created () {
-    this.$store.commit('getJwt')
+    this.$store.commit('updateJwt')
   }
 }
 </script>

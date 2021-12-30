@@ -104,28 +104,28 @@ export default {
 
   mounted () {
     const canvasScript = document.createElement('script')
+    // FIXME: use chart package by npm install
     canvasScript.setAttribute('src', 'https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js')
     document.head.appendChild(canvasScript)
   },
 
   methods: {
     getProb () {
-      this.$http.get(`/api/problem/view/${this.$route.params.id}`)
+      this.$agent.Problem.getInfo(this.$route.params.id)
         .then((res) => {
           this.prob = res.data.data
           if (this.prob.type === 2) {
-            this.loading = false
             this.hand = true
-            return
+            throw new Error('')
           }
           return this.prob.courses[0]
         })
         .then((co) => {
-          return this.$http.get(`/api/course/${co}`)
+          return this.$agent.Course.getInfo(co)
         })
         .then((res) => {
           this.students = res.data.data.studentNicknames
-          return this.$http.get(`/api/submission?offset=0&count=-1&course=${this.prob.courses[0]}&problemId=${this.$route.params.id}`)
+          return this.$agent.Submission.getList({ offset: 0, count: -1, course: this.prob.courses[0], problemId: this.$route.params.id })
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
@@ -155,10 +155,9 @@ export default {
               return true
             }).slice(0, 10)
         })
-        .catch((err) => {
+        .catch(() => {
           this.loading = false
           if (!this.hand) this.login = true
-          console.log(err)
         })
     },
     inCourse (user) {

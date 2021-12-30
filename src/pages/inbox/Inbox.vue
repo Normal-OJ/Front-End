@@ -137,7 +137,7 @@
                   <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-avatar v-else>
-                  <v-img :src="getAvatar(-1)"></v-img>
+                  <v-img :src="avatar"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title v-if="displayFolder==='inbox'" class="headline">Sender: {{mail[displayFolder][displayMail].sender.username}}</v-list-item-title>
@@ -214,7 +214,7 @@
                 <v-img :src="item.avatar"></v-img>
               </v-list-item-avatar>
               <v-list-item-avatar v-else>
-                <v-img :src="getAvatar(-1)"></v-img>
+                <v-img :src="avatar"></v-img>
               </v-list-item-avatar>
               <v-list-item-content v-if="displayFolder === 'inbox'" :class="item.status === 0 ? 'font-weight-bold': ''" @click="open('idx', i)">
                 <v-list-item-title>{{item.title}}</v-list-item-title>
@@ -268,7 +268,7 @@
               <v-img :src="mail[displayFolder][displayMail].avatar"></v-img>
             </v-list-item-avatar>
             <v-list-item-avatar v-else>
-                <v-img :src="getAvatar(-1)"></v-img>
+                <v-img :src="avatar"></v-img>
               </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="headline" v-if="displayFolder === 'inbox'">
@@ -327,7 +327,9 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
-const API_BASE_URL = '/api'
+import { mapState } from 'vuex'
+import { setAvatar } from '@/utils/utils'
+
 var len = 0
 
 export default {
@@ -372,8 +374,7 @@ export default {
       userList: [],
       userSearchValue: '',
       selectedCourse: 'Select Course',
-      toShow: false,
-      payload: ''
+      toShow: false
     }
   },
   watch: {
@@ -387,8 +388,12 @@ export default {
     }
   },
   beforeMount () {
-    this.getPayload()
     this.init()
+  },
+  computed: {
+    ...mapState({
+      avatar: state => state.avatar
+    })
   },
   methods: {
     init () {
@@ -400,32 +405,16 @@ export default {
       this.getSent()
       this.getCourse()
     },
-    getPayload () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === false) {
-          this.$router.push('/')
-        } else {
-          this.payload = payload
-        }
-      } else {
-        this.$router.push('/')
-      }
-    },
-    parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
-      return JSON.parse(atob(token.split('.')[1])).data
-    },
     getInbox () {
-      this.$http.get(`${API_BASE_URL}/inbox`)
+      this.$agent.Inbox.getInbox()
         .then((res) => {
           res.data.data.forEach(ele => {
-            this.mail.inbox.push({ messageId: ele.messageId, status: ele.status, sender: ele.sender, title: ele.title, message: ele.message, timestamp: this.$formatTime(ele.timestamp), avatar: this.getAvatar(ele.sender.md5) })
+            this.mail.inbox.push({ messageId: ele.messageId, status: ele.status, sender: ele.sender, title: ele.title, message: ele.message, timestamp: this.$formatTime(ele.timestamp), avatar: setAvatar(ele.sender.md5) })
           })
         })
     },
     getSent () {
-      this.$http.get(`${API_BASE_URL}/inbox/sent`)
+      this.$agent.Inbox.getSent()
         .then((res) => {
           res.data.data.forEach((ele) => {
             var receiversFormat = ''
@@ -438,7 +427,7 @@ export default {
         })
     },
     getCourse () {
-      this.$http.get(`${API_BASE_URL}/course`)
+      this.$agent.Course.getList()
         .then((res) => {
           res.data.data.forEach((ele) => {
             this.courseList.push(ele.course)
@@ -446,7 +435,7 @@ export default {
         })
     },
     getUser () {
-      this.$http.get(`${API_BASE_URL}/course/${this.selectedCourse}`)
+      this.$agent.Course.getInfo(this.selectedCourse)
         .then((res) => {
           var data = res.data.data
           this.userList.push('Select All')
@@ -456,11 +445,6 @@ export default {
             this.userList.push(data.studentNicknames[key])
           }
         })
-    },
-    getAvatar (payload) {
-      if (payload === -1) payload = this.payload.md5
-      var d = encodeURI('https://noj.tw/defaultAvatar.png')
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
     },
     send () {
       // validate form
@@ -473,7 +457,7 @@ export default {
         }
         this.errMsg = ['User not found', '']
         this.newMail.receiver.forEach((usr) => {
-          this.$http.post(`${API_BASE_URL}/auth/check/username`, { username: usr })
+          this.$agent.Auth.check('username', { username: usr })
             .then((response) => {
               if (response.data.data.valid === 1) {
                 this.errMsg[1] += usr + ' '
@@ -488,8 +472,8 @@ export default {
           this.errAlert = true
           return
         }
-        this.$http.post(`${API_BASE_URL}/inbox`, { receivers: this.newMail.receiver, title: this.newMail.title, message: this.newMail.message })
-          .then((res) => {
+        this.$agent.Inbox.compose({ receivers: this.newMail.receiver, title: this.newMail.title, message: this.newMail.message })
+          .then(() => {
             this.composeDialog = false
             this.init()
           })
@@ -524,7 +508,7 @@ export default {
       if (f === 'sent') {
         url = '/sent'
       }
-      await this.$http.delete(`${API_BASE_URL}/inbox${url}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { messageId: this.mail[f][idx].messageId } })
+      await this.$agent.Inbox.delete(url, { messageId: this.mail[f][idx].messageId })
       this.mail[f].splice(idx, 1)
       this.showMail = false
       this.displayMail = -1
@@ -545,7 +529,7 @@ export default {
     },
     async read (f, idx) {
       this.mail[f][idx].status ^= 1
-      await this.$http.put(`${API_BASE_URL}/inbox`, { messageId: this.mail[f][idx].messageId })
+      await this.$agent.Inbox.read({ messageId: this.mail[f][idx].messageId })
     },
     receiverChg () {
       this.userSearchValue = ''

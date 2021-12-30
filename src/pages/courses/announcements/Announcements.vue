@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Creator v-if="perm" v-model="dialog" :type="type" title="Announcement" @cancel="cancel" @post="post">
+    <Creator v-if="canWriteCourse" v-model="dialog" :type="type" title="Announcement" @cancel="cancel" @post="post">
       <template slot="content">
         <v-form v-model="validForm" ref="form">
           <v-text-field
@@ -26,24 +26,27 @@
     <ShowAnn
       v-if="items"
       :items="items"
-      :menu="perm"
+      :menu="canWriteCourse"
       :readmore="`/course/${$route.params.name}/announcement`"
       mask
       @edit="edit" @delete="deleteAnn"
-    ></ShowAnn>
+    />
+    <Spinner v-else />
   </div>
 </template>
 
 <script>
 import Creator from '@/components/courses/Creator'
 import ShowAnn from '@/components/courses/ShowAnn'
+import Spinner from '@/components/ui/Spinner.vue'
+import { mapState } from 'vuex'
 
 export default {
 
   name: 'Announcements',
 
   components: {
-    Creator, ShowAnn
+    Creator, ShowAnn, Spinner
   },
 
   data () {
@@ -56,34 +59,39 @@ export default {
         content: '',
         pinned: false
       },
-      perm: false,
       editing: -1,
-      type: 'New'
+      type: 'New',
+      tas: []
     }
   },
   created () {
-    this.init()
+    this.getAnn()
+    this.getCourseInfo()
   },
+
+  computed: {
+    ...mapState({
+      role: state => state.role,
+      username: state => state.username
+    }),
+    canWriteCourse () {
+      return this.role <= 1 || this.tas.includes(ta => ta.username === this.username)
+    }
+  },
+
   methods: {
-    init () {
-      this.checkUser(this.getUsername())
-      this.getAnn()
-    },
     getAnn () {
-      this.$http.get(`/api/course/${this.$route.params.name}/ann`)
+      this.$agent.Course.getAnns(this.$route.params.name)
         .then((res) => {
-          this.items = []
-          res.data.data.forEach(ele => {
-            this.items.push({
-              annId: ele.annId,
-              title: ele.title,
-              author: ele.creator,
-              content: ele.markdown,
-              createdTime: this.$formatTime(ele.createTime),
-              lastUpdatedTime: this.$formatTime(ele.updateTime),
-              lastUpdater: ele.updater
-            })
-          })
+          this.items = res.data.data.map(r => ({
+            annId: r.annId,
+            title: r.title,
+            author: r.creator,
+            content: r.markdown,
+            createdTime: this.$formatTime(r.createTime),
+            lastUpdatedTime: this.$formatTime(r.updateTime),
+            lastUpdater: r.updater
+          }))
         })
     },
     cancel () {
@@ -95,14 +103,14 @@ export default {
     post () {
       if (this.$refs.form.validate()) {
         if (this.editing !== -1) {
-          this.$http.put('/api/ann', { title: this.ann.title, markdown: this.ann.content, annId: this.editing, pinned: this.ann.pinned })
-            .then((res) => {
+          this.$agent.Ann.modify({ title: this.ann.title, markdown: this.ann.content, annId: this.editing, pinned: this.ann.pinned })
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
         } else {
-          this.$http.post('/api/ann', { courseName: this.$route.params.name, title: this.ann.title, markdown: this.ann.content, pinned: this.ann.pinned })
-            .then((res) => {
+          this.$agent.Ann.create({ courseName: this.$route.params.name, title: this.ann.title, markdown: this.ann.content, pinned: this.ann.pinned })
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
@@ -117,36 +125,17 @@ export default {
       this.dialog = true
     },
     deleteAnn (idx, id) {
-      this.$http.delete('/api/ann', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { annId: id } })
-        .then((res) => {
+      this.$agent.Ann.delete({ annId: id })
+        .then(() => {
           this.$router.go(0)
-          // console.log(res);
         })
     },
-    checkUser (username) {
-      this.$http.get(`/api/course/${this.$route.params.name}`)
+    getCourseInfo () {
+      this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
-          var data = res.data.data
-          data.TAs.forEach(ele => {
-            if (ele.username === username) {
-              this.perm = true
-            }
-          })
+          this.tas = res.data.data.TAs
         })
-    },
-    getUsername () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === true) {
-          if (payload.role <= 1) this.perm = true
-          return payload.username
-        }
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
     }
-
   }
 }
 </script>

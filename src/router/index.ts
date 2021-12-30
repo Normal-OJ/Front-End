@@ -45,11 +45,11 @@ export default new Router({
       children: [
         {
           path: 'announcements',
-          component: () => import('@/pages/courses/announcements/Announcement.vue')
+          component: () => import('@/pages/courses/announcements/Announcements.vue')
         },
         {
           path: 'announcement/:id',
-          component: () => import('@/pages/courses/announcements/Announcements.vue')
+          component: () => import('@/pages/courses/announcements/Announcement.vue')
         },
         {
           path: 'homeworks',
@@ -73,11 +73,11 @@ export default new Router({
         },
         {
           path: 'discussions',
-          component: () => import('@/pages/courses/discussions/Discussion.vue')
+          component: () => import('@/pages/courses/discussions/Discussions.vue')
         },
         {
           path: 'discussion/:id',
-          component: () => import('@/pages/courses/discussions/Discussions.vue')
+          component: () => import('@/pages/courses/discussions/Discussion.vue')
         },
         {
           path: 'grades',
@@ -90,11 +90,11 @@ export default new Router({
       ],
       redirect: '/course/:name/announcements'
     },
-    {
-      path: '/inbox',
-      name: 'Inbox',
-      component: () => import('@/pages/inbox/Inbox.vue')
-    },
+    // {
+    //   path: '/inbox',
+    //   name: 'Inbox',
+    //   component: () => import('@/pages/inbox/Inbox.vue')
+    // },
     {
       path: '/about',
       name: 'About',
@@ -114,11 +114,11 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: () => import('@/pages/profile/Profile.vue')
-    },
-    {
-      path: '/ui/demo',
-      name: 'Demo',
-      component: () => import('@/components/Demo.vue')
     }
+    // {
+    //   path: '/ui/demo',
+    //   name: 'Demo',
+    //   component: () => import('@/components/Demo.vue')
+    // }
   ]
 })

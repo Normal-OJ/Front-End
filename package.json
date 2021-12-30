@@ -29,8 +29,8 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-typescript": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
+    "@vue/cli-plugin-typescript": "^4.5.13",
     "@vue/eslint-config-standard": "^5.1.2",
     "eslint": "^7.32.0",
     "eslint-plugin-import": "^2.20.2",

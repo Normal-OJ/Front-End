@@ -1,8 +1,8 @@
 module.exports = {
-  "transpileDependencies": [
-    "vuetify"
+  transpileDependencies: [
+    'vuetify'
   ],
-  "devServer": {
-    "proxy": 'https://noj.tw'
+  devServer: {
+    proxy: 'https://noj.tw'
   }
 }

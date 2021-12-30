@@ -182,7 +182,7 @@ export default {
   },
   methods: {
     getSubm () {
-      this.$http.get(`/api/submission/${this.$route.params.id}`)
+      this.$agent.Submission.getInfo(this.$route.params.id)
         .then((res) => {
           var data = res.data.data
           this.submInfo = [
@@ -208,7 +208,7 @@ export default {
             }
           }
           this.langMode = LANG_MODE[data.languageType]
-          this.$http.get(`/api/problem/view/${data.problemId}`)
+          this.$agent.Problem.getInfo(data.problemId)
             .then((resp) => { this.course = resp.data.data.courses[0]; this.submInfo.splice(0, 0, { title: 'Problem', text: data.problemId, name: resp.data.data.problemName }) })
           data.tasks.forEach((ele, idx) => {
             var sub = []
@@ -241,9 +241,6 @@ export default {
             this.codeShow = false
           }
         })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     isKey (key, obj) {
       var keys = Object.keys(obj).map(function (x) {
@@ -253,7 +250,7 @@ export default {
     },
     rejudge () {
       this.isRejudge = true
-      this.$http.get(`/api/submission/${this.$route.params.id}/rejudge`)
+      this.$agent.Submission.rejudge(this.$route.params.id)
         .then(() => {
           this.$router.go(0)
           this.isRejudge = false

@@ -59,8 +59,6 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api'
-
 export default {
 
   name: 'SignInForm',
@@ -81,58 +79,18 @@ export default {
     }
   },
 
-  beforeMount () {
-    this.authData.username = ''
-    this.authData.password = ''
-  },
-
   methods: {
-    signin () {
-      this.$http.post(`${API_BASE_URL}/auth/session`, this.authData)
-        .then((response) => {
-          // successful sign in
-          this.$emit('signin')
-        })
-        .catch(() => {
-          // wrong password or not active
-          this.errMsg = 'Sorry, your password do not match.\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)'
-          this.errAlert = true
-        })
-    },
     submit () {
       this.btnLoading = true
       if (this.$refs.form.validate()) {
-        var type = (/.+@.+/.test(this.authData.username)) ? 'email' : 'username'
-        console.log('type: ' + type)
-        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData.username })
-          .then((response) => {
-            // console.log(response.data);
-            if (response.data.data.valid === 1) {
-              // this user is not exist
-              type = (type === 'email') ? 'username' : 'email'
-
-              this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData.username })
-                .then((response) => {
-                  // console.log(response.data);
-                  if (response.data.data.valid === 1) {
-                    this.errMsg = 'Sorry, we couldn\'t find an account with that E-mail/Username.'
-                    this.errAlert = true
-                  } else if (response.data.data.valid === 0) {
-                    this.signin()
-                  }
-                })
-                .catch(() => {
-                  this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
-                  this.errAlert = true
-                })
-            } else if (response.data.data.valid === 0) {
-              // this uesr is exist
-              this.signin()
-            }
+        this.$agent.Auth.signin(this.authData)
+          .then(() => {
+            this.$emit('signin')
           })
-          .catch(() => {
-            this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
+          .catch((error) => {
+            this.errMsg = 'Sorry, your login information was incorrect\nOr, you haven\'t verify your email yet. (you can verify email by link at bottom.)'
             this.errAlert = true
+            throw error
           })
       }
       this.btnLoading = false

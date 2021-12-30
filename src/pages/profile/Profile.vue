@@ -113,8 +113,7 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api'
-
+import { mapState } from 'vuex'
 export default {
 
   name: 'Profile',
@@ -132,7 +131,6 @@ export default {
         displayedName: '',
         bio: ''
       },
-      avatar: this.setAvatar(''),
       errAlert: '',
       errType: 'error',
       errMsg: '',
@@ -140,60 +138,55 @@ export default {
     }
   },
 
-  beforeMount () {
-    this.getProfile()
+  mounted () {
+    this.info = {
+      username: this.username,
+      email: this.email,
+      displayedName: this.displayedName,
+      bio: this.bio
+    }
+  },
+
+  computed: {
+    ...mapState({
+      username: state => state.username,
+      email: state => state.email,
+      displayedName: state => state.displayedName,
+      bio: state => state.bio,
+      avatar: state => state.avatar
+    })
   },
 
   methods: {
-    getProfile () {
-      if (this.$cookies.isKey('jwt')) {
-        this.payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (this.payload.active === true) {
-          this.info.username = this.payload.username
-          this.info.email = this.payload.email
-          this.info.displayedName = this.payload.profile.displayedName
-          this.info.bio = this.payload.profile.bio
-          this.avatar = this.setAvatar(this.payload.md5)
-        }
-      } else {
-        this.$router.push('/')
-      }
-    },
-    setAvatar (payload) {
-      var d = encodeURI('https://noj.tw/defaultAvatar.png')
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}&s=100`
-    },
-    parseJwt (token) {
-      console.log(atob(token.split('.')[1]))
-      return JSON.parse(atob(token.split('.')[1])).data
-    },
     update () {
       if (this.$refs.profileForm.validate()) {
-        this.$http.post(`${API_BASE_URL}/profile`, this.info)
-          .then((res) => {
+        this.$agent.Profile.create(this.info)
+          .then(() => {
             this.errMsg = 'Information updated successfully!'
             this.errType = 'success'
             this.errAlert = 'profile'
           })
-          .catch(() => {
+          .catch((error) => {
             this.errMsg = 'Invalid profile!'
             this.errType = 'error'
             this.errAlert = 'profile'
+            throw error
           })
       }
     },
     submit () {
       if (this.$refs.passwdForm.validate()) {
-        this.$http.post(`${API_BASE_URL}/auth/change-password`, this.passwd)
-          .then((res) => {
+        this.$agent.Auth.changePassword(this.passwd)
+          .then(() => {
             this.errMsg = 'Password changed successfully!'
             this.errType = 'success'
             this.errAlert = 'passwd'
           })
-          .catch(() => {
+          .catch((error) => {
             this.errMsg = 'Sorry, your password do not match.'
             this.errType = 'error'
             this.errAlert = 'passwd'
+            throw error
           })
       }
     }

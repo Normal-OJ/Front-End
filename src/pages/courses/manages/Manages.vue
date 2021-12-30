@@ -63,18 +63,18 @@ export default {
 
   methods: {
     getStudents () {
-      this.$http.get(`/api/course/${this.$route.params.name}`)
+      this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
-          var data = res.data.data
+          const data = res.data.data
           this.items = []
-          for (var key in data.studentNicknames) {
+          for (const key in data.studentNicknames) {
             this.items.push({ username: key, displayName: data.studentNicknames[key] })
           }
           this.getUsers()
         })
     },
     getUsers () {
-      this.$http.get('/api/course/Public')
+      this.$agent.Course.getInfo('Public')
         .then((res) => {
           var data = res.data.data
           this.users = []

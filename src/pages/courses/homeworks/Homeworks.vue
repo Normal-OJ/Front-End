@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Creator v-if="perm" v-model="dialog" type="New" title="Homework" @cancel="cancel" @post="post">
+    <Creator v-if="canWriteCourse" v-model="dialog" type="New" title="Homework" @cancel="cancel" @post="post">
       <template slot="content">
         <v-form v-model="validForm" ref="form">
           <ui-alert
@@ -97,15 +97,18 @@
       </template>
     </Creator>
 
-    <ShowHomework v-if="probs" :items="items" :probs="probs" :perm="perm" :user="username"
+    <ShowHomework v-if="probs && items" :items="items" :probs="probs" :perm="canWriteCourse" :user="username"
       @edit="edit" @delete="deleteHw"
-    ></ShowHomework>
+    />
+    <Spinner v-else />
   </div>
 </template>
 
 <script>
 import Creator from '@/components/courses/Creator'
 import ShowHomework from '@/components/courses/ShowHomework'
+import Spinner from '@/components/ui/Spinner.vue'
+import { mapState } from 'vuex'
 
 var offset = (new Date().getTimezoneOffset()) * 60 * 1000
 
@@ -114,15 +117,14 @@ export default {
   name: 'Homeworks',
 
   components: {
-    Creator, ShowHomework
+    Creator, ShowHomework, Spinner
   },
 
   data () {
     return {
-      items: [],
+      items: null,
       validForm: false,
       dialog: false,
-      perm: false,
       titleRules: [
         v => !!v || 'Sorry, the title cannot be empty',
         v => (!!v && v.length <= 64) || 'Sorry, the length must be ≤ 64 characters'
@@ -150,19 +152,29 @@ export default {
       probs: null,
       errAlert: false,
       errMsg: '',
-      username: ''
+      tas: []
+    }
+  },
+
+  computed: {
+    ...mapState({
+      username: state => state.username,
+      role: state => state.role
+    }),
+    canWriteCourse () {
+      return this.role <= 1 || this.tas.include(ta => ta.username === this.username)
     }
   },
 
   beforeMount () {
-    this.checkUser(this.getUsername())
+    this.getCourseInfo()
     this.getProblems()
     this.getHomework()
   },
 
   methods: {
     getHomework () {
-      this.$http.get(`/api/course/${this.$route.params.name}/homework`)
+      this.$agent.Course.getHomeworks(this.$route.params.name)
         .then((res) => {
           var temp = [[], [], []]
           res.data.data.sort((a, b) => { return a.end - b.end })
@@ -182,22 +194,19 @@ export default {
               id: ele.id
             })
           })
-          this.items = this.items.concat(temp[0].concat(temp[1].concat(temp[2])))
+          this.items = [...temp[0], ...temp[1], ...temp[2]]
         })
         .catch((err) => {
           console.log(err)
         })
     },
     getProblems () {
-      this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
+      this.$agent.Problem.getList({ offset: 0, count: -1, course: this.$route.params.name })
         .then((res) => {
           this.probs = res.data.data
           this.probs.forEach(ele => {
             ele.displayedName = ele.problemId + ' - ' + ele.problemName
           })
-        })
-        .catch((err) => {
-          console.log(err)
         })
     },
     getStatus (st, ed) {
@@ -207,11 +216,11 @@ export default {
       else return 'End'
     },
     cancel () {
+      this.editing = -1
       this.$refs.form.reset()
       this.dialog = false
     },
     edit (idx, id) {
-      console.log('idx,id: ' + idx + id)
       this.editing = id
       this.type = 'Update'
       this.hw.title = this.items[idx].title
@@ -239,28 +248,24 @@ export default {
         }
         if (this.editing !== -1) {
           data.newName = this.hw.title
-          this.$http.put(`/api/homework/${this.editing}`, data)
-            .then((res) => {
-              console.log(res)
+          this.$agent.Homework.modify(this.editing, data)
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
-            .catch((err) => {
-              console.log(err)
+            .catch(() => {
               this.errMsg = 'error'
               this.errAlert = true
             })
         } else {
           data.courseName = this.$route.params.name
           data.name = this.hw.title
-          this.$http.post('/api/homework', data)
-            .then((res) => {
-              console.log(res)
+          this.$agent.Homework.create(data)
+            .then(() => {
               this.cancel()
               this.$router.go(0)
             })
-            .catch((err) => {
-              console.log(err)
+            .catch(() => {
               this.errMsg = 'error'
               this.errAlert = true
             })
@@ -268,39 +273,17 @@ export default {
       }
     },
     deleteHw (idx, id) {
-      this.$http.delete(`/api/homework/${id}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' } })
-        .then((res) => {
+      this.$agent.Homework.delete(id)
+        .then(() => {
           this.$router.go(0)
         })
     },
-    checkUser (username) {
-      this.$http.get(`/api/course/${this.$route.params.name}`)
+    getCourseInfo () {
+      this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
-          var data = res.data.data
-          data.TAs.forEach(ele => {
-            if (ele.username === username) {
-              this.perm = true
-            }
-          })
+          this.tas = res.data.data.TAs
         })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
-    getUsername () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === true) {
-          if (payload.role <= 1) this.perm = true
-          this.username = payload.username
-          return payload.username
-        }
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
     }
-
   }
 }
 </script>

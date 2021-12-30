@@ -34,8 +34,6 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api'
-
 export default {
 
   name: 'Ranking',
@@ -46,20 +44,16 @@ export default {
     }
   },
 
-  beforeMount () {
+  created () {
     this.getRanking()
   },
 
   methods: {
     getRanking () {
-      this.$http.get(`${API_BASE_URL}/ranking`)
+      this.$agent.Ranking.getInfo()
         .then((res) => {
-          this.showRanking(res.data.data)
+          this.items = res.data.data.sort((a, b) => (b.ACProblem - a.ACProblem))
         })
-    },
-
-    showRanking (ranking) {
-      this.items = ranking.sort((a, b) => (b.ACProblem - a.ACProblem))
     }
   }
 }

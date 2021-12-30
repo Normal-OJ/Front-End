@@ -156,22 +156,13 @@ export default {
         formData.append('code', code)
         try {
           // create submission
-          const res = await this.$http.post(
-            '/api/submission',
-            {
-              problemId: Number(this.$route.params.id),
-              languageType: Number(this.editorConfig.language)
-            })
+          const res = await this.$agent.Submission.create({
+            problemId: Number(this.$route.params.id),
+            languageType: Number(this.editorConfig.language)
+          })
           const submissionId = res.data.data.submissionId
           // upload source code
-          await this.$http.put(
-            `/api/submission/${submissionId}`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            })
+          await this.$agent.Submission.modify(submissionId, formData)
           this.$refs.file.reset()
           this.alert = false
           this.loading = false
@@ -204,9 +195,6 @@ export default {
       this.cmOption.indentUnit = this.editorConfig.tabSize
       this.cmOption.theme = this.editorConfig.theme
       this.cmOption.mode = LANG[this.editorConfig.language]
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
     }
   }
 }

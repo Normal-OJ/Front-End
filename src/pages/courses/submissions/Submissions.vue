@@ -22,7 +22,7 @@
         </v-tooltip>
       </v-card-title>
       <v-card-title>
-        <v-col cols="6" md="3" v-if="perm">
+        <v-col cols="6" md="3" v-if="isTeacherOrAdmin">
           <v-select
             v-model="whosSubm"
             :items="['My Submissions', 'All Submissions']"
@@ -104,6 +104,7 @@
 <script>
 import User from '@/utils/user'
 import Clipboard from 'clipboard'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Submissions',
@@ -128,15 +129,13 @@ export default {
       selectedStatus: [],
       selectedLanguage: [],
       loading: false,
-      username: '',
       LANG: ['C', 'C++', 'Python', 'Handwritten'],
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       user: new User(this.$cookies.get('jwt')),
       snackbar: false,
       alertMsg: '',
-      pid2Pname: {},
-      perm: false
+      pid2Pname: {}
     }
   },
   computed: {
@@ -162,6 +161,13 @@ export default {
         if (this.selectedLanguage.length > 0 && !this.selectedLanguage.includes(s.languageType)) return false
         return true
       })
+    },
+    ...mapState({
+      username: state => state.username,
+      role: state => state.role
+    }),
+    isTeacherOrAdmin () {
+      return this.role <= 1
     }
   },
   methods: {
@@ -176,16 +182,13 @@ export default {
         filter.username = this.username
       }
       this.items = []
-      this.$http.get('/api/submission', { params: filter })
+      this.$agent.Submission.getList(filter)
         .then((res) => {
-          this.items = res.data.data.submissions.map(s => {
-            s.languageType = this.LANG[s.languageType]
-            s.timestamp = this.$formatTime(s.timestamp)
-            return s
-          })
-        })
-        .catch((err) => {
-          console.log(err)
+          this.items = res.data.data.submissions.map(s => ({
+            ...s,
+            languageType: this.LANG[s.languageType],
+            timestamp: this.$formatTime(s.timestamp)
+          }))
         })
         .finally(() => (this.loading = false))
     },
@@ -197,7 +200,7 @@ export default {
         course: this.$route.params.name
       }
       try {
-        const res = await this.$http.get('/api/problem', { params: filter })
+        const res = await this.$agent.Problem.getList(filter)
         this.problems = res.data.data.map(p => ({
           text: p.problemId + ' - ' + p.problemName,
           value: p.problemId
@@ -208,22 +211,11 @@ export default {
         })
       } catch (e) {
         console.log(e)
+        throw e
       }
-    },
-    getUsername () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        this.perm = payload.role <= 1
-        return payload.username
-      }
-      return ''
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
     }
   },
   async beforeMount () {
-    this.username = this.getUsername()
     await this.getProblems()
     await this.getSubmissions()
   },

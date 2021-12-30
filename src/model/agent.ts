@@ -3,26 +3,26 @@ import config from '@/constants/config'
 
 // create axios instance with baseurl
 export const fetcher = axios.create({
-  baseURL: config.API_BASE_URL,
+  baseURL: config.API_BASE_URL
 })
 
 fetcher.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error?.response) {
+    if (error && error.response) {
       // FIXME: catch Authorization Expired here
       // expected to logout
       throw error.response.data
     }
     throw error
-  },
+  }
 )
 
 const Auth = {
-  signin: (body) => fetcher.post('/auth/session'),
+  signin: (body) => fetcher.post('/auth/session', body),
   signout: () => fetcher.get('/auth/session'),
   signup: (body) => fetcher.post('/auth/signup', body),
-  check: (type, body) => fetcher.post(`/auth/checl/${type}`, body),
+  check: (type, body) => fetcher.post(`/auth/check/${type}`, body),
   activate: (body) => fetcher.post('/auth/active', body),
   recoveryPassword: (body) => fetcher.post('/auth/password-recovery', body),
   resendEmail: (body) => fetcher.post('/auth/resend-email', body),
@@ -73,8 +73,8 @@ const Homework = {
 }
 
 const Post = {
-  get: (name, id) => fetcher.get(`/post/view/${name}/${id}`),
-  getPosts: (name) => fetcher.get(`/post/${name}`),
+  getInfo: (name, id) => fetcher.get(`/post/view/${name}/${id}`),
+  getList: (name) => fetcher.get(`/post/${name}`),
   create: (body) => fetcher.post('/post', body),
   modify: (body) => fetcher.put('/post', body),
   delete: (body) => fetcher.delete('/post', {
@@ -89,11 +89,15 @@ const Problem = {
   getHighScore: (id) => fetcher.get(`/problem/${id}/high-score`),
   create: (body) => fetcher.post('/problem/manage', body),
   modify: (id, body) => fetcher.put(`/problem/manage/${id}`, body),
+  modifyTestcase: (id, body) => fetcher.put(`/problem/manage/${id}`, body, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
   getManage: (id) => fetcher.get(`/problem/manage/${id}`),
   getTestcase: (id) => fetcher.get(`/problem/${id}/testcase`),
   delete: (id) => fetcher.delete('/problem/manage', {
     headers: { 'Content-Type': 'application/json' }
-  })
+  }),
+  downloadTestcaseUrl: (id) => `${config.API_BASE_URL}/problem/${id}/testcase`
 }
 
 const Submission = {
@@ -119,11 +123,7 @@ const Inbox = {
   getSent: () => fetcher.get('/inbox/sent'),
   compose: (body) => fetcher.post('/inbox', body),
   read: (body) => fetcher.put('/inbox', body),
-  deleteInbox: (body) => fetcher.delete('/inbox', {
-    headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' },
-    data: body
-  }),
-  deleteSent: (body) => fetcher.delete('/inbox/sent', {
+  delete: (url, body) => fetcher.delete(`/inbox${url}`, {
     headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' },
     data: body
   })
@@ -131,6 +131,11 @@ const Inbox = {
 
 const Ranking = {
   getInfo: () => fetcher.get('/ranking')
+}
+
+const Copycat = {
+  get: (params) => fetcher.get('/copycat', { params }),
+  create: (body) => fetcher.post('/copycat', body)
 }
 
 export default {
@@ -144,5 +149,6 @@ export default {
   Submission,
   Profile,
   Inbox,
-  Ranking
+  Ranking,
+  Copycat
 }
