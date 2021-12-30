@@ -32,15 +32,15 @@ Vue.component('ui-post', UiPost)
 
 Sentry.init({
   Vue,
-  enabled: process.env.NODE_ENV === 'production',
-  dsn: 'https://55e3c040d67945b2b13d0d26c3933a4d@o876599.ingest.sentry.io/5888727',
+  enabled: process.env.NODE_ENV === 'production' && process.env.VUE_APP_SENTRY_DSN,
+  dsn: process.env.VUE_APP_SENTRY_DSN,
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.vueRouterInstrumentation(router),
       tracingOrigins: ['noj.tw']
     })
   ],
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 0.6,
   logErrors: true
 })
 

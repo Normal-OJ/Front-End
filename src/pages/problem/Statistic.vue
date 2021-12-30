@@ -20,7 +20,6 @@
 
         <v-row no-gutters justify="center">
           <h3 v-if="hand">No statistic for Handwritten!</h3>
-          <h3 v-if="login">Not Found, login first if you haven't</h3>
         </v-row>
         <v-skeleton-loader
           v-show="loading"
@@ -30,7 +29,7 @@
         ></v-skeleton-loader>
 
         <canvas
-          id="myChart"
+          id="pie-chart"
           :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
           height="30vh"
         ></canvas>
@@ -90,7 +89,6 @@ export default {
       data: [0, 0, 0, 0, 0, 0, 0, 0],
       students: [],
       hand: false,
-      login: false,
       user: new User(this.$cookies.get('jwt'))
     }
   },
@@ -124,8 +122,14 @@ export default {
           return this.$agent.Course.getInfo(co)
         })
         .then((res) => {
-          this.students = res.data.data.studentNicknames
-          return this.$agent.Submission.getList({ offset: 0, count: -1, course: this.prob.courses[0], problemId: this.$route.params.id })
+          this.students = res.data.data.students
+          const params = {
+              offset: 0,
+              count: -1,
+              course: this.prob.courses[0],
+              problemId: this.$route.params.id,
+          }
+          return this.$agent.Submission.getList(params)
         })
         .then((res) => {
           res.data.data.submissions.forEach((ele, idx) => {
@@ -155,9 +159,8 @@ export default {
               return true
             }).slice(0, 10)
         })
-        .catch(() => {
+        .finally(() => {
           this.loading = false
-          if (!this.hand) this.login = true
         })
     },
     inCourse (user) {
@@ -166,9 +169,9 @@ export default {
   }
 }
 var draw = function (data) {
-  var ctx = document.getElementById('myChart').getContext('2d')
+  var ctx = document.getElementById('pie-chart').getContext('2d')
   // eslint-disable-next-line no-unused-vars, no-undef
-  var myChart = new Chart(ctx, {
+  new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: ['Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],

@@ -65,24 +65,15 @@ export default {
     getStudents () {
       this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
-          const data = res.data.data
-          this.items = []
-          for (const key in data.studentNicknames) {
-            this.items.push({ username: key, displayName: data.studentNicknames[key] })
-          }
+          this.items = res.data.data.students
           this.getUsers()
         })
     },
     getUsers () {
       this.$agent.Course.getInfo('Public')
         .then((res) => {
-          var data = res.data.data
-          this.users = []
-          for (var key in data.studentNicknames) {
-            if (!this.findInItems(key)) {
-              this.users.push({ username: key, displayName: data.studentNicknames[key] })
-            }
-          }
+          this.users = res.data.data.students
+            .filter(r => !this.items.includes(({ username }) => username === r.username))
         })
     }
   }

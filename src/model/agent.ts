@@ -94,9 +94,7 @@ const Problem = {
   }),
   getManage: (id) => fetcher.get(`/problem/manage/${id}`),
   getTestcase: (id) => fetcher.get(`/problem/${id}/testcase`),
-  delete: (id) => fetcher.delete('/problem/manage', {
-    headers: { 'Content-Type': 'application/json' }
-  }),
+  delete: (id) => fetcher.delete(`/problem/manage/${id}`),
   downloadTestcaseUrl: (id) => `${config.API_BASE_URL}/problem/${id}/testcase`
 }
 
