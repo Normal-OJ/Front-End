@@ -1,6 +1,6 @@
 <template>
-  <v-row no-gutters style="height: 100%; width: 100%">
-    <v-col cols="12" md="6" style="min-height: 100vh;">
+  <v-row no-gutters style="width: 100%">
+    <v-col cols="12" md="6" style="height: calc(100vh - 48px); overflow-y: scroll">
       <v-card tile outlined height="100%" v-if="prob">
         <v-card-title
           class="headline font-weight-bold justify-center"
@@ -116,7 +116,7 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="12" md="6" v-if="prob">
+    <v-col cols="12" md="6" v-if="prob" style="height: calc(100vh - 48px); overflow-y: scroll">
       <Editor
         @getSubmission="setSubmission"
         @exceedRateLimit="exceedRateLimit"
