@@ -32,12 +32,12 @@ Vue.component('ui-post', UiPost)
 
 Sentry.init({
   Vue,
-  enabled: process.env.NODE_ENV === 'production' && process.env.VUE_APP_SENTRY_DSN,
+  enabled: Boolean(process.env.NODE_ENV === 'production' && process.env.VUE_APP_SENTRY_DSN),
   dsn: process.env.VUE_APP_SENTRY_DSN,
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-      tracingOrigins: [process.env.VUE_APP_SENTRY_TRACE_ORIGIN]
+      tracingOrigins: process.env.VUE_APP_SENTRY_TRACE_ORIGIN ? [process.env.VUE_APP_SENTRY_TRACE_ORIGIN] : []
     })
   ],
   tracesSampleRate: 0.6,
