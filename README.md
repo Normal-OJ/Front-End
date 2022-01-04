@@ -15,6 +15,13 @@ Install node modules with npm:
 $ npm install
 ```
 
+Clone `.env.example` as `.env` and specify the environment variables
+
+```shell
+$ cp .env.example .env
+# modify the content in .env
+```
+
 `vue-cli-service` provides hot-reloads for development environment:
 
 ```shell

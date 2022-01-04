@@ -150,7 +150,7 @@
           <v-row>
             <v-col cols="1" class="pb-0">
               <v-avatar class="mx-3">
-                <v-img :src="getAvatar('me')"></v-img>
+                <v-img :src="avatar"></v-img>
               </v-avatar>
             </v-col>
             <v-col cols="11" class="pb-0">
@@ -183,7 +183,7 @@
         <v-row>
           <v-col cols="1" class="pb-0">
             <v-avatar class="mx-3">
-              <v-img :src="getAvatar('me')"></v-img>
+              <v-img :src="avatar"></v-img>
             </v-avatar>
           </v-col>
           <v-col cols="11" class="pb-0">
@@ -237,6 +237,9 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
+import { setAvatar } from '@/utils/utils'
+import { mapState } from 'vuex'
+
 export default {
 
   name: 'ShowReply',
@@ -277,11 +280,19 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      username: state => state.username,
+      role: state => state.role,
+      avatar: state => state.avatar
+    })
+  },
+
   methods: {
     operation (op, id, content, check) {
       if (op === 'delete') {
         if (check) {
-          this.$http.delete('/api/post', { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
+          this.$agent.Post.delete({ targetThreadId: id })
             .then(() => {
               this.$router.go(0)
             })
@@ -302,32 +313,10 @@ export default {
       return this.$formatTime(item.created) + (item.created !== item.updated ? ' (edited)' : '')
     },
     perm (item) {
-      const payload = this.getPayload()
-      if (payload.active === true) {
-        if (payload.role <= 1 || payload.username === item.author.username) {
-          return true
-        }
-      }
+      return this.role <= 1 || this.username === item.author.username
     },
     getAvatar (payload) {
-      if (payload === 'me') payload = this.getPayload().md5
-      var d = encodeURI('https://noj.tw/defaultAvatar.png')
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
-    },
-    getPayload () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === false) {
-          this.$router.push('/')
-        } else {
-          return payload
-        }
-      } else {
-        this.$router.push('/')
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
+      setAvatar(payload)
     }
   }
 }

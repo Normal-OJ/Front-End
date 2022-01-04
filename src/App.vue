@@ -15,6 +15,10 @@ export default {
 
   components: {
     Header
+  },
+
+  created () {
+    this.$store.commit('updateJwt')
   }
 }
 </script>

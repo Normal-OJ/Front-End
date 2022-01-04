@@ -108,12 +108,6 @@ export default {
     }
   },
 
-  beforeMount () {
-    if (this.$cookies.isKey('jwt')) {
-      this.$router.push('/')
-    }
-  },
-
   methods: {
     open (idx) {
       this.diaTitle = this.items[idx].title
@@ -125,22 +119,24 @@ export default {
     },
     submit () {
       if (this.$refs.form.validate()) {
-        this.$http.post('/api/auth/check/email', { email: this.email })
+        this.$agent.Auth.check('email', { email: this.email })
           .then((res) => {
             if (res.data.data.valid === 1) {
               this.errMsg = 'Sorry, we couldn\'t find any account with this E-mail.'
               this.errAlert = true
             } else {
-              this.$http.post(`/api/auth/${this.diaIdx ? 'password-recovery' : 'resend-email'}`, { email: this.email })
-                .catch(err => {
-                  console.log(err.response.data)
-                })
+              if (this.diaIdx) {
+                this.$agent.Auth.recoveryPassword({ email: this.email })
+              } else {
+                this.$agent.Auth.resendEmail({ email: this.email })
+              }
               this.show = false
             }
           })
-          .catch(() => {
+          .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
             this.errAlert = true
+            throw error
           })
       }
     }

@@ -239,7 +239,7 @@ export default {
   watch: {
     grade () {
       if (this.grade) {
-        this.$http.get(`/api/course/${this.$route.params.name}/grade/${this.grade}`)
+        this.$agent.Course.getGrade(this.$route.params.name, this.grade)
           .then((res) => {
             this.scores = res.data.data
           })
@@ -265,12 +265,13 @@ export default {
       this.newUsers.forEach(student => {
         data[student] = student
       })
-      this.$http.put(`/api/course/${this.$route.params.name}`,
-        {
-          TAs: [],
-          studentNicknames: data
+      this.$agent.Course.modify(this.$route.params.name, {
+        TAs: [],
+        studentNicknames: data
+      })
+        .then(() => {
+          this.$router.go(0)
         })
-        .then(() => this.$router.go(0))
     },
     del (idx) {
       const data = {}
@@ -278,12 +279,13 @@ export default {
         if (index === idx) return
         data[ele.username] = ele.displayedName
       })
-      this.$http.put(`/api/course/${this.$route.params.name}`,
-        {
-          TAs: [],
-          studentNicknames: data,
+      this.$agent.Course.modify(this.$route.params.name, {
+        TAs: [],
+        studentNicknames: data
+      })
+        .then(() => {
+          this.$router.go(0)
         })
-        .then(() => this.$router.go(0))
     },
     update (grade) {
       this.grade = null
@@ -293,27 +295,20 @@ export default {
     },
     scoring () {
       if (this.$refs.form.validate()) {
-        this.$http.post(`/api/course/${this.$route.params.name}/grade/${this.grade}`, this.data)
+        this.$agent.Course.createGrade(this.$route.params.name, this.grade, this.data)
           .then(() => {
             this.gradeDialog = false
             this.$refs.form.reset()
             this.update(this.grade)
           })
-          .catch((err) => {
-            console.log(err)
-          })
       }
     },
     delscore (title) {
-      this.$http.delete(`/api/course/${this.$route.params.name}/grade/${this.grade}`, { headers: { Accept: 'application/vnd.hal+json', 'Content-Type': 'application/json' }, data: { title: title } })
+      this.$agent.Course.deleteGrade(this.$route.params.name, this.grade, { title: title })
         .then(() => {
           this.update(this.grade)
         })
-        .catch((err) => {
-          console.log(err)
-        })
     }
-
   }
 }
 </script>

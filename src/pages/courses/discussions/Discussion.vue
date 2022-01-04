@@ -12,7 +12,7 @@
       </template>
       <span>Return</span>
     </v-tooltip>
-    <Creator v-if="perm" v-model="dialog" :type="type" title="Discussion" @cancel="cancel" @post="submit" noActivator>
+    <Creator v-if="canWriteCourse" v-model="dialog" :type="type" title="Discussion" @cancel="cancel" @post="submit" noActivator>
       <template slot="content">
         <v-form v-model="validForm" ref="form">
           <v-text-field
@@ -34,9 +34,10 @@
     <ShowPost
       v-if="items"
       :items="items"
-      :menu="perm"
+      :menu="canWriteCourse"
       @edit="edit" @delete="deletePost"
-    ></ShowPost>
+    />
+    <spinner v-else />
     <v-row justify="center">
       <v-card :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" elevation="0" style="background: transparent;">
         <ui-button
@@ -68,14 +69,15 @@
 import Creator from '@/components/courses/Creator'
 import ShowPost from '@/components/courses/ShowPost'
 import ShowReply from '@/components/courses/ShowReply'
-const API_BASE_URL = '/api'
+import { mapState } from 'vuex'
+import Spinner from '@/components/ui/Spinner.vue'
 
 export default {
 
   name: 'Discussion',
 
   components: {
-    Creator, ShowPost, ShowReply
+    Creator, ShowPost, ShowReply, Spinner
   },
 
   data () {
@@ -83,29 +85,37 @@ export default {
       dialog: false,
       type: 'New',
       validForm: false,
-      items: [],
+      items: null,
       post: {
         title: '',
         content: '',
         targetThreadId: null
       },
-      perm: false,
-      username: null,
       focus: false,
       snackbar: false,
       alert: {
         color: '',
         msg: ''
-      }
+      },
+      tas: []
+    }
+  },
+  computed: {
+    ...mapState({
+      username: state => state.username,
+      role: state => state.role
+    }),
+    canWriteCourse () {
+      return this.role <= 1 || this.tas.include(ta => ta.username === this.username)
     }
   },
   created () {
     this.getPost()
-    this.checkUser(this.getUsername())
+    this.getCourseInfo()
   },
   methods: {
     getPost () {
-      this.$http.get(`${API_BASE_URL}/post/view/${this.$route.params.name}/${this.$route.params.id}`)
+      this.$agent.Post.getInfo(this.$route.params.name, this.$route.params.id)
         .then((res) => {
           this.items = []
           res.data.data.forEach(ele => {
@@ -124,9 +134,6 @@ export default {
           })
           this.items.reverse()
         })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     cancel () {
       this.post.targetThreadId = null
@@ -135,22 +142,16 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         if (this.post.targetThreadId) {
-          this.$http.put(`${API_BASE_URL}/post`, this.post)
+          this.$agent.Post.modify(this.post)
             .then(() => {
               this.cancel()
               this.$router.go(0)
-            })
-            .catch((err) => {
-              console.log(err)
             })
         } else {
-          this.$http.post(`${API_BASE_URL}/post`, this.post)
+          this.$agent.Post.create(this.post)
             .then(() => {
               this.cancel()
               this.$router.go(0)
-            })
-            .catch((err) => {
-              console.log(err)
             })
         }
       }
@@ -164,16 +165,13 @@ export default {
     },
     deletePost (idx, id) {
       this.post.targetThreadId = id
-      this.$http.delete(`${API_BASE_URL}/post`, { headers: { 'Content-Type': 'application/json' }, data: { targetThreadId: id } })
+      this.$agent.Post.delete({ targetThreadId: id })
         .then(() => {
           this.$router.push(`/course/${this.$route.params.name}/discussions`)
         })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     newComment (id, content) {
-      this.$http.post(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
+      this.$agent.Post.create({ targetThreadId: id, content: content })
         .then(() => {
           this.$router.go(0)
         })
@@ -187,7 +185,7 @@ export default {
         })
     },
     editComment (id, content) {
-      this.$http.put(`${API_BASE_URL}/post`, { targetThreadId: id, content: content })
+      this.$agent.Post.modify({ targetThreadId: id, content: content })
         .then(() => {
           this.$router.go(0)
         })
@@ -200,36 +198,11 @@ export default {
           this.snackbar = true
         })
     },
-    getAvatar (payload) {
-      var d = encodeURI('https://noj.tw/defaultAvatar.png')
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
-    },
-    checkUser (username) {
-      this.$http.get(`/api/course/${this.$route.params.name}`)
+    getCourseInfo () {
+      this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
-          var data = res.data.data
-          data.TAs.forEach(ele => {
-            if (ele.username === username) {
-              this.perm = true
-            }
-          })
+          this.tas = res.data.data.TAs
         })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
-    getUsername () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === true) {
-          if (payload.role <= 1) this.perm = true
-          this.username = payload.username
-          return payload.username
-        }
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
     }
   }
 }

@@ -78,13 +78,12 @@ export default {
         course: this.$route.params.name
       }
       this.items = []
-      this.$http.get('/api/problem', { params: filter })
+      this.$agent.Problem.getList(filter)
         .then((res) => {
           this.items = res.data.data
           this.items.forEach((ele, idx) => {
-            this.$http.get(`/api/problem/${ele.problemId}/high-score`)
+            this.$agent.Problem.getHighScore(ele.problemId)
               .then(r => { this.$set(this.items[idx], 'score', r.data.data.score) })
-              .catch(e => console.log(e))
           })
           return this.items
         })
@@ -94,10 +93,8 @@ export default {
             if (p.quota === -1) p.quota = 'unlimited'
             return p
           })
-          this.loading = false
         })
-        .catch((err) => {
-          console.log(err)
+        .finally(() => {
           this.loading = false
         })
     }

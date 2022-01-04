@@ -63,14 +63,17 @@ export default {
 
   methods: {
     getStudents () {
-      this.$http.get(`/api/course/${this.$route.params.name}`)
+      this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
-          var data = res.data.data
-          this.items = data.students
+          this.items = res.data.data.students
+          this.getUsers()
         })
-        .catch((err) => {
-          alert('請求課程資料失敗')
-          console.log(err)
+    },
+    getUsers () {
+      this.$agent.Course.getInfo('Public')
+        .then((res) => {
+          this.users = res.data.data.students
+            .filter(r => !this.items.includes(({ username }) => username === r.username))
         })
     }
   }

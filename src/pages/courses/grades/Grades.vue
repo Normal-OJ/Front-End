@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
 
   name: 'Grades',
@@ -49,35 +50,24 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      username: state => state.username
+    })
+  },
+
   created () {
-    this.getGrade(this.getUser())
+    this.getGrade(this.username)
   },
 
   methods: {
-    getUser () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === true) {
-          return payload.username
-        } else {
-          this.$router.push('/')
-        }
-      } else {
-        this.$router.push('/')
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
-    },
     getGrade (user) {
       this.loading = true
-      this.$http.get(`/api/course/${this.$route.params.name}/grade/${user}`)
+      this.$agent.Course.getGrade(this.$route.params.name, user)
         .then((res) => {
           this.items = res.data.data
-          this.loading = false
         })
-        .catch((err) => {
-          console.log(err)
+        .finally(() => {
           this.loading = false
         })
     }

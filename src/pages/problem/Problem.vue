@@ -1,6 +1,6 @@
 <template>
-  <v-row no-gutters style="height: 100%; width: 100%">
-    <v-col cols="12" md="6" style="min-height: 100vh;">
+  <v-row no-gutters style="width: 100%">
+    <v-col cols="12" md="6" style="height: calc(100vh - 48px); overflow-y: scroll">
       <v-card tile outlined height="100%" v-if="prob">
         <v-card-title
           class="headline font-weight-bold justify-center"
@@ -116,7 +116,7 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col cols="12" md="6" v-if="prob">
+    <v-col cols="12" md="6" v-if="prob" style="height: calc(100vh - 48px); overflow-y: scroll">
       <Editor
         @getSubmission="setSubmission"
         @exceedRateLimit="exceedRateLimit"
@@ -139,8 +139,8 @@ import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
 import User from '@/utils/user'
 import Clipboard from 'clipboard'
+import { mapState } from 'vuex'
 
-const API_BASE_URL = '/api'
 export default {
   name: 'Problem',
   components: {
@@ -156,7 +156,6 @@ export default {
       submData: [],
       show: true,
       snackbar: false,
-      username: '',
       cnt: 0,
       alert: {
         color: 'info',
@@ -166,6 +165,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      username: state => state.username
+    }),
     allowedLang () {
       const temp = []
       const value = this.prob.allowedLanguage
@@ -192,21 +194,16 @@ export default {
     }
   },
   created () {
-    this.getUsername()
     this.getProb()
     this.getSubm()
+    this.setupClipboard()
   },
   methods: {
     async getProb () {
-      try {
-        this.prob = (await this.$http.get(`${API_BASE_URL}/problem/view/${this.$route.params.id}`)).data.data
-      } catch (err) {
-        console.log(err)
-      }
-      this.setupClipboard()
+      this.prob = (await this.$agent.Problem.getInfo(this.$route.params.id)).data.data
     },
     getSubm () {
-      this.$http.get(`${API_BASE_URL}/submission?offset=0&count=-1&username=${this.username}&problemId=${this.$route.params.id}`)
+      this.$agent.Submission.getList({ offset: 0, count: -1, username: this.username, problemId: this.$route.params.id })
         .then((res) => {
           this.submData = []
           res.data.data.submissions.forEach((ele) => {
@@ -259,17 +256,13 @@ export default {
     },
     async updateSubm (sid) {
       if (this.prob.type !== 2) {
-        var done = false
+        let done = false
         this.cnt++
         this.tab = 1
         while (done === false) {
           await this.delay(1000)
-          try {
-            // get submission data
-            var data = await this.$http.get(`${API_BASE_URL}/submission/${sid}`).data.data
-          } catch (err) {
-            console.log(err)
-          }
+          // get submission data
+          const data = (await this.$agent.Submission.getInfo(sid)).data.data
           // haven't been judged
           if (data.status === -1) {
             this.show = false
@@ -299,19 +292,8 @@ export default {
       this.snackbar = true
       this.getSubm()
     },
-    getUsername () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === true) {
-          this.username = payload.username
-        }
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
-    },
     download () {
-      window.location = `https://noj.tw/api/problem/${this.$route.params.id}/testcase`
+      window.location = this.$agent.Problem.downloadTestcaseUrl(this.$route.params.id)
     }
   }
 }

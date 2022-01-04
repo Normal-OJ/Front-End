@@ -55,26 +55,26 @@ export default {
 
   methods: {
     getHW () {
-      this.$http.get(`/api/homework/${this.$route.params.id}`)
+      this.$agent.Homework.getInfo(this.$route.params.id)
         .then((res) => {
           this.items = res.data.data.studentStatus
           this.probs = res.data.data.problemIds
           this.getReport()
         })
-        .catch((err) => {
-          console.log(err)
-        })
     },
     getReport () {
-      this.probs.forEach(ele => {
-        this.$http.post('/api/copycat', {
-          problemId: ele,
-          course: this.$route.params.name
-        })
-          .catch((err) => {
-            console.log(err)
-          })
-      })
+      // this.probs.forEach(ele => {
+      //   this.$agent.Copycat.create({
+      //     problemId: ele,
+      //     course: this.$route.params.name
+      //   })
+      //     .then((res) => {
+      //       this.getUrl()
+      //     })
+      //     .catch((err) => {
+      //       console.log(err)
+      //     })
+      // })
     },
     delay (delayInms) {
       return new Promise(resolve => {

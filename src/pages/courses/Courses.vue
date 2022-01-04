@@ -30,7 +30,7 @@
               </td>
             </tr>
             <tr v-for="item in items" :key="item.title">
-              <td class="subtitle-1"><a :href="`/course/${item.title}`">{{ item.title }}</a></td>
+              <td class="subtitle-1"><a :href="item.path">{{ item.title }}</a></td>
               <td class="subtitle-1">{{ item.teacher.username }}</td>
               <td class="subtitle-1">
                 <span class="pr-1" v-for="ta in item.ta" :key="ta">{{ ta }}</span>
@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
 
   name: 'Courses',
@@ -97,46 +98,43 @@ export default {
         v => (!!v && v.length <= 64) || 'Sorry, the length must be ≤ 64 characters.'
       ],
       errAlert: false,
-      errMsg: '',
-      perm: -1
+      errMsg: ''
     }
+  },
+
+  computed: {
+    ...mapState({
+      perm: state => state.role
+    })
   },
 
   beforeMount () {
     this.getCourses()
-    this.getProfile()
   },
 
   methods: {
     getCourses () {
-      this.$http.get('/api/course')
+      this.$agent.Course.getList()
         .then((res) => {
-          res.data.data.forEach(ele => {
-            this.items.push({ title: ele.course, teacher: ele.teacher, path: `/${ele.course}`, ta: ele.TAs })
-          })
+          this.items = res.data.data.map(r => ({
+            title: r.course,
+            teacher: r.teacher,
+            path: `/course/${r.course}`,
+            ta: r.TAs
+          }))
         })
-    },
-    getProfile () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === true) {
-          this.perm = payload.role
-        }
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
     },
     create () {
       if (this.$refs.form.validate()) {
-        this.$http.post('/api/course', { course: this.courseName, teacher: this.teacher })
+        this.$agent.Course.create({ course: this.courseName, teacher: this.teacher })
           .then(() => {
             this.dialog = false
-            this.$router.go(0)
+            this.$router.push(`/course/${this.courseName}`)
           })
-          .catch((err) => {
-            this.errMsg = `${err.response.data.message}`
+          .catch((error) => {
+            this.errMsg = `${error.response.data.message}`
             this.errAlert = true
+            throw error
           })
       }
     }

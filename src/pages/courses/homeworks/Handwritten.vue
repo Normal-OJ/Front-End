@@ -103,28 +103,24 @@ export default {
     async getData () {
       try {
         this.items = null
-        const res = await this.$http.get(`/api/homework/${this.$route.params.id}`)
+        const res = await this.$agent.Homework.getInfo(this.$route.params.id)
         // stash student status
         const items = res.data.data.studentStatus
         // get handwritten problem ids
         const pids = res.data.data.problemIds
         const handwrittens = await Promise.all(pids.map(async pid => {
-          return ((await this.$http.get(`/api/problem/view/${pid}`)).data.data.type === 2)
+          return ((await this.$agent.Problem.getInfo(pid)).data.data.type === 2)
         }))
         this.probs = pids.filter((pid, idx) => handwrittens[idx])
         // get submission ids
         await Promise.all(this.probs.map(async pid => {
           // query submission ids by pid
-          const sRes = await this.$http.get(
-            '/api/submission',
-            {
-              params: {
-                course: this.$route.params.name,
-                problemId: pid,
-                offset: 0,
-                count: -1
-              }
-            })
+          const sRes = await this.$agent.Submission.getList({
+            offset: 0,
+            count: -1,
+            course: this.$route.params.name,
+            problemId: pid
+          })
           // update student status
           for (const subm of sRes.data.data.submissions) {
             if (items[subm.user.username]) {
@@ -142,17 +138,12 @@ export default {
       this.data.file = null
     },
     comment (sid) {
-      this.$http.put(`/api/submission/${sid}/grade`, { score: Number(this.data.score) })
+      this.$agent.Submission.grade(sid, { score: Number(this.data.score) })
         .then(() => {
           if (this.data.file) {
             var formData = new FormData()
             formData.append('comment', this.data.file)
-            return this.$http.put(`/api/submission/${sid}/comment`,
-              formData,
-              {
-                headers: { 'Content-Type': 'multipart/form-data' }
-              }
-            ).then()
+            return this.$agent.Submission.modify(sid, formData)
           }
           return true
         })
@@ -165,10 +156,7 @@ export default {
       // this.copycat[`${ele}`] = {};
       // this.copycat[`${ele}`]['valid'] = false;
       // while ( !this.copycat[`${ele}`]['valid'] ) {
-      // this.$http.get('/api/copycat', {
-      //                                   'problemId': ele,
-      //                                   'course': this.$route.params.name,
-      //                                })
+      // this.$agent.Copycat.get({ problemId: ele, course: this.$route.params.name })
       //   .then(async(res) => {
       //     var flag = false;
       //     if ( res.data.data.cppReport ) {

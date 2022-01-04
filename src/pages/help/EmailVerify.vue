@@ -63,8 +63,7 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api'
-
+import { mapState } from 'vuex'
 export default {
 
   name: 'EmailVerify',
@@ -72,53 +71,45 @@ export default {
   data () {
     return {
       payload: null,
-      username: '',
       profile: {
         displayedName: '',
         bio: ''
       },
-      avatar: this.getAvatar(''),
       agree: false,
       errAlert: false,
       errMsg: ''
     }
   },
 
-  beforeMount () {
-    this.payload = this.getPayload()
-    this.username = this.payload.username
-    this.profile.displayedName = this.username
-    this.avatar = this.getAvatar(this.payload.md5)
+  mounted () {
+    this.profile = {
+      displayedName: this.displayedName,
+      bio: this.bio
+    }
+  },
+
+  computed: {
+    ...mapState({
+      username: state => state.username,
+      displayedName: state => state.displayedName,
+      bio: state => state.bio,
+      avatar: state => state.avatar
+    })
   },
 
   methods: {
-    getPayload () {
-      if (this.$cookies.isKey('jwt')) {
-        var payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (payload.active === false) {
-          return this.parseJwt(this.$cookies.get('jwt'))
-        }
-      }
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
-    },
     submit () {
       if (this.$refs.form.validate()) {
-        this.$http.post(`${API_BASE_URL}/auth/active`, { agreement: this.agree, profile: this.profile })
+        this.$agent.Auth.activate({ agreement: this.agree, profile: this.profile })
           .then(() => {
             this.$router.push('/')
           })
           .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
             this.errAlert = true
-            console.log(error.response.data)
+            throw error
           })
       }
-    },
-    getAvatar (payload) {
-      var d = encodeURI('https://noj.tw/defaultAvatar.png')
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
     }
   }
 }

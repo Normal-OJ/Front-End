@@ -43,7 +43,7 @@
           >{{ 'Due Time: ' + item.end }}</v-alert>
         </v-card-text>
         <v-card-text class="py-0 text--primary">
-          <v-row>
+          <v-row v-if="prob">
             <v-col cols="6" class="pb-0">
               <v-row justify="center">
                 <span v-if="totalScore(item) === item.problemIds.length*100" class="headline mt-4">🎉</span>
@@ -61,6 +61,7 @@
               <v-row justify="center"><h3>Solved Programming Problem</h3></v-row>
             </v-col>
           </v-row>
+          <spinner v-else />
         </v-card-text>
         <v-card-title class="font-weight-bold">Description</v-card-title>
           <v-card-text class="text--primary">
@@ -152,13 +153,15 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
+import Spinner from '../ui/Spinner.vue'
 var TYPE = ['Programming', 'Template', 'Handwritten']
 export default {
 
   name: 'ShowHomework',
 
   components: {
-    VueMarkdown
+    VueMarkdown,
+    Spinner
   },
 
   props: {

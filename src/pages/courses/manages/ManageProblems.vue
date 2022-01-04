@@ -487,7 +487,7 @@ export default {
     getProbs () {
       this.items = []
       this.tags = []
-      this.$http.get(`/api/problem?offset=0&count=-1&course=${this.$route.params.name}`)
+      this.$agent.Problem.getList({ offset: 0, count: -1, course: this.$route.params.name })
         .then((res) => {
           res.data.data.forEach(ele => {
             ele.status = ele.status === 0 ? 'Online' : 'Offline'
@@ -519,7 +519,7 @@ export default {
       }
       if (this.$refs.form.validate()) {
         if (this.creating === -1) {
-          this.$http.post('/api/problem/manage', this.prob)
+          this.$agent.Problem.create(this.prob)
             .then((res) => {
               if (!this.zip) {
                 this.$router.go(0)
@@ -527,7 +527,7 @@ export default {
               if (this.prob.type !== 2) {
                 var formData = new FormData()
                 formData.append('case', this.zip)
-                return this.$http.put(`/api/problem/manage/${res.data.data.problemId}`,
+                return this.$agent.Problem.modifyTestcase(`/api/problem/manage/${res.data.data.problemId}`,
                   formData,
                   {
                     headers: { 'Content-Type': 'multipart/form-data' }
@@ -543,7 +543,7 @@ export default {
               console.log(err)
             })
         } else {
-          this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`, this.prob)
+          this.$agent.Problem.modify(this.items[this.creating].problemId, this.prob)
             .then(() => {
               if (!this.zip) {
                 this.$router.go(0)
@@ -551,11 +551,7 @@ export default {
               if (this.prob.type !== 2 && this.zip) {
                 var formData = new FormData()
                 formData.append('case', this.zip)
-                return this.$http.put(`/api/problem/manage/${this.items[this.creating].problemId}`,
-                  formData,
-                  {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                  })
+                return this.$agent.Problem.modifyTestcase(this.items[this.creating].problemId, formData)
               }
             })
             .then(() => {
@@ -598,7 +594,7 @@ export default {
     },
     edit (idx) {
       this.toCreate(idx)
-      this.$http.get(`/api/problem/manage/${this.items[idx].problemId}`)
+      this.$agent.Problem.getManage(this.items[idx].problemId)
         .then(async (res) => {
           var data = res.data.data
           // problem data preprocess
@@ -639,23 +635,20 @@ export default {
           }
           this.create = true
         })
-      this.$http.get(`/api/problem/${this.items[idx].problemId}/testcase`)
+      this.$agent.Problem.getTestcase(this.items[idx].problemId)
         .then((res) => { this.existZip = res.data })
     },
     del (idx) {
-      this.$http.delete(`/api/problem/manage/${this.items[idx].problemId}`, { headers: { 'Content-Type': 'application/json' } })
+      this.$agent.Problem.delete(this.items[idx].problemId)
         .then(() => {
           this.$router.go(0)
-        })
-        .catch((err) => {
-          console.log(err)
         })
     },
     download () {
       window.location = this.testdata
     },
     downloadServer () {
-      window.location = `https://noj.tw/api/problem/${this.creating}/testcase`
+      window.location = this.$agent.Problem.downloadTestcaseUrl(this.creating)
     }
   }
 }

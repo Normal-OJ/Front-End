@@ -18,8 +18,6 @@
         </v-card-text>
       </v-card>
 
-      <!-- <v-divider></v-divider> -->
-
       <!-- Ann -->
       <v-card-title class="headline font-weight-bold">
         <v-icon color="transparent">mdi-pin</v-icon>System Announcement
@@ -51,8 +49,8 @@ export default {
 
   data () {
     return {
-      items: null,
-      pin: null
+      items: [],
+      pin: []
     }
   },
 
@@ -62,33 +60,20 @@ export default {
 
   methods: {
     getAnn () {
-      this.$http.get('/api/ann/')
+      this.$agent.SystemAnn.getList()
         .then((res) => {
-          this.pin = []
-          this.items = []
-          res.data.data.forEach(ele => {
-            if (ele.pinned) {
-              this.pin.push({
-                annId: ele.annId,
-                title: ele.title,
-                author: ele.creator,
-                content: ele.markdown,
-                createdTime: this.$formatTime(ele.createTime),
-                lastUpdatedTime: this.$formatTime(ele.updateTime),
-                lastUpdater: ele.updater
-              })
-            } else {
-              this.items.push({
-                annId: ele.annId,
-                title: ele.title,
-                author: ele.creator,
-                content: ele.markdown,
-                createdTime: this.$formatTime(ele.createTime),
-                lastUpdatedTime: this.$formatTime(ele.updateTime),
-                lastUpdater: ele.updater
-              })
-            }
-          })
+          const anns = res.data.data.map(r => ({
+            pinned: r.pinned,
+            annId: r.annId,
+            title: r.title,
+            author: r.creator,
+            content: r.markdown,
+            createdTime: this.$formatTime(r.createTime),
+            lastUpdatedTime: this.$formatTime(r.updateTime),
+            lastUpdater: r.updater
+          }))
+          this.pin = anns.filter(ann => ann.pinned)
+          this.items = anns.filter(ann => !ann.pinned)
         })
     }
 

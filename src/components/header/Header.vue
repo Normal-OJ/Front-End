@@ -20,11 +20,10 @@
       </a>
 
       <!-- Nav Bar -->
-      <v-toolbar-items>
+      <v-toolbar-items v-if="$vuetify.breakpoint.mdAndUp">
         <template v-for="link in links">
           <ui-button
             :key="link.title"
-            v-if="link.show && $vuetify.breakpoint.mdAndUp"
             :to="link.path"
             color="white"
             text
@@ -89,7 +88,6 @@
       <v-list dense>
         <template v-for="link in links">
           <v-list-item
-            v-if="link.show"
             :key="link.title"
             :to="link.path"
             link
@@ -104,33 +102,12 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-
-    <v-snackbar
-      v-model="alertBar"
-      color="success"
-      vertical
-      bottom
-      right
-      :timeout="4000"
-    >
-      <h3>{{ alertText }}</h3>
-      <v-btn
-        text
-        @click="alertBar = false"
-      >Close</v-btn>
-      <pre></pre>
-      <v-progress-linear
-        v-model="progress"
-        :active="showProgress"
-      ></v-progress-linear>
-    </v-snackbar>
   </div>
 </template>
 
 <script>
 import Auth from './Auth'
-
-const API_BASE_URL = '/api'
+import { mapState } from 'vuex'
 
 export default {
 
@@ -143,63 +120,39 @@ export default {
   data () {
     return {
       links: [
-        { title: 'Home', path: '/', show: true },
-        { title: 'Courses', path: '/courses', show: true },
-        { title: 'Inbox', path: '/inbox', show: false },
-        { title: 'About', path: '/about', show: true }
+        { title: 'Home', path: '/' },
+        { title: 'Courses', path: '/courses' },
+        // { title: 'Inbox', path: '/inbox' },
+        { title: 'About', path: '/about' }
       ],
-      drawer: false,
-      isLogin: false,
-      alertBar: false,
-      alertText: '',
-      progress: 0,
-      showProgress: true,
-      payload: null,
-      avatar: this.setAvatar(''),
-      username: '',
-      displayedName: ''
+      drawer: false
     }
   },
 
-  beforeMount () {
-    this.setProfile()
+  computed: {
+    ...mapState({
+      isLogin: state => state.isLogin,
+      username: state => state.username,
+      displayedName: state => state.displayedName,
+      avatar: state => state.avatar
+    })
   },
 
   methods: {
-    async showAlert () {
+    showAlert () {
       this.drawer = false
       this.$router.go(0)
     },
-    setProfile () {
-      if (this.$cookies.isKey('jwt')) {
-        this.payload = this.parseJwt(this.$cookies.get('jwt'))
-        if (this.payload.active === true) {
-          this.isLogin = true
-          this.links.forEach((obj) => {
-            obj.show = true
-          })
-          this.username = this.payload.username
-          this.displayedName = this.payload.profile.displayedName
-          this.avatar = this.setAvatar(this.payload.md5)
-        }
-      }
-    },
-    setAvatar (payload) {
-      var d = encodeURI('https://noj.tw/defaultAvatar.png')
-      return `https://www.gravatar.com/avatar/${payload}?d=${d}`
-    },
-    parseJwt (token) {
-      return JSON.parse(atob(token.split('.')[1])).data
-    },
+
     signout () {
-      this.$http.get(`${API_BASE_URL}/auth/session`)
+      this.$agent.Auth.signout()
         .then(() => {
-          this.isLogin = false
           this.$router.push('/')
           this.showAlert()
         })
-        .catch((err) => {
-          console.log(err)
+        .catch((error) => {
+          // FIXME: Alert user logout failed by dialog
+          throw error
         })
     }
   }

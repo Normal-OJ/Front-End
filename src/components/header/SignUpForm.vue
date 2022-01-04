@@ -73,8 +73,7 @@
 </template>
 
 <script>
-const API_BASE_URL = '/api'
-var globKey = { email: 0, username: 0 }
+const globKey = { email: 0, username: 0 }
 
 export default {
 
@@ -131,25 +130,21 @@ export default {
     }
   },
 
-  beforeMount () {
-    this.authData.username = ''
-    this.authData.password = ''
-    this.authData.email = ''
-  },
-
   methods: {
     submit () {
       this.btnLoading = true
       if (this.$refs.form.validate()) {
-        this.$http.post(`${API_BASE_URL}/auth/signup`, this.authData)
+        this.$agent.Auth.signup(this.authData)
           .then(() => {
             this.signup = false
             this.dialog = true
             this.$emit('signup')
           })
-          .catch(() => {
-            this.errMsg = 'Invalid Email'
+          .catch((error) => {
+            // FIXME: set a good error message
+            this.errMsg = JSON.stringify(error.data)
             this.errAlert = true
+            throw error
           })
       }
       this.btnLoading = false
@@ -160,7 +155,7 @@ export default {
         username: val => (val && val.length <= 16)
       }
       if (cnt === globKey[type] && checker[type] && checker[type](this.authData[type])) {
-        this.$http.post(`${API_BASE_URL}/auth/check/${type}`, { [type]: this.authData[type] })
+        this.$agent.Auth.check(type, { [type]: this.authData[type] })
           .then((response) => {
             if (response.data.data.valid === 0) {
               this.used[type] = false
@@ -169,13 +164,15 @@ export default {
               this.used[type] = true
             }
           })
-          .catch(() => {
+          .catch((error) => {
             this.errMsg = 'Some issue occurred, please check out your network connection, refresh the page or contact with administrator.'
             this.errAlert = true
+            throw error
           })
       }
     },
     keying (type) {
+      // FIXME: use lodash.debounce()
       this.used[type] = true
       globKey[type]++
       setTimeout(this.check, 800, type, globKey[type])
