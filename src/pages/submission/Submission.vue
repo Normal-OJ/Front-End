@@ -1,5 +1,5 @@
 <template>
-  <v-col style="height: 100%; width: 100%">
+  <v-col style="height: 100%; width: 100%; padding-left: 48px; padding-right: 48px">
     <v-slide-x-transition>
       <v-row no-gutters v-if="course!==''">
         <ui-button small color="info" class="mt-3 mr-3" :to="`/course/${course}/submissions`">
@@ -21,8 +21,8 @@
     <v-row no-gutters class="px-6">
       <h3>Submission Information</h3>
     </v-row>
-    <v-row no-gutters justify="center" style="width: 100%;">
-      <v-simple-table id="info-table">
+    <v-row no-gutters justify="center" style="width: 100%">
+      <v-simple-table style="width: 100%">
         <template v-slot:default>
           <thead>
             <tr>
@@ -30,7 +30,7 @@
                 <th
                   :key="info.title"
                   v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
-                  class="subtitle-1"
+                  class="subtitle-1 primary white--text"
                   v-text="info.title"
                 />
               </template>
@@ -42,7 +42,7 @@
                 <td
                   :key="info.title"
                   v-if="info.title!=='Run Time(ms)'&&info.title!=='Memory(KB)'||submInfo[6].text!=='Handwritten'"
-                  class="subtitle-1 text-left"
+                  class="subtitle-1"
                 >
                   <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
                   <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
@@ -59,22 +59,22 @@
     <v-row no-gutters class="px-6">
       <h3>Subtask Information</h3>
     </v-row>
-    <v-row no-gutters justify="center" style="width: 100%;">
-      <v-simple-table id="data-table" v-for="(subm, idx) in submData" :key="idx">
+    <v-row no-gutters justify="center" style="width: 100%">
+      <v-simple-table style="width: 100%" v-for="(subm, idx) in submData" :key="idx">
         <template v-slot:default>
           <thead>
             <tr>
               <th
                 v-for="header in submHeader"
                 :key="header"
-                class="subtitle-1 text-left"
+                class="subtitle-1 primary white--text"
                 v-text="(header==='#' ? (header+idx) : header)"
               ></th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="data in subm" :key="data['#']">
-              <td v-for="header in submHeader" :key="header" class="subtitle-1 text-left">
+              <td v-for="header in submHeader" :key="header" class="subtitle-1">
                 <v-btn
                   v-if="(header==='Standard Error' || header==='Standard Output') && !!data[header]"
                   class="subtitle-1 text-none"
@@ -108,38 +108,36 @@
         </template>
       </v-simple-table>
     </v-row>
-    <v-row align="center" v-if="codeShow" no-gutters class="px-6" style="max-width: 50%;">
-      <v-col cols="2" class="mr-4">
-        <h3>Source Code</h3>
-      </v-col>
-      <v-col class="pt-2" cols="1">
-        <ui-button class="copy-code" color="gray" icon>
+    <template v-if="codeShow">
+      <div no-gutters class="px-6 d-flex align-baseline">
+        <h3 class="mr-4">Source Code</h3>
+        <ui-button class="copy-code mr-4" color="gray" icon>
           <template slot="content">
             <v-icon>mdi-content-copy</v-icon>
           </template>
         </ui-button>
-      </v-col>
-      <v-col class="pt-3" cols="2">
         <v-switch v-model="darkTheme" label="Dark Mode"></v-switch>
-      </v-col>
-      <v-spacer></v-spacer>
-    </v-row>
-    <v-row v-if="codeShow" no-gutters justify="center" style="width: 100%;">
+      </div>
       <codemirror
         v-model="code"
-        :options="{readOnly: true, theme: darkTheme ? 'dracula' : 'eclipse', lineNumbers: true, mode: langMode}"
-        style="width: 90%;"
-      ></codemirror>
-    </v-row>
+        :options="{ readOnly: true, theme: editorTheme, lineNumbers: true, mode: langMode }"
+        style="width: 100%"
+      />
+    </template>
     <!-- just a padding -->
     <div style="height: 20vh"></div>
+    <v-snackbar v-model="snackbar" class="subtitle-1" :color="alert.color">
+      {{ alert.msg }}
+      <v-btn icon @click="snackbar = false">
+        <v-icon>mdi-close-circle</v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-col>
 </template>
 
 <script>
 import { codemirror } from 'vue-codemirror'
-import 'codemirror/theme/dracula.css'
-import 'codemirror/theme/eclipse.css'
+import '@/pages/problem/EditorConfig'
 import User from '@/utils/user'
 import Clipboard from 'clipboard'
 var LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
@@ -169,16 +167,42 @@ export default {
       STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
       COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       user: new User(this.$cookies.get('jwt')),
-      isRejudge: false
+      isRejudge: false,
+      snackbar: false,
+      alert: {
+        color: 'info',
+        msg: 'Code has been copied into the clipboard!'
+      },
     }
   },
-
+  computed: {
+    editorTheme () {
+      return this.darkTheme ? 'dracula' : 'eclipse'
+    }
+  },
   beforeMount () {
     this.getSubm()
   },
   mounted () {
-    // eslint-disable-next-line no-unused-vars
-    const clipboard = new Clipboard('.copy-code', { text: trigger => { return this.code } })
+    const clipboard = new Clipboard('.copy-code', { text: () => { return this.code } })
+    clipboard.on('success', evt => {
+        this.snackbar = false
+        this.alert = {
+          color: 'info',
+          msg: 'Code has been copied into the clipboard!'
+        }
+        this.snackbar = true
+        evt.clearSelection()
+      })
+      clipboard.on('error', err => {
+        this.snackbar = false
+        this.alert = {
+          color: 'error',
+          msg: 'Failed to copy the code'
+        }
+        this.snackbar = true
+        throw err
+      })
   },
   methods: {
     getSubm () {
@@ -264,16 +288,18 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
-#info-table,
-#data-table {
-  width: 90%;
-  background-color: transparent;
+<style lang="css">
+@font-face {
+  font-family: "Monako";
+  src: url("/monaco.ttf") format("truetype");
 }
-
-#info-table th,
-#data-table th {
-  background-color: #003865;
-  color: white;
+.CodeMirror {
+  font-family: "Monako";
+  height: 100%;
+  width: 100%;
+  direction: ltr;
+}
+.CodeMirror-placeholder {
+  color: grey !important;
 }
 </style>
