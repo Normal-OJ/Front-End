@@ -181,7 +181,7 @@ export default {
         indentType: 1, // 0: space, 1: tab
         tabSize: 4,
         theme: 'monokai',
-        language: this.languageItem.length === 1 ? this.languageItem[0] : -1 // 0: c, 1: cpp, 2: py
+        language: this.languageItem.length === 1 ? this.languageItem[0].value : -1 // 0: c, 1: cpp, 2: py
       }
       this.code = ''
       this.updateOption()
