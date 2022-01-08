@@ -9,9 +9,9 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: 50%;">Course</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: 20%;">Teacher</th>
-              <th class="font-weight-bold subtitle-1 text--primary" style="width: 30%;">TA</th>
+              <th style="width: 50%;">Course</th>
+              <th style="width: 20%;">Teacher</th>
+              <th style="width: 30%;">TA</th>
             </tr>
           </thead>
           <tbody>
@@ -21,10 +21,10 @@
                   <v-card
                     tile
                     elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
+                    :style="{ cursor: 'pointer', backgroundColor: hover ? 'var(--v-gray)' : 'var(--v-white)' }"
                     @click="dialog = true"
                   >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>New Course</v-card-title>
+                    <v-card-title class="subtitle-1"><v-icon>mdi-plus</v-icon>New Course</v-card-title>
                   </v-card>
                 </v-hover>
               </td>
@@ -36,7 +36,10 @@
                 <span class="pr-1" v-for="ta in item.ta" :key="ta">{{ ta }}</span>
               </td>
             </tr>
-            <tr v-if="items.length===0">
+            <tr v-if="!items">
+              <td colspan="3"><Spinner /></td>
+            </tr>
+            <tr v-else-if="items.length===0">
               <td colspan="3">You have not enrolled in any course.</td>
             </tr>
           </tbody>
@@ -82,13 +85,17 @@
 
 <script>
 import { mapState } from 'vuex'
+import Spinner from '@/components/ui/Spinner.vue'
+
 export default {
 
   name: 'Courses',
 
+  components: { Spinner },
+
   data () {
     return {
-      items: [],
+      items: null,
       dialog: false,
       form: false,
       teacher: '',

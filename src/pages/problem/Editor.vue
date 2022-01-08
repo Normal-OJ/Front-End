@@ -11,10 +11,10 @@
     <v-simple-table v-else>
       <thead v-if="type === 2 && submData && submData.length > 0">
         <tr>
-          <th class="subtitle-1 font-weight-bold">Last update</th>
-          <th class="subtitle-1 font-weight-bold">Score</th>
-          <th class="subtitle-1 font-weight-bold">Uploaded File</th>
-          <th class="subtitle-1 font-weight-bold">Feedback</th>
+          <th>Last update</th>
+          <th>Score</th>
+          <th>Uploaded File</th>
+          <th>Feedback</th>
         </tr>
       </thead>
       <tbody v-if="type === 2 && submData && submData.length > 0">
@@ -71,8 +71,8 @@ import { codemirror } from 'vue-codemirror'
 import './EditorConfig.js'
 import JSZip from 'jszip'
 
-var LANG = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
-var LANG_EXT = ['.c', '.cpp', '.py']
+const LANG = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
+const LANG_EXT = ['.c', '.cpp', '.py']
 
 export default {
   name: 'Editor',
@@ -178,7 +178,7 @@ export default {
     setConfig () {
       this.editorConfig = {
         fontSize: 16,
-        indentType: 1, // 0: space, 1: tab
+        indentType: 1,
         tabSize: 4,
         theme: 'monokai',
         language: this.languageItem.length === 1 ? this.languageItem[0] : -1 // 0: c, 1: cpp, 2: py
@@ -201,12 +201,8 @@ export default {
 </script>
 
 <style lang="css">
-@font-face {
-  font-family: "Monako";
-  src: url("/monaco.ttf") format("truetype");
-}
 .CodeMirror {
-  font-family: "Monako";
+  font-family: "Monaco";
   height: 100%;
   width: 100%;
   direction: ltr;

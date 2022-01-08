@@ -14,12 +14,12 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary">ID</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Name</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Status</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Type</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Tags</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Operations</th>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Type</th>
+              <th>Tags</th>
+              <th>Operations</th>
             </tr>
           </thead>
           <tbody>
@@ -29,10 +29,10 @@
                   <v-card
                     tile
                     elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
+                    :style="{ cursor: 'pointer', backgroundColor: hover ? 'var(--v-gray)' : 'var(--v-white)' }"
                     @click="toCreate(-1)"
                   >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>Add Problems</v-card-title>
+                    <v-card-title class="subtitle-1"><v-icon>mdi-plus</v-icon>Add Problems</v-card-title>
                   </v-card>
                 </v-hover>
               </td>
@@ -51,19 +51,22 @@
                 >{{ tag }}</v-chip>
               </td>
               <td>
-                <ui-button class="mr-1" color="info" @click.native="edit(idx)">
+                <ui-button class="mr-1" small color="info" @click.native="edit(idx)">
                   <template slot="content">
-                    <v-icon>mdi-pencil</v-icon>Edit
+                    <v-icon small>mdi-pencil</v-icon>Edit
                   </template>
                 </ui-button>
-                <ui-button class="mr-1" color="error" alert @alertClick="del(idx)">
+                <ui-button class="mr-1" small color="error" alert @alertClick="del(idx)">
                   <template slot="content">
-                    <v-icon>mdi-delete</v-icon>Delete
+                    <v-icon small>mdi-delete</v-icon>Delete
                   </template>
                 </ui-button>
               </td>
             </tr>
-            <tr v-if="items.length===0">
+            <tr v-if="!items">
+              <td colspan="7"><Spinner /></td>
+            </tr>
+            <tr v-else-if="items.length===0">
               <td class="subtitle-1" colspan="7">🦄 No data available.</td>
             </tr>
           </tbody>
@@ -399,19 +402,20 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import JSZip from 'jszip'
+import Spinner from '@/components/ui/Spinner.vue'
 
 export default {
 
   name: 'ManageProblems',
 
   components: {
-    VueMarkdown
+    VueMarkdown, Spinner
   },
 
   data () {
     return {
       creating: false,
-      items: [],
+      items: null,
       errAlert: false,
       errMsg: '',
       tags: [],

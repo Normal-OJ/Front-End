@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters style="width: 100%">
     <v-col cols="12" md="6" style="height: calc(100vh - 48px); overflow-y: scroll">
-      <v-card tile outlined height="100%" v-if="prob">
+      <v-card tile outlined v-if="prob">
         <v-card-title
           class="headline font-weight-bold justify-center"
         >{{ id + ' - ' + prob.problemName }}</v-card-title>
@@ -16,7 +16,7 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="4" v-if="prob.type != 2 && user.role < 2">
-              <v-btn :to="`${$route.params.id}/statistic`" class="text-none subtitle-1" color="info" small width="100%">
+              <v-btn color="info" small width="100%" @click="$router.push({ path: `${$route.params.id}/statistic` })">
                 <v-icon>mdi-chart-arc</v-icon>Statistic
               </v-btn>
             </v-col>
@@ -27,7 +27,7 @@
             </v-col>
             <v-spacer />
             <v-col cols="4" v-if="prob.type != 2 && user.role < 2">
-              <v-btn class="text-none subtitle-1" color="info" small width="100%" @click="download">
+              <v-btn color="info" small width="100%" @click="download">
                 <v-icon>mdi-download</v-icon>Testdata
               </v-btn>
             </v-col>
@@ -97,9 +97,9 @@
               <v-simple-table>
                 <thead>
                   <tr>
-                    <th class="text--primary subtitle-1">Subtask</th>
-                    <th class="text--primary subtitle-1">Time Limit(ms)</th>
-                    <th class="text--primary subtitle-1">Memory Limit(KB)</th>
+                    <th>Subtask</th>
+                    <th>Time Limit (ms)</th>
+                    <th>Memory Limit (KB)</th>
                   </tr>
                 </thead>
                 <tbody>

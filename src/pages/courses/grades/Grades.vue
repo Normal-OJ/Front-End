@@ -4,10 +4,10 @@
       <v-simple-table class="px-3">
         <thead>
           <tr>
-            <th class="subtitle-1 font-weight-bold text--primary">Title</th>
-            <th class="subtitle-1 font-weight-bold text--primary">Score</th>
-            <th class="subtitle-1 font-weight-bold text--primary">Description</th>
-            <th class="subtitle-1 font-weight-bold text--primary">Time</th>
+            <th>Title</th>
+            <th>Score</th>
+            <th>Description</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody>

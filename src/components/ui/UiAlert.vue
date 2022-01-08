@@ -31,7 +31,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'info' // info, success, warning, error
+      default: 'info'
     },
     icon: {
       type: String,

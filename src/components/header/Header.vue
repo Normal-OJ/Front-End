@@ -2,7 +2,7 @@
   <div class="ma-0 pa-0">
     <v-app-bar
       app
-      color="#003865"
+      :color="$vuetify.theme.dark ? 'default' : 'primary'"
       dark
       dense
     >
@@ -15,8 +15,8 @@
       ></v-app-bar-nav-icon>
 
       <!-- LOGO -->
-      <a style="height: 85%; cursor: default;">
-        <img :src="require('@/assets/NOJ-LOGO.png')" height="100%">
+      <a class="ml-2 mr-4" style="height: 85%" href="/">
+        <img :src="require('@/assets/NOJ-logo-white.svg')" height="100%" />
       </a>
 
       <!-- Nav Bar -->
@@ -32,6 +32,10 @@
       </v-toolbar-items>
 
       <v-spacer></v-spacer>
+
+      <v-btn icon @click="toggleDarkMode" class="mr-3">
+        <v-icon>{{ $vuetify.theme.dark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+      </v-btn>
 
       <!-- Sign in, up, User -->
       <v-menu v-if="isLogin && $vuetify.breakpoint.mdAndUp" offset-y>
@@ -129,6 +133,14 @@ export default {
     }
   },
 
+  mounted() {
+    if ( localStorage.getItem('dark-theme') == 'true' ) {
+      this.$vuetify.theme.dark = true
+    } else {
+      this.$vuetify.theme.dark = false
+    }
+  },
+
   computed: {
     ...mapState({
       isLogin: state => state.isLogin,
@@ -139,11 +151,14 @@ export default {
   },
 
   methods: {
+    toggleDarkMode () {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+      window.localStorage.setItem('dark-theme', this.$vuetify.theme.dark);
+    },
     showAlert () {
       this.drawer = false
       this.$router.go(0)
     },
-
     signout () {
       this.$agent.Auth.signout()
         .then(() => {

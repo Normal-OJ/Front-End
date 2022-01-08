@@ -27,13 +27,17 @@ export default {
 @import 'https://unpkg.com/katex@0.6.0/dist/katex.min.css';
 @import "./styles/markdownstyle.css";
 
+a {
+  text-decoration: none;
+}
+
 code::before, code::after {
   content: none !important;
 }
 
 .v-application code {
-  background-color: #f8f8f8 !important;
-  color: #bd4147;
+  background-color: var(--v-white) !important;
+  color: var(--v-code-base) !important;
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
 }

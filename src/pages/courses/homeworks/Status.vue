@@ -4,7 +4,7 @@
       <template v-slot:default>
         <thead v-if="probs">
           <tr>
-            <th class="font-weight-bold subtitle-1 text--primary" v-text="'username'"></th>
+            <th>username</th>
             <th
               v-for="(prob, idx) in probs"
               :key="idx"
@@ -22,8 +22,11 @@
           >
             <td class="subtitle-1" v-text="item"></td>
             <td v-for="prob in probs" class="subtitle-1" :key="prob">
-              <font v-if="items[item][prob].problemStatus!=null" :color="COLOR[items[item][prob].problemStatus+1]">{{ STATUS[items[item][prob].problemStatus+1] }}</font>
-              <font v-else>Unsolved</font>
+              <span
+                v-if="items[item][prob].problemStatus!=null"
+                :style="{ color: SUBMISSION_COLOR[`${items[item][prob].problemStatus}`] }"
+              >{{ SUBMISSION_STATUS[items[item][prob].problemStatus] }}</span>
+              <span v-else>Unsolved</span>
               {{ ' / ' + items[item][prob].score + 'pts' }}
               {{ ' / ' + items[item][prob].submissionIds.length + 'tries' }}
             </td>
@@ -35,6 +38,8 @@
 </template>
 
 <script>
+import { SUBMISSION_STATUS, SUBMISSION_COLOR } from '@/constants/submissions'
+
 export default {
 
   name: 'Status',
@@ -44,9 +49,12 @@ export default {
       items: null,
       probs: null,
       copycat: {},
-      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C']
     }
+  },
+
+  computed: {
+    SUBMISSION_STATUS() { return SUBMISSION_STATUS },
+    SUBMISSION_COLOR() { return SUBMISSION_COLOR },
   },
 
   created () {

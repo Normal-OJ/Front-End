@@ -41,11 +41,11 @@
         <v-simple-table class="px-6">
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary text-center">Rank</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Username</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Runtime</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Memory</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Language</th>
+              <th>Rank</th>
+              <th>Username</th>
+              <th>Runtime</th>
+              <th>Memory</th>
+              <th>Language</th>
             </tr>
           </thead>
           <tbody>

@@ -42,7 +42,6 @@
       <v-card :width="$vuetify.breakpoint.smAndDown ? '75vw' : '50vw'" elevation="0" style="background: transparent;">
         <ui-button
           v-if="items && items.length > 0"
-          color="white"
           @click.native="focus = !focus"
         >
           <template slot="content"><v-icon class="mr-1">mdi-comment</v-icon>Comment</template>

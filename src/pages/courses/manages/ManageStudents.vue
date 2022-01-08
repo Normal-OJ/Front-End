@@ -14,10 +14,10 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary">Username</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Display Name</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Role</th>
-              <th class="font-weight-bold subtitle-1 text--primary">Operations</th>
+              <th>Username</th>
+              <th>Display Name</th>
+              <th>Role</th>
+              <th>Operations</th>
             </tr>
           </thead>
           <tbody>
@@ -27,10 +27,10 @@
                   <v-card
                     tile
                     elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
+                    :style="{ cursor: 'pointer', backgroundColor: hover ? 'var(--v-gray)' : 'var(--v-white)' }"
                     @click="dialog = true"
                   >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>Add Students</v-card-title>
+                    <v-card-title class="subtitle-1"><v-icon>mdi-plus</v-icon>Add Students</v-card-title>
                   </v-card>
                 </v-hover>
               </td>
@@ -40,14 +40,14 @@
               <td class="subtitle-1">{{ item.displayedName }}</td>
               <td class="subtitle-1">Student</td>
               <td class="subtitle-1">
-                <ui-button class="mr-1" color="info" @click.native="grade = item.username">
+                <ui-button class="mr-1" small color="info" @click.native="grade = item.username">
                   <template slot="content">
-                    <v-icon>mdi-chart-bar</v-icon>
+                    <v-icon small>mdi-chart-bar</v-icon>
                   </template>
                 </ui-button>
-                <ui-button class="mr-1" color="error" alert @alertClick="del(idx)">
+                <ui-button class="mr-1" small color="error" alert @alertClick="del(idx)">
                   <template slot="content">
-                    <v-icon>mdi-account-remove</v-icon>
+                    <v-icon small>mdi-account-remove</v-icon>
                   </template>
                 </ui-button>
               </td>
@@ -109,11 +109,11 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="subtitle-1 font-weight-bold text--primary">Title</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Score</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Description</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Time</th>
-              <th class="subtitle-1 font-weight-bold text--primary">Operations</th>
+              <th>Title</th>
+              <th>Score</th>
+              <th>Description</th>
+              <th>Time</th>
+              <th>Operations</th>
             </tr>
           </thead>
           <tbody>
@@ -123,10 +123,10 @@
                   <v-card
                     tile
                     elevation="0"
-                    :style="{ cursor: 'pointer', backgroundColor: hover ? '#eee' : '#fff' }"
+                    :style="{ cursor: 'pointer', backgroundColor: hover ? 'var(--v-gray)' : 'var(--v-white)' }"
                     @click="gradeDialog = true"
                   >
-                    <v-card-title class="subtitle-1"><v-icon color="black">mdi-plus</v-icon>Add Score</v-card-title>
+                    <v-card-title class="subtitle-1"><v-icon>mdi-plus</v-icon>Add Score</v-card-title>
                   </v-card>
                 </v-hover>
               </td>

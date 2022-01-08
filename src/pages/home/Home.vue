@@ -10,11 +10,21 @@
         </v-card-title>
         <v-divider class="mt-0"></v-divider>
         <v-card-text class="pl-10">
-          <a
-            v-for="item in pin"
-            :key="item.annId"
-            class="ml-6 subtitle-1" target="_blank" rel="noopener noreferrer" :href="'/post/'+item.annId">
-            <v-icon>mdi-file-document</v-icon>{{ item.title }}</a><br>
+          <template v-if="pin">
+            <a
+              v-for="item in pin"
+              :key="item.annId"
+              class="ml-6 subtitle-1"
+              target="_blank"
+              rel="noopener noreferrer"
+              :href="'/post/'+item.annId"
+            >
+              <v-icon>mdi-file-document</v-icon>
+              {{ item.title }}
+            </a>
+          </template>
+          <Spinner v-else />
+          <br>
         </v-card-text>
       </v-card>
 
@@ -31,6 +41,7 @@
           :readmore="`/post`"
           mask
         ></ShowAnn>
+        <Spinner v-else />
       </v-card-text>
     </v-card>
   </v-container>
@@ -38,19 +49,20 @@
 
 <script>
 import ShowAnn from '@/components/courses/ShowAnn'
+import Spinner from '@/components/ui/Spinner.vue'
 
 export default {
 
   name: 'Home',
 
   components: {
-    ShowAnn
+    ShowAnn, Spinner
   },
 
   data () {
     return {
-      items: [],
-      pin: []
+      items: null,
+      pin: null
     }
   },
 

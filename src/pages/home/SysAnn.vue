@@ -6,24 +6,27 @@
       :menu="role === 0"
       updateInfo
       @delete="deleteAnn"
-    ></ShowAnn>
+    />
+    <Spinner v-else />
   </v-container>
 </template>
 
 <script>
 import ShowAnn from '@/components/courses/ShowAnn'
 import { mapState } from 'vuex'
+import Spinner from '@/components/ui/Spinner.vue'
+
 export default {
 
   name: 'SysAnn',
 
   components: {
-    ShowAnn
+    ShowAnn, Spinner
   },
 
   data () {
     return {
-      items: []
+      items: null
     }
   },
 

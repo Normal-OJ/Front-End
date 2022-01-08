@@ -93,7 +93,9 @@
           </v-tooltip>
         </template>
         <template v-slot:[`item.status`]="{ item }">
-          <span :style="{ color: COLOR[item.status+1] }">{{ STATUS[item.status+1] }}</span>
+          <span :style="{ color: SUBMISSION_COLOR[`${item.status}`] }">
+            {{ SUBMISSION_STATUS[item.status] }}
+          </span>
         </template>
       </v-data-table>
     </v-card>
@@ -105,6 +107,7 @@
 import User from '@/utils/user'
 import Clipboard from 'clipboard'
 import { mapState } from 'vuex'
+import { SUBMISSION_STATUS, SUBMISSION_COLOR } from '@/constants/submissions'
 
 export default {
   name: 'Submissions',
@@ -130,8 +133,6 @@ export default {
       selectedLanguage: [],
       loading: false,
       LANG: ['C', 'C++', 'Python', 'Handwritten'],
-      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       user: new User(this.$cookies.get('jwt')),
       snackbar: false,
       alertMsg: '',
@@ -141,15 +142,15 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'ID', value: 'submissionId', class: 'font-weight-bold subtitle-1 text--primary', sortable: false },
-        { text: 'PID', value: 'problemId', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
-        { text: 'User', value: 'user', class: 'font-weight-bold subtitle-1 text--primary', sortable: false },
-        { text: 'Result', value: 'status', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
-        { text: 'Run Time', value: 'runTime', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
-        { text: 'Memory', value: 'memoryUsage', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
-        { text: 'Score', value: 'score', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
-        { text: 'Language', value: 'languageType', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false },
-        { text: 'Submit Time', value: 'timestamp', class: 'font-weight-bold subtitle-1 text--primary', filterable: false }
+        { text: 'ID', value: 'submissionId', sortable: false },
+        { text: 'PID', value: 'problemId', sortable: false, filterable: false },
+        { text: 'User', value: 'user', sortable: false },
+        { text: 'Result', value: 'status', sortable: false, filterable: false },
+        { text: 'Run Time', value: 'runTime', filterable: false },
+        { text: 'Memory', value: 'memoryUsage', filterable: false },
+        { text: 'Score', value: 'score', filterable: false },
+        { text: 'Language', value: 'languageType', sortable: false, filterable: false },
+        { text: 'Submit Time', value: 'timestamp', filterable: false }
       ]
     },
     submissions () {
@@ -162,6 +163,8 @@ export default {
         return true
       })
     },
+    SUBMISSION_STATUS() { return SUBMISSION_STATUS },
+    SUBMISSION_COLOR() { return SUBMISSION_COLOR },
     ...mapState({
       username: state => state.username,
       role: state => state.role

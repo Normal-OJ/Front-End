@@ -114,11 +114,11 @@ export default new Router({
       path: '/profile',
       name: 'Profile',
       component: () => import('@/pages/profile/Profile.vue')
+    },
+    {
+      path: '/ui/demo',
+      name: 'Demo',
+      component: () => import('@/components/Demo.vue')
     }
-    // {
-    //   path: '/ui/demo',
-    //   name: 'Demo',
-    //   component: () => import('@/components/Demo.vue')
-    // }
   ]
 })
