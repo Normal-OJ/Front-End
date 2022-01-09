@@ -12,6 +12,11 @@ import UiDialog from './components/ui/UiDialog.vue'
 import UiButton from './components/ui/UiButton.vue'
 import UiAlert from './components/ui/UiAlert.vue'
 import UiPost from './components/ui/UiPost.vue'
+import ECharts from 'vue-echarts'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { PieChart } from 'echarts/charts'
+import { LegendComponent, TooltipComponent } from 'echarts/components'
 
 // use cookie package
 Vue.use(VueCookies)
@@ -43,6 +48,15 @@ Sentry.init({
   tracesSampleRate: 0.6,
   logErrors: true
 })
+
+use([
+  CanvasRenderer,
+  PieChart,
+  LegendComponent,
+  TooltipComponent
+]);
+
+Vue.component('v-chart', ECharts)
 
 new Vue({
   vuetify,
