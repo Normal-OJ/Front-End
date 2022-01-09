@@ -5,7 +5,7 @@
       </slot>
     </template>
     <v-card>
-      <v-toolbar color="primary" dark dense>
+      <v-toolbar :color="$vuetify.theme.dark ? 'default' : 'primary'" dark dense>
         <slot name="title">
           Title
         </slot>

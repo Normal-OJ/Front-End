@@ -42,12 +42,14 @@
       updateInfo
       @edit="edit" @delete="deleteAnn"
     ></ShowAnn>
+    <Spinner v-else />
   </div>
 </template>
 
 <script>
 import Creator from '@/components/courses/Creator'
 import ShowAnn from '@/components/courses/ShowAnn'
+import Spinner from '@/components/ui/Spinner.vue'
 import { mapState } from 'vuex'
 
 export default {
@@ -55,12 +57,12 @@ export default {
   name: 'Announcement',
 
   components: {
-    Creator, ShowAnn
+    Creator, ShowAnn, Spinner
   },
 
   data () {
     return {
-      items: [],
+      items: null,
       dialog: false,
       validForm: true,
       ann: {

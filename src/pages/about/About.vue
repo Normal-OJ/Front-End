@@ -73,7 +73,7 @@ export default {
 
 <style lang="css" scoped>
 .page1 {
-  background: #fafafa;
+  background: var(--v-white);
 }
 
 .bottom {

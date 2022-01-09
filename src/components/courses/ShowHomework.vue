@@ -73,13 +73,13 @@
             <template v-slot:default>
               <thead>
                 <tr>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'#'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'PID'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Name'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Type'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Quota'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Score'"></th>
-                  <th class="font-weight-bold subtitle-1 text--primary" v-text="'Statistic'"></th>
+                  <th>#</th>
+                  <th>PID</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Quota</th>
+                  <th>Score</th>
+                  <th>Statistic</th>
                 </tr>
               </thead>
               <tbody v-if="ready">
@@ -105,7 +105,7 @@
           </v-simple-table>
           <div v-if="perm">
             <v-card-text>
-              <ui-button :to="`homework/${item.id}/handwritten`" color="warning" class="mr-3">
+              <ui-button :to="`homework/${item.id}/handwritten`" color="secondary" class="mr-3">
                 <template slot="content">Check Handwritten</template>
               </ui-button>
               <ui-button :to="`homework/${item.id}`" color="info">

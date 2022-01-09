@@ -22,7 +22,7 @@
       <h3>Submission Information</h3>
     </v-row>
     <v-row no-gutters justify="center" style="width: 100%">
-      <v-simple-table style="width: 100%">
+      <v-simple-table style="width: 100%; margin: 0">
         <template v-slot:default>
           <thead>
             <tr>
@@ -45,7 +45,11 @@
                   class="subtitle-1"
                 >
                   <a v-if="info.title==='Problem'" :href="'/problem/'+info.text" v-text="info.text+'. '+info.name"></a>
-                  <p v-else-if="info.title==='Status'" :style="{ color:COLOR[info.text] }" v-text="STATUS[info.text]"></p>
+                  <p
+                    v-else-if="info.title==='Status'"
+                    :style="{ color: SUBMISSION_COLOR[`${info.text}`] }"
+                    v-text="SUBMISSION_STATUS[info.text]"
+                  />
                   <a v-else-if="info.title==='Uploaded File'" :href="`/api/submission/${$route.params.id}/pdf/upload`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
                   <a v-else-if="info.title==='Feedback'" :href="`/api/submission/${$route.params.id}/pdf/comment`" rel="noopener noreferrer" target="_blank"><v-icon color="primary">mdi-file-download</v-icon></a>
                   <p v-else>{{ info.text }}</p>
@@ -60,7 +64,7 @@
       <h3>Subtask Information</h3>
     </v-row>
     <v-row no-gutters justify="center" style="width: 100%">
-      <v-simple-table style="width: 100%" v-for="(subm, idx) in submData" :key="idx">
+      <v-simple-table style="width: 100%; margin: 0" v-for="(subm, idx) in submData" :key="idx">
         <template v-slot:default>
           <thead>
             <tr>
@@ -84,8 +88,8 @@
                 >View</v-btn>
                 <p
                   v-else-if="header==='Status'"
-                  :style="{ color:COLOR[data[header]] }"
-                  v-text="STATUS[data[header]]"
+                  :style="{ color: SUBMISSION_COLOR[data[header]] }"
+                  v-text="SUBMISSION_STATUS[data[header]]"
                 ></p>
                 <p v-else v-text="data[header]"></p>
               </td>
@@ -140,7 +144,8 @@ import { codemirror } from 'vue-codemirror'
 import '@/pages/problem/EditorConfig'
 import User from '@/utils/user'
 import Clipboard from 'clipboard'
-var LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
+import { SUBMISSION_STATUS, SUBMISSION_COLOR } from '@/constants/submissions'
+const LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
 
 export default {
 
@@ -153,7 +158,7 @@ export default {
   data () {
     return {
       submInfo: [],
-      submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score'], //, 'Standard Error'],//, 'Standard Output'],
+      submHeader: ['#', 'Status', 'RunTime(ms)', 'Memory(KB)', 'Score'],
       submData: [],
       codeShow: false,
       code: '',
@@ -164,8 +169,6 @@ export default {
       diaTitle: '',
       diaText: '',
       LANG: ['C (c11)', 'C++ (c++17)', 'Python (py3)', 'Handwritten'],
-      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C'],
       user: new User(this.$cookies.get('jwt')),
       isRejudge: false,
       snackbar: false,
@@ -178,7 +181,9 @@ export default {
   computed: {
     editorTheme () {
       return this.darkTheme ? 'dracula' : 'eclipse'
-    }
+    },
+    SUBMISSION_STATUS() { return SUBMISSION_STATUS },
+    SUBMISSION_COLOR() { return SUBMISSION_COLOR }
   },
   beforeMount () {
     this.getSubm()
@@ -186,23 +191,23 @@ export default {
   mounted () {
     const clipboard = new Clipboard('.copy-code', { text: () => { return this.code } })
     clipboard.on('success', evt => {
-        this.snackbar = false
-        this.alert = {
-          color: 'info',
-          msg: 'Code has been copied into the clipboard!'
-        }
-        this.snackbar = true
-        evt.clearSelection()
-      })
-      clipboard.on('error', err => {
-        this.snackbar = false
-        this.alert = {
-          color: 'error',
-          msg: 'Failed to copy the code'
-        }
-        this.snackbar = true
-        throw err
-      })
+      this.snackbar = false
+      this.alert = {
+        color: 'info',
+        msg: 'Code has been copied into the clipboard!'
+      }
+      this.snackbar = true
+      evt.clearSelection()
+    })
+    clipboard.on('error', err => {
+      this.snackbar = false
+      this.alert = {
+        color: 'error',
+        msg: 'Failed to copy the code'
+      }
+      this.snackbar = true
+      throw err
+    })
   },
   methods: {
     getSubm () {
@@ -211,7 +216,7 @@ export default {
           var data = res.data.data
           this.submInfo = [
             { title: 'Username', text: data.user.username },
-            { title: 'Status', text: data.status + 1 },
+            { title: 'Status', text: data.status },
             { title: 'Run Time(ms)', text: data.runTime },
             { title: 'Memory(KB)', text: data.memoryUsage },
             { title: 'Score', text: data.score },
@@ -240,7 +245,7 @@ export default {
               '#': 'Overall',
               'RunTime(ms)': ele.execTime,
               'Memory(KB)': ele.memoryUsage,
-              Status: ele.status + 1,
+              Status: ele.status,
               Score: ele.score,
               'Standard Error': '',
               'Standard Output': ''
@@ -250,7 +255,7 @@ export default {
                 '#': idx + '-' + (jdx),
                 'RunTime(ms)': ele.execTime,
                 'Memory(KB)': ele.memoryUsage,
-                Status: ele.status + 1,
+                Status: ele.status,
                 Score: '-',
                 'Standard Error': ele.stderr,
                 'Standard Output': ele.stdout
@@ -289,12 +294,8 @@ export default {
 </script>
 
 <style lang="css">
-@font-face {
-  font-family: "Monako";
-  src: url("/monaco.ttf") format("truetype");
-}
 .CodeMirror {
-  font-family: "Monako";
+  font-family: "Monaco";
   height: 100%;
   width: 100%;
   direction: ltr;

@@ -22,8 +22,9 @@
       </v-bottom-navigation>
     </div>
 
+    <Spinner v-if="!items" />
     <ManageStudents
-      v-show="activeBtn==='students'"
+      v-if="items && activeBtn==='students'"
       :items="items"
       :users="users"
     ></ManageStudents>
@@ -36,13 +37,14 @@
 <script>
 import ManageStudents from './ManageStudents'
 import ManageProblems from './ManageProblems'
+import Spinner from '@/components/ui/Spinner.vue'
 
 export default {
 
   name: 'Manages',
 
   components: {
-    ManageStudents, ManageProblems
+    ManageStudents, ManageProblems, Spinner
   },
 
   data () {
@@ -50,7 +52,7 @@ export default {
       activeBtn: 'students',
       dialog: false,
       users: [],
-      items: [],
+      items: null,
       errAlert: false,
       errMsg: '',
       newUsers: []

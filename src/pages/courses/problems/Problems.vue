@@ -52,13 +52,13 @@ export default {
     return {
       search: '',
       headers: [
-        { text: 'ID', value: 'problemId', class: 'font-weight-bold subtitle-1 text--primary' },
-        { text: 'Name', value: 'problemName', class: 'font-weight-bold subtitle-1 text--primary', sortable: false },
-        { text: 'Type', value: 'type', class: 'font-weight-bold subtitle-1 text--primary' },
-        { text: 'Tags', value: 'tags', class: 'font-weight-bold subtitle-1 text--primary' },
-        { text: 'Quota', value: 'quota', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
-        { text: 'Score', value: 'score', class: 'font-weight-bold subtitle-1 text--primary', filterable: false },
-        { text: 'Statistic', value: 'statistic', class: 'font-weight-bold subtitle-1 text--primary', sortable: false, filterable: false }
+        { text: 'ID', value: 'problemId' },
+        { text: 'Name', value: 'problemName', sortable: false },
+        { text: 'Type', value: 'type' },
+        { text: 'Tags', value: 'tags' },
+        { text: 'Quota', value: 'quota', filterable: false },
+        { text: 'Score', value: 'score', filterable: false },
+        { text: 'Statistic', value: 'statistic', sortable: false, filterable: false }
       ],
       items: null,
       loading: false

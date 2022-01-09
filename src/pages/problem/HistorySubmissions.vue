@@ -39,7 +39,13 @@
                   class="mx-auto"
                   type="text"
                 ></v-skeleton-loader>
-                <p v-else class="subtitle-1"><a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id" v-text="STATUS[data[header]]" :style="{color: COLOR[data[header]]}"></a></p>
+                <p v-else class="subtitle-1">
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    :href="'/submission/'+data.id"
+                    :style="{ color: SUBMISSION_COLOR[data[header]] }"
+                  >{{ SUBMISSION_STATUS[data[header]] }}</a></p>
               </td>
             </template>
           </tr>
@@ -49,9 +55,12 @@
           <tr :key="-idx" v-if="data['Status']">
             <td class="subtitle-1">{{ data['Timestamp'] }}</td>
             <td class="subtitle-1">
-              <a target="_blank" rel="noopener noreferrer" :href="'/submission/'+data.id"
-                :style="{color: COLOR[data['Status']]}"
-              >{{ STATUS[data['Status']] }}</a>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                :href="'/submission/'+data.id"
+                :style="{ color: SUBMISSION_COLOR[`${data['Status']}`] }"
+              >{{ SUBMISSION_STATUS[data['Status']] }}</a>
             </td>
             <td class="subtitle-1">{{ data['Score'] }}</td>
             <td class="subtitle-1">{{ data['Run Time'] }}</td>
@@ -65,6 +74,8 @@
 </template>
 
 <script>
+import { SUBMISSION_STATUS, SUBMISSION_COLOR } from '@/constants/submissions'
+
 export default {
 
   name: 'HistorySubmissions',
@@ -74,9 +85,12 @@ export default {
   data () {
     return {
       submHeader: ['Timestamp', 'Status', 'Score', 'RunTime(ms)', 'Memory(KB)', 'Language'],
-      STATUS: ['Pending', 'Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      COLOR: ['#4E342E', '#00C853', '#F44336', '#DD2C00', '#9C27B0', '#FF9800', '#2196F3', '#93282C', '#BF360C']
     }
-  }
+  },
+
+  computed: {
+    SUBMISSION_STATUS() { return SUBMISSION_STATUS },
+    SUBMISSION_COLOR() { return SUBMISSION_COLOR },
+  },
 }
 </script>

@@ -16,7 +16,7 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th class="font-weight-bold subtitle-1 text--primary" v-text="'username'"></th>
+              <th v-text="'username'"></th>
               <th
                 v-for="(prob, idx) in probs"
                 :key="idx"

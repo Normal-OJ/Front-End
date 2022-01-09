@@ -162,7 +162,9 @@ export default {
 
   methods: {
     menuEmit (item) {
-      if (item === 'edit') { this.$emit(item) } else {
+      if (item === 'edit') {
+        this.$emit(item)
+      } else {
         this.dialog = true
       }
     }
