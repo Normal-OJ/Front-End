@@ -21,7 +21,7 @@ export default new Vuetify({
         gray: colors.grey.base,
       },
       dark: {
-        primary: '#6cb1cc',
+        primary: '#69a7bf',
         secondary: '#c2958f',
         success: '#178C1B',
         info: '#5cb3bf',
