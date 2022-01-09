@@ -1,207 +1,162 @@
 <template>
   <div>
-    <v-row justify="center"  v-if="user.role >= 2">
+    <v-row justify="center" v-if="role >= 2">
       <h3>Sorry, statistic page is temporary closed due to technical issue. 😢</h3>
     </v-row>
-    <v-row v-else justify="center">
-      <v-card
-        :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
-        class="my-6"
-      >
-        <v-row no-gutters>
-          <v-card-title class="headline text-center">
-            Statistic
-          </v-card-title>
-          <v-spacer/>
-          <v-chip v-if="prob != null" label color="primary" class="subtitle-1">
-            <a :href="`/problem/${$route.params.id}`" style="color: white;">{{ 'Problem: ' + $route.params.id }} - {{ prob.problemName }}</a>
-          </v-chip>
-        </v-row>
+    <v-container v-else>
+      <div class="d-flex align-center">
+        <h3>Submission Status</h3>
+        <v-spacer />
+        <v-chip v-if="prob != null" label color="primary" class="subtitle-1">
+          <a :href="`/problem/${$route.params.id}`" style="color: white;">{{ 'Problem: ' + $route.params.id }} - {{ prob.problemName }}</a>
+        </v-chip>
+      </div>
 
-        <v-row no-gutters justify="center">
-          <h3 v-if="hand">No statistic for Handwritten!</h3>
-        </v-row>
-        <v-skeleton-loader
-          v-show="loading"
-          class="mx-auto"
-          width="80%"
-          type="image"
-        ></v-skeleton-loader>
+      <v-row v-if="isHandwritten" no-gutters justify="center">
+        <h3>No statistic for Handwritten!</h3>
+      </v-row>
 
-        <canvas
-          id="pie-chart"
-          :width="$vuetify.breakpoint.mdAndUp ? '50vw' : '95vw'"
-          height="30vh"
-        ></canvas>
+      <spinner v-if="isLoading" />
+      <v-chart
+        v-else
+        :theme="$vuetify.theme.dark ? 'dark' : null"
+        :option="pieChartOption"
+        style="min-height: 400px"
+      />
 
-        <v-card-title class="headline text-center">
-          Runtime Top 10
-        </v-card-title>
+      <h3>Runtime Top 10</h3>
 
-        <v-simple-table class="px-6">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Username</th>
-              <th>Runtime</th>
-              <th>Memory</th>
-              <th>Language</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, idx) in subm" :key="item.submissionId">
-              <td v-if="idx<3" class="headline text-center">{{ (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : '🥉')) }}</td>
-              <td v-else class="subtitle-1 text-center">{{ (idx+1) }}</td>
-              <td class="subtitle-1">{{ item.user.username }}</td>
-              <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
-              <td class="subtitle-1">{{ item.memoryUsage + 'KB' }}</td>
-              <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
-            </tr>
-            <tr v-show="loading">
-              <td colspan="4">
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="table-row"
-                ></v-skeleton-loader>
-              </td>
-            </tr>
-          </tbody>
-        </v-simple-table>
-
-      </v-card>
-    </v-row>
+      <v-simple-table class="px-6">
+        <thead>
+          <tr>
+            <th class="text-center">Rank</th>
+            <th>Username</th>
+            <th>Runtime</th>
+            <th>Memory</th>
+            <th>Language</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, idx) in submissions" :key="item.submissionId">
+            <td v-if="idx<3" class="headline text-center">{{ (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : '🥉')) }}</td>
+            <td v-else class="subtitle-1 text-center">{{ (idx+1) }}</td>
+            <td class="subtitle-1">{{ item.user.username }}</td>
+            <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
+            <td class="subtitle-1">{{ item.memoryUsage + 'KB' }}</td>
+            <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
+          </tr>
+        </tbody>
+      </v-simple-table>
+    </v-container>
   </div>
 </template>
 
 <script>
-import User from '@/utils/user'
+import { SUBMISSION_COLOR, SUBMISSION_STATUS, SUBMISSION_STATUS_CODE } from '@/constants/submissions'
+import { mapState } from 'vuex'
+import Spinner from '@/components/ui/Spinner.vue'
 
 export default {
+  components: { Spinner },
 
   name: 'Statistic',
 
   data () {
     return {
-      LANG: ['C', 'C++', 'Python', 'Handwritten'],
-      loading: true,
+      LANG: ['C', 'C++', 'Python'],
+      isLoading: true,
       prob: null,
-      subm: null,
-      data: [0, 0, 0, 0, 0, 0, 0, 0],
+      submissions: [],
       students: [],
-      hand: false,
-      user: new User(this.$cookies.get('jwt'))
+      pieChartOption: {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left'
+        },
+        series: [
+          {
+            type: 'pie',
+            label: {
+              textBorderColor: 'none',
+            },
+            data: [],
+            color: [],
+          }
+        ]
+      }
     }
   },
 
+  computed: {
+    isHandwritten() {
+      if (!this.prob) return false
+      return this.prob.type === 2
+    },
+    ...mapState({
+      role: state => state.role
+    })
+  },
+
   created () {
-    // only teacher and admin can view statistic
-    if (this.user.role < 2) {
+    if (this.role < 2) {
       this.getProb()
     }
   },
 
-  mounted () {
-    const canvasScript = document.createElement('script')
-    // FIXME: use chart package by npm install
-    canvasScript.setAttribute('src', 'https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js')
-    document.head.appendChild(canvasScript)
-  },
-
   methods: {
-    getProb () {
-      this.$agent.Problem.getInfo(this.$route.params.id)
-        .then((res) => {
-          this.prob = res.data.data
-          if (this.prob.type === 2) {
-            this.hand = true
-            throw new Error('')
-          }
-          return this.prob.courses[0]
-        })
-        .then((co) => {
-          return this.$agent.Course.getInfo(co)
-        })
-        .then((res) => {
-          this.students = res.data.data.students
-          const params = {
-              offset: 0,
-              count: -1,
-              course: this.prob.courses[0],
-              problemId: this.$route.params.id,
-          }
-          return this.$agent.Submission.getList(params)
-        })
-        .then((res) => {
-          res.data.data.submissions.forEach((ele, idx) => {
-            if (this.inCourse(ele.user.username)) {
-              if (ele.status !== -1) {
-                this.data[ele.status]++
-              }
-              if (ele.status !== 0) {
-                delete res.data.data.submissions[idx]
-              }
-            } else {
-              delete res.data.data.submissions[idx]
-            }
-          })
-          this.loading = false
-          draw(this.data)
-          this.subm = res.data.data.submissions
-            .sort((a, b) => {
-              if (a.runTime === b.runTime) {
-                return a.memoryUsage - b.memoryUsage
-              }
-              return a.runTime - b.runTime
-            }).filter((value, index, self) => {
-              for (let i = 0; i < index; i++) {
-                if (self[i].user.username === value.user.username) return false
-              }
-              return true
-            }).slice(0, 10)
-        })
-        .finally(() => {
-          this.loading = false
-        })
-    },
-    inCourse (user) {
-      return this.students.find(({ username }) => username === user) !== undefined
-    }
-  }
-}
-var draw = function (data) {
-  var ctx = document.getElementById('pie-chart').getContext('2d')
-  // eslint-disable-next-line no-unused-vars, no-undef
-  new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Accepted', 'Wrong Answer', 'Compile Error', 'Time Limit Exceed', 'Memory Limit Exceed', 'Runtime Error', 'Judge Error', 'Output Limit Exceed'],
-      datasets: [{
-        label: '# of Votes',
-        data: data,
-        backgroundColor: [
-          '#00C853CC',
-          '#F44336CC',
-          '#DD2C00CC',
-          '#9C27B0CC',
-          '#FF9800CC',
-          '#2196F3CC',
-          '#93282CCC',
-          '#BF360CCC'
-        ]
-      }]
-    },
-    options: {
-      tooltips: {
-        titleFontSize: 18,
-        bodyFontSize: 16
-      },
-      legend: {
-        labels: {
-          fontColor: 'black',
-          fontSize: 16
-        }
+    async getProb () {
+      this.prob = (await this.$agent.Problem.getInfo(this.$route.params.id)).data.data
+      if (this.prob.type === 2) return
+
+      this.students = (await this.$agent.Course.getInfo(this.prob.courses[0])).data.data.students
+
+      const params = {
+        offset: 0,
+        count: -1,
+        course: this.prob.courses[0],
+        problemId: this.$route.params.id,
       }
-    }
-  })
+      const submissions = (await this.$agent.Submission.getList(params)).data.data.submissions
+
+      const submissionStatusCount = {}
+      Object.values(SUBMISSION_STATUS).forEach(status => {
+        submissionStatusCount[status] = 0
+      })
+      const studentSubmissions = submissions.filter(subm => {
+        return this.students.find(({ username }) => username === subm.user.username)
+      })
+      studentSubmissions.forEach(subm => {
+        submissionStatusCount[SUBMISSION_STATUS[subm.status]] += 1
+      })
+      const submissionStatusCountArray = []
+      const submissionStatusColor = []
+      Object.entries(SUBMISSION_STATUS).forEach(([key, name]) => {
+        if ( submissionStatusCount[name] > 0 ) {
+          submissionStatusCountArray.push({ name, value: submissionStatusCount[name] })
+          submissionStatusColor.push(SUBMISSION_COLOR[key])
+        }
+      })
+      this.pieChartOption.series[0].data = submissionStatusCountArray
+      this.pieChartOption.series[0].color = submissionStatusColor
+      const studentACSubmissions = studentSubmissions.filter(subm => {
+        return subm.status === SUBMISSION_STATUS_CODE.ACCEPTED
+      })
+      this.submissions = studentACSubmissions
+        .sort((a, b) => {
+          if (a.runTime === b.runTime) return a.memoryUsage - b.memoryUsage
+          return a.runTime - b.runTime
+        }).filter((value, index, arr) => {
+          for (let i = 0; i < index; i++) {
+            if (arr[i].user.username === value.user.username) return false
+          }
+          return true
+        }).slice(0, 10)
+      this.isLoading = false
+    },
+  }
 }
 </script>
