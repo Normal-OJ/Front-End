@@ -8,11 +8,11 @@
         <ui-button small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}`">
           <template slot="content">back to problem</template>
         </ui-button>
-        <ui-button v-if="submInfo[6].text !== 'Handwritten' && user.role < 2" small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
+        <ui-button v-if="submInfo[6].text !== 'Handwritten' && role < 2" small color="info" class="mt-3 mr-3" :to="`/problem/${submInfo[0].text}/statistic`">
           <template slot="content">view statistic</template>
         </ui-button>
         <v-spacer />
-        <v-btn v-if="user.role < 2" small color="error" class="mt-3" outlined @click="rejudge" :loading="isRejudge">
+        <v-btn v-if="role < 2" small color="error" class="mt-3" outlined @click="rejudge" :loading="isRejudge">
           rejudge
         </v-btn>
         <v-spacer />
@@ -142,9 +142,9 @@
 <script>
 import { codemirror } from 'vue-codemirror'
 import '@/pages/problem/EditorConfig'
-import User from '@/utils/user'
 import Clipboard from 'clipboard'
 import { SUBMISSION_STATUS, SUBMISSION_COLOR } from '@/constants/submissions'
+import { mapState } from 'vuex'
 const LANG_MODE = ['text/x-csrc', 'text/x-c++src', { name: 'python', version: 3 }]
 
 export default {
@@ -169,7 +169,6 @@ export default {
       diaTitle: '',
       diaText: '',
       LANG: ['C (c11)', 'C++ (c++17)', 'Python (py3)', 'Handwritten'],
-      user: new User(this.$cookies.get('jwt')),
       isRejudge: false,
       snackbar: false,
       alert: {
@@ -183,7 +182,10 @@ export default {
       return this.darkTheme ? 'dracula' : 'eclipse'
     },
     SUBMISSION_STATUS() { return SUBMISSION_STATUS },
-    SUBMISSION_COLOR() { return SUBMISSION_COLOR }
+    SUBMISSION_COLOR() { return SUBMISSION_COLOR },
+    ...mapState({
+      role: state => state.role
+    })
   },
   beforeMount () {
     this.getSubm()

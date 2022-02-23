@@ -15,7 +15,7 @@
               </v-chip>
             </v-col>
             <v-spacer></v-spacer>
-            <v-col cols="4" v-if="prob.type != 2 && user.role < 2">
+            <v-col cols="4" v-if="prob.type != 2 && role < 2">
               <v-btn color="info" small width="100%" @click="$router.push({ path: `${$route.params.id}/statistic` })">
                 <v-icon>mdi-chart-arc</v-icon>Statistic
               </v-btn>
@@ -26,7 +26,7 @@
               <p>Quota: <strong class="text--primary">{{ this.prob.quota==-1 ? 'unlimited' : this.prob.quota-this.prob.submitCount }}</strong></p>
             </v-col>
             <v-spacer />
-            <v-col cols="4" v-if="prob.type != 2 && user.role < 2">
+            <v-col cols="4" v-if="prob.type != 2 && role < 2">
               <v-btn color="info" small width="100%" @click="download">
                 <v-icon>mdi-download</v-icon>Testdata
               </v-btn>
@@ -137,7 +137,6 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import Editor from './Editor'
-import User from '@/utils/user'
 import Clipboard from 'clipboard'
 import { mapState } from 'vuex'
 
@@ -160,13 +159,13 @@ export default {
       alert: {
         color: 'info',
         msg: 'The example has been copied into the clipboard!'
-      },
-      user: new User(this.$cookies.get('jwt'))
+      }
     }
   },
   computed: {
     ...mapState({
-      username: state => state.username
+      username: state => state.username,
+      role: state => state.role
     }),
     allowedLang () {
       const temp = []
