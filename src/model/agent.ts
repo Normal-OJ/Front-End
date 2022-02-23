@@ -3,7 +3,8 @@ import config from '@/constants/config'
 
 // create axios instance with baseurl
 export const fetcher = axios.create({
-  baseURL: config.API_BASE_URL
+  baseURL: config.API_BASE_URL,
+  withCredentials: true,
 })
 
 fetcher.interceptors.response.use(
