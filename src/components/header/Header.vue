@@ -38,7 +38,8 @@
       </v-btn>
 
       <!-- Sign in, up, User -->
-      <v-menu v-if="isLogin && $vuetify.breakpoint.mdAndUp" offset-y>
+      <Spinner v-if="isFetching" />
+      <v-menu v-else-if="isLogin && $vuetify.breakpoint.mdAndUp" offset-y>
         <template v-slot:activator="{ on: { click } }">
           <ui-button
             text
@@ -97,13 +98,15 @@
             link
           ><v-list-item-title v-text="link.title"></v-list-item-title></v-list-item>
         </template>
-        <v-divider v-if="isLogin"></v-divider>
-        <v-list-item v-if="isLogin" link :to="{path: '/profile'}">
-          <v-list-item-title v-text="'Profile'"></v-list-item-title>
-        </v-list-item>
-        <v-list-item v-if="isLogin" link @click="signout">
-          <v-list-item-title v-text="'Sign Out'"></v-list-item-title>
-        </v-list-item>
+        <template v-if="isLogin">
+          <v-divider></v-divider>
+          <v-list-item link :to="{path: '/profile'}">
+            <v-list-item-title v-text="'Profile'"></v-list-item-title>
+          </v-list-item>
+          <v-list-item link @click="signout">
+            <v-list-item-title v-text="'Sign Out'"></v-list-item-title>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
   </div>
@@ -143,6 +146,7 @@ export default {
 
   computed: {
     ...mapState({
+      isFetching: state => state.isFetching,
       isLogin: state => state.isLogin,
       username: state => state.username,
       displayedName: state => state.displayedName,
