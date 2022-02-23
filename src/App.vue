@@ -17,8 +17,8 @@ export default {
     Header
   },
 
-  created () {
-    this.$store.commit('updateJwt')
+  async created () {
+    await this.$store.dispatch('fetchUserData')
   }
 }
 </script>
