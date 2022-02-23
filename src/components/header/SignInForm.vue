@@ -81,8 +81,8 @@ export default {
 
   methods: {
     submit () {
-      this.btnLoading = true
       if (this.$refs.form.validate()) {
+        this.btnLoading = true
         this.$agent.Auth.signin(this.authData)
           .then(() => {
             this.$emit('signin')
@@ -92,8 +92,10 @@ export default {
             this.errAlert = true
             throw error
           })
+          .finally(() => {
+            this.btnLoading = false
+          })
       }
-      this.btnLoading = false
     },
     emailResend () {
       const routeData = this.$router.resolve({ name: 'EmailResend' })
