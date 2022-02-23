@@ -104,7 +104,6 @@
 </template>
 
 <script>
-import User from '@/utils/user'
 import Clipboard from 'clipboard'
 import { mapState } from 'vuex'
 import { SUBMISSION_STATUS, SUBMISSION_COLOR } from '@/constants/submissions'
@@ -133,7 +132,6 @@ export default {
       selectedLanguage: [],
       loading: false,
       LANG: ['C', 'C++', 'Python', 'Handwritten'],
-      user: new User(this.$cookies.get('jwt')),
       snackbar: false,
       alertMsg: '',
       pid2Pname: {}
