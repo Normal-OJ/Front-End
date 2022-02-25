@@ -7,9 +7,62 @@
     <v-card height="100%" elevation="2" v-if="!grade">
       <v-card-title class="font-weight-bold">Manage Students</v-card-title>
       <v-divider class="mt-0"></v-divider>
-      <v-chip v-if="items" label class="ml-3">
-        {{ 'Total Students: ' + items.length }}
-      </v-chip>
+      <div class="d-flex">
+        <v-chip v-if="items" label class="ml-3">
+          {{ 'Total Students: ' + items.length }}
+        </v-chip>
+        <v-spacer />
+        <ui-button
+          class="mx-3"
+          color="secondary"
+          @click.native="batchSignupDialog = true"
+        >
+          <template slot="content">batch signup</template>
+        </ui-button>
+        <ui-dialog v-model="batchSignupDialog" :width="$vuetify.breakpoint.smAndDown ? '95vw' : '50vw'"
+          @cancel="cancel"
+        >
+          <template slot="title">Batch Signup</template>
+          <template slot="body">
+            <v-card-text>
+              <div>CSV headers: <code>username</code>, <code>email</code>, <code>password</code>,  <code>displayedName</code> (optional), <code>role</code> (optional)</div>
+              <v-file-input v-model="csvFile" label="CSV File" accept=".csv" />
+              <div v-if="csvString != null">預覽</div>
+              <v-simple-table class="mt-4" v-if="csvString != null">
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th v-for="h in csvHeaders" :key="h">{{ h }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(b, index) in csvBodies" :key="index">
+                      <td v-for="h in csvHeaders" :key="`${h}-${index}`">
+                        {{ b[h] }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+
+              <ui-alert
+                v-model="errAlert"
+                dense
+                type="error"
+                :alertMsg="errMsg"
+              ></ui-alert>
+            </v-card-text>
+          </template>
+          <template slot="action-cancel">
+            <v-btn outlined color="secondary" :loading="batchSignupLoading" @click.native="cancel">Cancel</v-btn>
+          </template>
+          <template slot="action-ok">
+            <v-btn class="ml-3" color="primary" :disabled="!csvString" :loading="batchSignupLoading" @click.native="submitBatchSignup">
+              Submit
+            </v-btn>
+          </template>
+        </ui-dialog>
+      </div>
       <v-simple-table class="px-4">
         <template v-slot:default>
           <thead>
@@ -202,6 +255,8 @@
 </template>
 
 <script>
+import Papa from 'papaparse'
+
 export default {
 
   name: 'ManageStudents',
@@ -227,12 +282,18 @@ export default {
       grade: '',
       scores: null,
       gradeDialog: false,
+      batchSignupDialog: false,
       data: {
         title: '',
         newtitle: '',
         score: '',
         content: ''
-      }
+      },
+      csvFile: null,
+      csvString: null,
+      csvHeaders: '',
+      csvBodies: '',
+      batchSignupLoading: false,
     }
   },
 
@@ -248,13 +309,52 @@ export default {
             this.scores = null
           })
       }
-    }
+    },
+    csvFile () {
+      this.csvString = null
+      if (this.csvFile) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          this.csvString = evt.target.result;
+          Papa.parse(this.csvString, {
+              header: true,
+              complete: (results) => {
+                this.csvHeaders = results.meta.fields
+                this.csvBodies = results.data.slice(0, 10)
+                console.log(this.csvHeaders, this.csvBodies)
+              },
+              error: (errors) => {
+                this.csvString = null
+                this.errMsg = errors
+                this.errAlert = true
+              },
+            })
+        };
+        reader.readAsText(this.csvFile);
+      }
+    },
   },
 
   methods: {
+    submitBatchSignup () {
+      const body = { newUsers: this.csvString, course: this.$route.params.name }
+      this.batchSignupLoading = true
+      this.$agent.Auth.batchSignup(body)
+        .then(() => {
+          this.$router.go(0)
+        })
+        .catch((err) => {
+          this.errMsg = err
+          this.errAlert = true
+        })
+        .finally(() => {
+          this.batchSignupLoading = false
+        })
+    },
     cancel () {
       this.dialog = false
       this.gradeDialog = false
+      this.batchSignupDialog = false
       this.newUsers = []
     },
     submit () {
