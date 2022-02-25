@@ -115,13 +115,14 @@
 <script>
 import Auth from './Auth'
 import { mapState } from 'vuex'
+import Spinner from '@/components/ui/Spinner.vue'
 
 export default {
 
   name: 'Header',
 
   components: {
-    Auth: Auth
+    Auth, Spinner,
   },
 
   data () {

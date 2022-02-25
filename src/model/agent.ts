@@ -28,7 +28,8 @@ const Auth = {
   recoveryPassword: (body) => fetcher.post('/auth/password-recovery', body),
   resendEmail: (body) => fetcher.post('/auth/resend-email', body),
   changePassword: (body) => fetcher.post('/auth/change-password', body),
-  me: () => fetcher.get('/auth/me')
+  me: () => fetcher.get('/auth/me'),
+  batchSignup: (body) => fetcher.post('/auth/batch-signup', body),
 }
 
 const Course = {
