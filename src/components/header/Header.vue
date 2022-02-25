@@ -122,8 +122,11 @@ export default {
   name: 'Header',
 
   components: {
-    Auth, Spinner
+    Auth,
+    Spinner,
+  },
   data () {
+    return {
       links: [
         { title: 'Home', path: '/' },
         { title: 'Courses', path: '/courses' },
