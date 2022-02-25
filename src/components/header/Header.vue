@@ -115,18 +115,15 @@
 <script>
 import Auth from './Auth'
 import { mapState } from 'vuex'
-import Spinner from '@/components/ui/Spinner.vue'
+import Spinner from '../ui/Spinner.vue'
 
 export default {
 
   name: 'Header',
 
   components: {
-    Auth, Spinner,
-  },
-
+    Auth, Spinner
   data () {
-    return {
       links: [
         { title: 'Home', path: '/' },
         { title: 'Courses', path: '/courses' },
