@@ -376,14 +376,14 @@
                           <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
                         </ui-button>
                       </v-card-title>
-                      <v-card-text><code style="width: 100%;">{{ prob.description.sampleInput[idx-1] }}</code></v-card-text>
+                      <v-card-text><code class="sample">{{ prob.description.sampleInput[idx-1] }}</code></v-card-text>
                       <v-card-title class="py-0">
                         Output
                         <ui-button color="grey" icon class="ml-3">
                           <template slot="content"><v-icon>mdi-content-copy</v-icon></template>
                         </ui-button>
                       </v-card-title>
-                      <v-card-text><code style="width: 100%;">{{ prob.description.sampleOutput[idx-1] }}</code></v-card-text>
+                      <v-card-text><code class="sample">{{ prob.description.sampleOutput[idx-1] }}</code></v-card-text>
                     </v-card>
                   </v-row>
                   <h2>Hint</h2>
@@ -653,3 +653,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.sample {
+  display: block;
+  white-space: pre-wrap;
+  width: 100%;
+}
+</style>

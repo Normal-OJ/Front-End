@@ -62,8 +62,7 @@
                   <code
                     ref="sample-i"
                     :id="`sample-i${idx}`"
-                    style="width: 100%;"
-                    class="subtitle-1"
+                    class="subtitle-1 sample"
                   >{{ prob.description.sampleInput[idx] }}</code>
                 </v-card-text>
                 <v-card-title class="py-0">
@@ -84,8 +83,7 @@
                   <code
                     ref="sample-o"
                     :id="`sample-o${idx}`"
-                    style="width: 100%;"
-                    class="subtitle-1"
+                    class="subtitle-1 sample"
                   >{{ prob.description.sampleOutput[idx] }}</code>
                 </v-card-text>
               </v-card>
@@ -297,3 +295,12 @@ export default {
   }
 }
 </script>
+
+
+<style scoped>
+.sample {
+  display: block;
+  white-space: pre-wrap;
+  width: 100%;
+}
+</style>
