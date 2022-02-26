@@ -531,11 +531,7 @@ export default {
               if (this.prob.type !== 2) {
                 var formData = new FormData()
                 formData.append('case', this.zip)
-                return this.$agent.Problem.modifyTestcase(`/api/problem/manage/${res.data.data.problemId}`,
-                  formData,
-                  {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                  })
+                return this.$agent.Problem.modifyTestcase(res.data.data.problemId, formData)
               }
             })
             .then(() => {
