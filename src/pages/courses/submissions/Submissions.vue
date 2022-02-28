@@ -5,11 +5,12 @@
         Submissions
         <v-spacer></v-spacer>
         <v-text-field
+          v-if="isTeacherOrAdmin"
           v-model="search"
           append-icon="mdi-magnify"
-          label="Search user, submission id"
-          single-line
-          hide-details
+          label="Search username (Exact match)"
+          hint="Press enter to search"
+          @keydown.enter="option.username = search || null"
         ></v-text-field>
         <v-spacer></v-spacer>
         <v-tooltip right>
@@ -33,27 +34,27 @@
         </v-col>
         <v-col cols="6" md="3">
           <v-combobox
-            v-model="selectedProblem"
+            v-model="option.selectedProblem"
             label="Problem"
             :items="problems"
+            clearable
             solo
             hide-details
-            multiple
           ></v-combobox>
         </v-col>
         <v-col cols="6" md="3">
           <v-select
-            v-model="selectedStatus"
+            v-model="option.selectedStatus"
             label="Status"
             :items="submStatus"
+            clearable
             solo
             hide-details
-            multiple
           ></v-select>
         </v-col>
         <v-col cols="6" md="3">
           <v-select
-            v-model="selectedLanguage"
+            v-model="option.selectedLanguage"
             label="Language"
             :items="LANG"
             solo
@@ -64,9 +65,16 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="submissions"
-        :items-per-page="15"
+        :items="items"
+        :page.sync="option.page"
+        :items-per-page="option.itemsPerPage"
+        :server-items-length="submissionCount"
         :loading="loading"
+        :footer-props="{
+          itemsPerPageOptions: [5, 10, 20, 30]
+        }"
+        @update:page="(val) => option.page = val"
+        @update:items-per-page="(val) => option.itemsPerPage = val"
       >
         <template v-slot:[`item.submissionId`]="{ item }">
           <a :href="'/submission/'+item.submissionId" rel="noopener noreferrer" target="_blank">{{ item.submissionId.substr(-6) }}</a>
@@ -96,6 +104,17 @@
           <span :style="{ color: SUBMISSION_COLOR[`${item.status}`] }">
             {{ SUBMISSION_STATUS[item.status] }}
           </span>
+        </template>
+        <template v-slot:[`footer.prepend`]>
+          <v-text-field
+            :value="option.page"
+            class="px-4"
+            label="Page"
+            type="number"
+            min="1"
+            :max="Math.floor(submissionCount / option.itemsPerPage) + 1"
+            @input="option.page = parseInt($event, 10)"
+          ></v-text-field>
         </template>
       </v-data-table>
     </v-card>
@@ -127,14 +146,25 @@ export default {
         { text: 'JE', value: 6 },
         { text: 'OLE', value: 7 }
       ],
-      selectedProblem: [],
-      selectedStatus: [],
-      selectedLanguage: [],
       loading: false,
-      LANG: ['C', 'C++', 'Python', 'Handwritten'],
+      LANG: [
+        { text: 'C', value: 0 },
+        { text: 'C++', value: 1 },
+        { text: 'Python', value: 2 },
+        { text: 'Handwritten', value: 3 },
+      ],
       snackbar: false,
       alertMsg: '',
-      pid2Pname: {}
+      pid2Pname: {},
+      submissionCount: 10,
+      option: {
+        itemsPerPage: 10,
+        page: 1,
+        selectedProblem: null,
+        selectedStatus: null,
+        selectedLanguage: [],
+        username: '',
+      }
     }
   },
   computed: {
@@ -144,22 +174,12 @@ export default {
         { text: 'PID', value: 'problemId', sortable: false, filterable: false },
         { text: 'User', value: 'user', sortable: false },
         { text: 'Result', value: 'status', sortable: false, filterable: false },
-        { text: 'Run Time', value: 'runTime', filterable: false },
-        { text: 'Memory', value: 'memoryUsage', filterable: false },
-        { text: 'Score', value: 'score', filterable: false },
+        { text: 'Run Time', value: 'runTime', sortable: false, filterable: false },
+        { text: 'Memory', value: 'memoryUsage', sortable: false, filterable: false },
+        { text: 'Score', value: 'score', sortable: false, filterable: false },
         { text: 'Language', value: 'languageType', sortable: false, filterable: false },
-        { text: 'Submit Time', value: 'timestamp', filterable: false }
+        { text: 'Submit Time', value: 'timestamp', sortable: false, filterable: false }
       ]
-    },
-    submissions () {
-      const selectedPid = this.selectedProblem.map(sp => sp.value)
-      return this.items.filter(s => {
-        if (this.search.length > 0 && !s.submissionId.includes(this.search) && !s.user.username.includes(this.search) && !s.user.displayedName.includes(this.search)) return false
-        if (selectedPid.length > 0 && !selectedPid.includes(s.problemId)) return false
-        if (this.selectedStatus.length > 0 && !this.selectedStatus.includes(s.status)) return false
-        if (this.selectedLanguage.length > 0 && !this.selectedLanguage.includes(s.languageType)) return false
-        return true
-      })
     },
     SUBMISSION_STATUS() { return SUBMISSION_STATUS },
     SUBMISSION_COLOR() { return SUBMISSION_COLOR },
@@ -169,27 +189,39 @@ export default {
     }),
     isTeacherOrAdmin () {
       return this.role <= 1
+    },
+  },
+  watch: {
+    option: {
+      handler: function () {
+        this.getSubmissions()
+      },
+      deep: true
     }
   },
   methods: {
     async getSubmissions () {
       this.loading = true
       const filter = {
-        offset: 0,
-        count: -1,
-        course: this.$route.params.name
+        offset: (this.option.page - 1) * this.option.itemsPerPage,
+        count: this.option.itemsPerPage,
+        course: this.$route.params.name,
+        problemId: this.option.selectedProblem && this.option.selectedProblem.value,
+        status: this.option.selectedStatus,
+        languageType: this.option.selectedLanguage.join(',') || null,
+        username: this.option.username || null,
       }
       if (this.whosSubm === 'My Submissions') {
         filter.username = this.username
       }
-      this.items = []
       this.$agent.Submission.getList(filter)
         .then((res) => {
           this.items = res.data.data.submissions.map(s => ({
             ...s,
-            languageType: this.LANG[s.languageType],
+            languageType: this.LANG[s.languageType].text,
             timestamp: this.$formatTime(s.timestamp)
           }))
+          this.submissionCount = res.data.data.submissionCount
         })
         .finally(() => (this.loading = false))
     },
@@ -218,6 +250,9 @@ export default {
   },
   async beforeMount () {
     await this.getProblems()
+    if (this.isTeacherOrAdmin) {
+      this.whosSubm = 'All Submissions'
+    }
     await this.getSubmissions()
   },
   mounted () {
