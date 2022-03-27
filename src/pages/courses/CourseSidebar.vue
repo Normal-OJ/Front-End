@@ -104,11 +104,12 @@ export default {
       role: state => state.role,
       username: state => state.username
     }),
-    isTA () {
-      return this.ta.includes(t => t.username === this.username)
-    },
+    // isTA () {
+    //   return this.ta.includes(t => t.username === this.username)
+    // },
     canManageCourse () {
-      return this.role <= 1 || this.isTA
+      return this.role <= 1
+      // return this.role <= 1 || this.isTA
     }
   },
 
@@ -117,7 +118,7 @@ export default {
       this.$agent.Course.getInfo(this.$route.params.name)
         .then((res) => {
           this.teacherName = res.data.data.teacher.username
-          this.ta = res.data.data.TAs
+          // this.ta = res.data.data.TAs
           this.avatar = setAvatar(res.data.data.teacher.md5)
         })
     }
