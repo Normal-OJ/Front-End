@@ -1,52 +1,56 @@
 <template>
   <div>
-    <v-row justify="center" v-if="role >= 2">
-      <h3>Sorry, statistic page is temporary closed due to technical issue. 😢</h3>
-    </v-row>
-    <v-container v-else>
-      <div class="d-flex align-center">
-        <h3>Submission Status</h3>
-        <v-spacer />
-        <v-chip v-if="prob != null" label color="primary" class="subtitle-1">
-          <a :href="`/problem/${$route.params.id}`" style="color: white;">{{ 'Problem: ' + $route.params.id }} - {{ prob.problemName }}</a>
-        </v-chip>
-      </div>
+    <v-container>
+      <template v-if="role >= 2">
+        <v-row justify="center" style="margin-top: 48px">
+          See the stats on&nbsp; <a href="https://v2.noj.tw">https://v2.noj.tw</a>!
+        </v-row>
+      </template>
+      <template v-else>
+        <div class="d-flex align-center">
+          <h3>Submission Status</h3>
+          <v-spacer />
+          <v-chip v-if="prob != null" label color="primary" class="subtitle-1">
+            <a :href="`/problem/${$route.params.id}`" style="color: white;">{{ 'Problem: ' + $route.params.id }} - {{ prob.problemName }}</a>
+          </v-chip>
+        </div>
 
-      <v-row v-if="isHandwritten" no-gutters justify="center">
-        <h3>No statistic for Handwritten!</h3>
-      </v-row>
+        <v-row v-if="isHandwritten" no-gutters justify="center">
+          <h3>No statistic for Handwritten!</h3>
+        </v-row>
 
-      <spinner v-if="isLoading" />
-      <v-chart
-        v-else
-        :theme="$vuetify.theme.dark ? 'dark' : null"
-        :option="pieChartOption"
-        style="min-height: 400px"
-      />
+        <spinner v-if="isLoading" />
+        <v-chart
+          v-else
+          :theme="$vuetify.theme.dark ? 'dark' : null"
+          :option="pieChartOption"
+          style="min-height: 400px"
+        />
 
-      <h3>Runtime Top 10</h3>
+        <h3>Runtime Top 10</h3>
 
-      <v-simple-table class="px-6">
-        <thead>
-          <tr>
-            <th class="text-center">Rank</th>
-            <th>Username</th>
-            <th>Runtime</th>
-            <th>Memory</th>
-            <th>Language</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in submissions" :key="item.submissionId">
-            <td v-if="idx<3" class="headline text-center">{{ (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : '🥉')) }}</td>
-            <td v-else class="subtitle-1 text-center">{{ (idx+1) }}</td>
-            <td class="subtitle-1">{{ item.user.username }}</td>
-            <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
-            <td class="subtitle-1">{{ item.memoryUsage + 'KB' }}</td>
-            <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
-          </tr>
-        </tbody>
-      </v-simple-table>
+        <v-simple-table class="px-6">
+          <thead>
+            <tr>
+              <th class="text-center">Rank</th>
+              <th>Username</th>
+              <th>Runtime</th>
+              <th>Memory</th>
+              <th>Language</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, idx) in submissions" :key="item.submissionId">
+              <td v-if="idx<3" class="headline text-center">{{ (idx == 0 ? '🥇' : (idx == 1 ? '🥈' : '🥉')) }}</td>
+              <td v-else class="subtitle-1 text-center">{{ (idx+1) }}</td>
+              <td class="subtitle-1">{{ item.user.username }}</td>
+              <td class="subtitle-1">{{ item.runTime + 'ms' }}</td>
+              <td class="subtitle-1">{{ item.memoryUsage + 'KB' }}</td>
+              <td class="subtitle-1">{{ LANG[item.languageType] }}</td>
+            </tr>
+          </tbody>
+        </v-simple-table>
+      </template>
     </v-container>
   </div>
 </template>
