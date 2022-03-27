@@ -57,7 +57,7 @@ export default {
         content: '',
         targetThreadId: null
       },
-      tas: []
+      // tas: []
     }
   },
   computed: {
@@ -66,7 +66,8 @@ export default {
       role: state => state.role
     }),
     canWriteCourse () {
-      return this.role <= 1 || this.tas.include(ta => ta.username === this.username)
+      return this.role <= 1
+      // return this.role <= 1 || this.tas.include(ta => ta.username === this.username)
     }
   },
   created () {
@@ -130,10 +131,10 @@ export default {
         })
     },
     getCourseInfo () {
-      this.$agent.Course.getInfo(this.$route.params.name)
-        .then((res) => {
-          this.tas = res.data.data.TAs
-        })
+      // this.$agent.Course.getInfo(this.$route.params.name)
+      //   .then((res) => {
+      //     this.tas = res.data.data.TAs
+      //   })
     }
   }
 }
