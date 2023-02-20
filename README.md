@@ -1,5 +1,9 @@
 # Normal OJ Web Frontend
 
+## ❗️Caution
+
+We'll NOT maintain the first version of NOJ Front-End (this repository) in the future and please see our new Front-End repository https://github.com/Normal-OJ/new-front-end
+
 ## Contributing Guide
 
 Clone this project via SSH:
